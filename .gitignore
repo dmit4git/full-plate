@@ -1,0 +1,16 @@
+/webapi/netcore/bin/
+/webapi/netcore/built/
+/webapi/netcore/.vscode/
+/webapi/netcore/.idea/
+/webapi/netcore/archive/
+/misc/
+/webapi/netcore/obj/
+/webapp/react/.idea/
+/webapp/react/build/
+/webapp/react/node_modules/
+/webapp/react/not-used/
+/.idea/
+/.vs/
+/.vscode/
+/webapi/netcore/Migrations/
+/postgres/data/

@@ -1,0 +1,25 @@
+.panel-tree {
+  .p-panel {
+    background-color: rgba(var(--primary-color-rgb), 0.05);
+    .p-panel-header {
+      background-color: rgba(var(--primary-color-rgb), 0.1);
+      padding-left: 0.5rem;
+      i {
+        transition: transform 0.2s;
+        &.panel-tree-tab-expanded {
+          transform: rotate(90deg);
+        }
+      }
+    }
+    .p-panel-content {
+      background-color: initial;
+      padding: 1.25rem;
+    }
+  }
+  .panel-tree-tab-children {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.25rem;
+  }
+}

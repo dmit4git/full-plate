@@ -1,0 +1,22 @@
+.theme-settings-container {
+  
+  padding: 0 1.5rem;
+
+  // dark mode toggle
+  .p-inputswitch {
+    .p-inputswitch-slider {
+      background: var(--surface-d);
+      &:before {
+        background: var(--text-color);
+      }
+    }
+    &.p-inputswitch-checked:not(.p-disabled):hover .p-inputswitch-slider {
+      background: var(--surface-d);
+    }
+  }
+  span > i {
+    &.theme-mode-active {
+      color: var(--primary-color);
+    }
+  }
+}

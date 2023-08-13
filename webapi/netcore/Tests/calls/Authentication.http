@@ -1,0 +1,9 @@
+### WebApp : authentication : registration
+POST http://localhost:9080/Identity/Account/Register
+Content-Type: application/x-www-form-urlencoded; Input.Email=BoxName_123@email.com; Input.Password=BoxName_123@email.com; Input.ConfirmPassword=BoxName_123@email.com;
+###
+
+### WebApp : authentication : registration
+POST https://localhost:44453/Identity/Account/Register?returnUrl=%2Fauthentication%2Flogin
+Content-Type: application/x-www-form-urlencoded; Input.Email=BoxName_123@email.com; Input.Password=BoxName_123@email.com; Input.ConfirmPassword=BoxName_123@email.com;
+###

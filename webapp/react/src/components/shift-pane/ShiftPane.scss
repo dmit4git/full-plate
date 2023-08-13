@@ -1,0 +1,6 @@
+.shift-pane {
+  transition: left 0.5s ease-in-out;
+  .shift-pane-fragment {
+    transition: max-height 0.5s ease-in-out;
+  }
+}
