@@ -1,6 +1,6 @@
 ﻿
 # sudo service docker start
-# docker-compose up --build --detach
+# docker compose up --build --detach
 
 version: '3.8'
 

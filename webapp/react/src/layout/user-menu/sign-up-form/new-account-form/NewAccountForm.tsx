@@ -89,6 +89,8 @@ function NewAccountFormComponent(props: IPanelBranchContent): ReactElement {
             } else if (errorCode === 'DuplicateUserName') {
                 // show error hint on username input
                 control.setError('username', {type: 'taken'});
+            } else if (errorCode === 'EmailVerificationSendFail') {
+                setError('failed to send email verification message');
             } else if (isConnectionError(errorCode)) {
                 setError(serverCommunicationError);
             } else {

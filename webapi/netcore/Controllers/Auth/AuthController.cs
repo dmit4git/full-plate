@@ -63,9 +63,13 @@ public class AuthController : Controller
         
         // request email verification
         var verificationUrl = await MakeVerificationUrl(account, user);
-        Console.WriteLine(verificationUrl);
         var styles = body.Styles ?? new Dictionary<string, string>();
-        await _emailService.SendEmailVerificationMessage(user.Email!, verificationUrl, styles);
+        var messageId = await _emailService.SendEmailVerificationMessage(user.Email!, verificationUrl, styles);
+        if (messageId == null) // if verification message was not sent
+        {
+            await _userManager.DeleteAsync(user); // delete newly created user
+            throw new ActionException("EmailVerificationSendFail", "Failed to send email verification message");
+        }
 
         // // add claims
         // var defaultClaims = new Claim[] { new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()) };
