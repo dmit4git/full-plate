@@ -20,13 +20,13 @@ function SignInFormComponent(): ReactElement {
 
     // form
     const defaultValues = {username: signInSlice.username, password: signInSlice.password};
-    const { control, formState, handleSubmit } =
+    const { control, handleSubmit } =
         useForm<UserCredentials>({defaultValues: defaultValues, mode: "all"});
     const messagesRef = useRef<Messages>(null);
     const [buttonSeverity, setButtonSeverity] = useState<ButtonProps["severity"]>(undefined);
 
     // api
-    const [signInTrigger, signInResult, signInLastPromiseInfo] = useLazySignInQuery();
+    const [signInTrigger, signInResult] = useLazySignInQuery();
 
     // sign user in on button click
     async function onSignInClick(data: UserCredentials) {

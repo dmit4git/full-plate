@@ -11,8 +11,7 @@ import { RootState } from '../../store/store';
 
 function HeaderComponent(): ReactElement {
 
-    const [leftSliderVisible, setLeftSliderVisible] 
-        = useState<boolean>(false); // hides menu button
+    const [, setLeftSliderVisible] = useState<boolean>(false); // hides menu button
 
     const userSlice = useSelector((store: RootState) => store.user);
 

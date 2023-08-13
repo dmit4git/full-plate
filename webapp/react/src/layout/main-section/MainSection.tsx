@@ -28,7 +28,7 @@ function MainSectionComponent(): ReactElement {
             emailConfirmationQuery();
         }
     }
-    useEffect(checkOverlayParams, [queryParams, mainLayoutControls]);
+    useEffect(checkOverlayParams, []);
 
     return(
         <div className="main-section-wrapper">

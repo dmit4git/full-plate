@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { UserCredentials } from '../layout/user-menu/sign-in-form/SignInFormSlice';
 import {FetchBaseQueryError, QueryStatus} from "@reduxjs/toolkit/query";
 import {SerializedError} from "@reduxjs/toolkit";
 

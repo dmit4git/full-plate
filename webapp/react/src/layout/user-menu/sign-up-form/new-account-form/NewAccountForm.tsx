@@ -35,7 +35,7 @@ function NewAccountFormComponent(props: IPanelBranchContent): ReactElement {
         if (emailParam) { dispatch(signUpEmailChange(emailParam)); }
         if (usernameParam) { dispatch(signUpUsernameChange(usernameParam)); }
     }
-    useEffect(onMount, [queryParams]);
+    useEffect(onMount, [dispatch, emailParam, usernameParam]);
 
     // form
     const defaultValues = {
@@ -44,13 +44,13 @@ function NewAccountFormComponent(props: IPanelBranchContent): ReactElement {
         password: '',
         'repeat password': ''
     };
-    const { control, formState, handleSubmit } =
+    const { control, handleSubmit } =
         useForm<UserAccount>({defaultValues: defaultValues, mode: "all"});
     const messagesRef = useRef<Messages>(null);
     const [buttonSeverity, setButtonSeverity] = useState<ButtonProps["severity"]>(undefined);
 
     // api
-    const [signUpTrigger, signUpResult, signUpLastPromiseInfo] = useLazySignUpQuery();
+    const [signUpTrigger, signUpResult] = useLazySignUpQuery();
     
     // create new user and send email verification message 
     async function onSignUpClick(data: UserAccount) {
@@ -81,7 +81,6 @@ function NewAccountFormComponent(props: IPanelBranchContent): ReactElement {
 
     function processErrors(signUpResult: ApiResponse) {
         clearError();
-        const errorCodes = getErrorCodes(signUpResult);
         for (let errorCode of getErrorCodes(signUpResult)) {
             if (errorCode === 'DuplicateEmail') {
                 // show error hint on email input

@@ -12,7 +12,6 @@ import { RootState, store } from '../../store/store';
 import { SignInForm } from './sign-in-form/SignInForm';
 import { SignOutForm } from './sign-out-form/SignOutForm';
 import {MenuTreeTab, PanelTree} from "../../components/panel-tree/PanelTree";
-import {IPanelBranchContent} from "../../components/panel-tree/panel-branch/PanelBranch";
 
 export const accountMenuTab = new MenuTreeTab('Account', 'user', undefined, []);
 export const signUpFormTab = new MenuTreeTab('Create New Account', 'user', <SignUpForm />);

@@ -15,7 +15,7 @@ function SignUpFormComponent(props: IPanelBranchContent): ReactElement {
 
     // checking query params
     const emailParam: string | null = queryParams.get('email');
-    const emailConfirmation: EmailConfirmation | null = queryParams.get('overlay') != 'email-verification' ? null
+    const emailConfirmation: EmailConfirmation | null = queryParams.get('overlay') !== 'email-verification' ? null
         : { username: queryParams.get('username'), token: queryParams.get('email-verification')};
 
     // email address to confirm

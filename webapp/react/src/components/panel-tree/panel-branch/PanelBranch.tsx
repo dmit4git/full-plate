@@ -1,6 +1,6 @@
 import {Panel, PanelHeaderTemplateOptions} from "primereact/panel";
 import {Ripple} from "primereact/ripple";
-import React, {PropsWithChildren, ReactElement, useEffect} from "react";
+import React, {PropsWithChildren, ReactElement, useEffect, useMemo} from "react";
 import {MenuTreeTab} from "../PanelTree";
 import {UserAccount} from "../../../layout/user-menu/sign-up-form/new-account-form/NewAccountFormSlice";
 
@@ -17,7 +17,7 @@ export interface IPanelBranchContent {
 
 function PanelBranchComponent(props: PanelBranchProps): ReactElement {
 
-    const tab: MenuTreeTab = props.tab || new MenuTreeTab();
+    const tab: MenuTreeTab = useMemo<MenuTreeTab>(() => props.tab || new MenuTreeTab(), [props.tab]);
     function resolveRenderPromise() {
         if (tab?.render?.resolve) { tab.render.resolve(true); }
     }

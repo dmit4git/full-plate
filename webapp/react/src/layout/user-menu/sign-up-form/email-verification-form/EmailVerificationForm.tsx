@@ -1,14 +1,13 @@
-import React, {ReactElement, useEffect, useRef} from "react";
-import {Divider} from "primereact/divider";
-import {useLazyVerifyEmailQuery} from "./EmailVerificationFormApi";
-import {Messages, MessagesMessage} from "primereact/messages";
-import {ApiResponse} from "../../../../store/webApi";
-import {getCurrentPath, getErrorCodes} from "../../../../helpers/accessors";
-import {makeErrorMessage, makeWarningMessage} from "../../../../helpers/makers";
-import {signInFormTab} from "../../UserMenu";
-import {Link, useSearchParams} from "react-router-dom";
-import {queryParams} from "../../../MainLayout";
-import {Button} from "primereact/button";
+import React, { ReactElement, useEffect, useRef } from "react";
+import { Divider } from "primereact/divider";
+import { useLazyVerifyEmailQuery } from "./EmailVerificationFormApi";
+import { Messages, MessagesMessage } from "primereact/messages";
+import { ApiResponse } from "../../../../store/webApi";
+import { getErrorCodes } from "../../../../helpers/accessors";
+import { makeErrorMessage, makeWarningMessage } from "../../../../helpers/makers";
+import { signInFormTab } from "../../UserMenu";
+import { useSearchParams } from "react-router-dom";
+import { Button } from "primereact/button";
 
 export interface EmailConfirmation {
     username?: string | null;
@@ -23,34 +22,33 @@ interface EmailConfirmFormProps {
 function EmailConfirmFormComponent(props: EmailConfirmFormProps): ReactElement  {
 
     // api
-    const [verificationEmailTrigger, verificationEmailResult, verificationEmailPromise] = useLazyVerifyEmailQuery();
+    const [verificationEmailTrigger, verificationEmailResult] = useLazyVerifyEmailQuery();
 
     const messagesRef = useRef<Messages>(null);
     let [searchParams, setSearchParams] = useSearchParams();
-    useEffect(queryEmailConfirmation, [messagesRef, verificationEmailTrigger, verificationEmailResult]);
-
-    const errors: MessagesMessage[] = [];
-    function processErrors(response: ApiResponse) {
-        messagesRef.current?.clear();
-        for (let errorCode of getErrorCodes(response)) {
-            if (errorCode === 'InvalidUsername') {
-                errors.push(makeErrorMessage('wrong username'));
-            } else if (errorCode === 'InvalidToken') {
-                errors.push(makeErrorMessage('wrong email confirmation token'));
-            } else if (errorCode === 'EmptyUsername') {
-                errors.push(makeErrorMessage('no username provided'));
-            } else if (errorCode === 'EmptyToken') {
-                errors.push(makeErrorMessage('no email confirmation token provided'));
-            } else if (errorCode === 'AlreadyVerified') {
-                errors.push(makeWarningMessage('the email is already verified'));
-            } else {
-                errors.push(makeErrorMessage());
-            }
-        }
-        messagesRef.current?.show(errors);
-    }
+    useEffect(queryEmailConfirmation, [messagesRef, verificationEmailTrigger, verificationEmailResult, props.confirmation]);
 
     function queryEmailConfirmation() {
+        const errors: MessagesMessage[] = [];
+        function processErrors(response: ApiResponse) {
+            messagesRef.current?.clear();
+            for (let errorCode of getErrorCodes(response)) {
+                if (errorCode === 'InvalidUsername') {
+                    errors.push(makeErrorMessage('wrong username'));
+                } else if (errorCode === 'InvalidToken') {
+                    errors.push(makeErrorMessage('wrong email confirmation token'));
+                } else if (errorCode === 'EmptyUsername') {
+                    errors.push(makeErrorMessage('no username provided'));
+                } else if (errorCode === 'EmptyToken') {
+                    errors.push(makeErrorMessage('no email confirmation token provided'));
+                } else if (errorCode === 'AlreadyVerified') {
+                    errors.push(makeWarningMessage('the email is already verified'));
+                } else {
+                    errors.push(makeErrorMessage());
+                }
+            }
+            messagesRef.current?.show(errors);
+        }
         if (!props.confirmation) { return; }
         if (verificationEmailResult.isUninitialized) {
             verificationEmailTrigger(props.confirmation);

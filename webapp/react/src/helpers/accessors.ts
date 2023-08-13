@@ -1,9 +1,7 @@
 import React from "react";
-import {FetchBaseQueryError, QueryStatus} from "@reduxjs/toolkit/query";
-import {SerializedError} from "@reduxjs/toolkit";
+import {FetchBaseQueryError} from "@reduxjs/toolkit/query";
 import {ApiResponse} from "../store/webApi";
 import {isObject} from "./checks";
-import {unknownErrorMessage} from "./constants";
 
 export function getComponentDisplayName(element: React.ReactElement<any>) {
     const node = element as React.ReactElement<React.ComponentType<any>>;

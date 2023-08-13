@@ -1,19 +1,19 @@
-import React, {FC, ReactElement} from "react";
+import React, { ReactElement } from "react";
 import { Button } from "primereact/button";
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { useLazySignOutQuery } from "./SignOutFormApi";
 import { userSignOut } from "../../UserSlice";
-import {InputText} from "primereact/inputtext";
+import { InputText } from "primereact/inputtext";
 
 function SignOutFormComponent(): ReactElement {
 
     const userSlice = useSelector((store: RootState) => store.user);
-    const [signOutTrigger, signOutResult, signOutLastPromiseInfo] = useLazySignOutQuery();
+    const [signOutTrigger, signOutResult] = useLazySignOutQuery();
     const dispatch = useDispatch();
     
     async function onSignUpClick() {
-        const signUpResult = await signOutTrigger();
+        await signOutTrigger();
         dispatch(userSignOut());
     }
     
