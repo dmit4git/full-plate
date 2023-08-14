@@ -33,25 +33,23 @@ function HeaderComponent(): ReactElement {
         (userSlice.signedIn ? "fadeinright" : "fadeoutright animation-fill-forwards");
     const usernameWidth = userSlice.signedIn ? 'max-w-13rem' : 'max-w-0';
     return (
-        <div className="header flex justify-content-between align-items-center">
-            {/* left group */}
-            <div className={sliderClasses}>
-                <Button icon="pi pi-bars" className="p-button-rounded p-button-text no-focus" aria-label="Menu"
-                        onClick={menuClickHandler}/>
-                {/* Logo */}
-                <div className="logo-text">
-                    <div>FullPlate Prime</div>
+        <div className="header-wrapper">
+            <div className="header flex justify-content-between align-items-center">
+                {/* left group */}
+                <div className={sliderClasses}>
+                    <Button icon="pi pi-bars" className="p-button-rounded p-button-text no-focus" aria-label="Menu"
+                            onClick={menuClickHandler}/>
                 </div>
-            </div>
-            {/* right group */}
-            <div className="flex align-items-center header-group m-2">
-                <div className={"overflow-hidden max-w-t " + usernameWidth}>
-                    <div className={"white-space-nowrap text-overflow-ellipsis overflow-hidden " + usernameAnimation}>
-                        {userSlice.username}
+                {/* right group */}
+                <div className="flex align-items-center header-group m-2">
+                    <div className={"overflow-hidden max-w-t " + usernameWidth}>
+                        <div className={"white-space-nowrap text-overflow-ellipsis overflow-hidden " + usernameAnimation}>
+                            {userSlice.username}
+                        </div>
                     </div>
+                    <Button className="p-button-rounded p-button-text no-focus"
+                            icon="pi pi-user" aria-label="User" onClick={accountClickHandler}/>
                 </div>
-                <Button className="p-button-rounded p-button-text no-focus"
-                        icon="pi pi-user" aria-label="User" onClick={accountClickHandler}/>
             </div>
         </div>
     )
