@@ -1,10 +1,17 @@
 # full-plate
-A fullstack template project. Demo site is coming soon.  
+A fullstack project template. 
+Demo available at http://44.198.72.114/, [fullplate.dev](https://fullplate.dev) domain is coming up soon.  
 It is currently in prototype stage. Basic features work, but there is no documentation or tests coverage.
 
-It's made of **React** frontend, **.Net Core webapi** backend, **PostgresQL** for database and **nginx** used as reverse-proxy.  
-Wiki page with full description is coming soon. 
+## tech stack
+ * **React** frontend
+ * **.Net Core 7.0 webapi** backend 
+ * **PostgresQL** database 
+ * **nginx** web server / reverse-proxy
 
+Wiki page with full description is coming soon.
+
+## howto
 To run it, you need to clone the repository, go to docker compose directory and start its containers:
 ```
 git clone https://github.com/dmit4git/full-plate.git
