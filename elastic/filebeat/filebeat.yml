@@ -1,0 +1,31 @@
+﻿## processor (host: "unix:///var/run/docker.sock") works better,
+## it provides more container info
+# filebeat.inputs:
+#   - type: container
+#     paths:
+#       - '/var/lib/docker/containers/*/*.log'
+
+processors:
+  - add_docker_metadata:
+      host: "unix:///var/run/docker.sock"
+
+  - decode_json_fields:
+      fields: ["message"]
+      target: ""
+      overwrite_keys: true
+
+output.elasticsearch:
+  hosts: ["localhost:9200"]
+  # username: "elastic"
+  username: "filebeat_internal"
+  password: "changeme"
+  indices:
+    - index: "filebeat-%{[agent.version]}-%{+yyyy.MM.dd}"
+
+logging.json: true
+logging.metrics.enabled: false
+
+filebeat.autodiscover:
+ providers:
+   - type: docker
+     hints.enabled: true
