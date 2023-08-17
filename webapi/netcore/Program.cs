@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -11,6 +9,9 @@ using webapi.Helpers.Readers;
 using webapi.Middlewares;
 using webapi.Models.Security;
 using webapi.Services.Email;
+using static webapi.Helpers.Waiter;
+
+Console.WriteLine("Staring WebAPI");
 
 // add router tokens hyphenation
 var builder = WebApplication.CreateBuilder(args);
@@ -93,12 +94,13 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<EF_DataContext>();
+    Console.WriteLine("Waiting for EF database");
+    await WaitForDatabase(db.Database);
     db.Database.Migrate();
 }
 
 app.UseSerilogRequestLogging();
 app.UseMiddleware<ActionExceptionMiddleware>();
-// app.UseExceptionHandler("/error");
 app.UseHttpLogging();
 app.UseForwardedHeaders(new ForwardedHeadersOptions() // adds HttpContext.Connection.RemoteIpAddress
 {
@@ -107,4 +109,5 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions() // adds HttpContext.Connec
 app.UseAuthentication();
 app.MapControllers();
 app.UseAuthorization();
+Console.WriteLine("Running the WebAPI app");
 app.Run();
