@@ -40,6 +40,9 @@
   >.p-sidebar-content {
     background: var(--surface-f);
     padding: 0;
+    &::-webkit-scrollbar {
+      display: none; // do not display scroll bar to prevent layout shift
+    }
   }
   
   .p-tree {

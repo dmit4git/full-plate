@@ -42,9 +42,9 @@ function NewAccountFormComponent(props: IPanelBranchContent): ReactElement {
         email: emailParam || signUpSlice.email,
         username: usernameParam || signUpSlice.username,
         password: '',
-        'repeat password': ''
+        'password repeat': ''
     };
-    const { control, handleSubmit } =
+    const { control, getFieldState, trigger, handleSubmit } =
         useForm<UserAccount>({defaultValues: defaultValues, mode: "all"});
     const messagesRef = useRef<Messages>(null);
     const [buttonSeverity, setButtonSeverity] = useState<ButtonProps["severity"]>(undefined);
@@ -114,6 +114,14 @@ function NewAccountFormComponent(props: IPanelBranchContent): ReactElement {
         setButtonSeverity(undefined); // reset button color
     }
 
+    function onPasswordChange(value: string) {
+        onInputChange(value);
+        const repeatState = getFieldState('password repeat');
+        if (repeatState.isTouched || repeatState.isDirty) {
+            setTimeout(() => trigger('password repeat'));
+        }
+    }
+
     // styles to read calculated values from
     const stylesDivRef = useRef(null);
     const styles: CSSProperties = {
@@ -133,9 +141,9 @@ function NewAccountFormComponent(props: IPanelBranchContent): ReactElement {
                             required={true} valueAction={signUpEmailChange} valueCallback={onInputChange} />
                 <InputField name="username" idPrefix="sign-up" control={control}
                             required={true} valueAction={signUpUsernameChange} valueCallback={onInputChange} />
-                <InputField name="password" idPrefix="sign-up" control={control}
-                            type={FieldType.password} passwordMeter={true} required={true} valueCallback={onInputChange} />
-                <InputField name="repeat password" idPrefix="sign-up" control={control} match="password"
+                <InputField name="password" idPrefix="sign-up" control={control} passwordMeter={true}
+                            type={FieldType.password} required={true} valueCallback={onPasswordChange} />
+                <InputField name="password repeat" idPrefix="sign-up" control={control} match="password"
                             type={FieldType.password} required={true} valueCallback={onInputChange} />
                 <Button className="w-full mt-3" label="Create Account"
                         onClick={handleSubmit(onSignUpClick)} loading={signUpResult.isLoading} severity={buttonSeverity} />

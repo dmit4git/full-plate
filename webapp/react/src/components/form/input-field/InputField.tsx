@@ -1,15 +1,15 @@
 import "./InputField.scss"
-import {InputText} from "primereact/inputtext";
-import React, {ReactElement} from "react";
-import {useDispatch} from "react-redux";
-import {useMemoState} from "../../../helpers/hooks";
-import {useController, UseControllerProps, Validate} from "react-hook-form";
-import {Password} from "primereact/password";
-import {ControllerRenderProps} from "react-hook-form/dist/types/controller";
-import {Divider} from "primereact/divider";
-import {CharType, charTypesInString, emailRegExp} from "../../../helpers/checks";
-import {ProgressBar} from "primereact/progressbar";
-import {KeyFilterType} from "primereact/keyfilter";
+import { InputText } from "primereact/inputtext";
+import React, { ReactElement } from "react";
+import { useDispatch } from "react-redux";
+import { useMemoState } from "../../../helpers/hooks";
+import { useController, UseControllerProps, Validate } from "react-hook-form";
+import { Password } from "primereact/password";
+import { ControllerRenderProps } from "react-hook-form/dist/types/controller";
+import { Divider } from "primereact/divider";
+import { CharType, charTypesInString, emailRegExp } from "../../../helpers/checks";
+import { ProgressBar } from "primereact/progressbar";
+import { KeyFilterType } from "primereact/keyfilter";
 
 export enum FieldType {
     email,

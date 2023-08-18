@@ -3,7 +3,8 @@ import { UserCredentials } from '../../sign-in-form/SignInFormSlice';
 
 export interface UserAccount extends UserCredentials {
     email: string,
-    returnPath?: string
+    returnPath?: string,
+    'password repeat'?: string
 }
 
 const initialState: UserAccount = {
