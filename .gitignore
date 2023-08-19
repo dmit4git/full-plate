@@ -1,5 +1,6 @@
 /webapi/netcore/bin/
 /webapi/netcore/built/
+/webapi/netcore/build/
 /webapi/netcore/.vscode/
 /webapi/netcore/.idea/
 /webapi/netcore/archive/

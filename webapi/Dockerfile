@@ -17,7 +17,7 @@ COPY ./netcore/Services ./Services
 COPY ./netcore/Migrations/20230813211419_InitialMigration.cs ./netcore/Migrations/20230813211419_InitialMigration.Designer.cs ./netcore/Migrations/EF_DataContextModelSnapshot.cs ./Migrations/
 COPY ./netcore/Migrations/EF_DataContextModelSnapshot.cs ./Migrations/EF_DataContextModelSnapshot.cs
 # build
-RUN dotnet publish --configuration release --output built
+RUN dotnet publish --configuration release --output build
 ## run EF migrations
 #RUN dotnet ef migrations add BuildMigration -v
 #RUN dotnet ef database update -v
@@ -26,6 +26,6 @@ RUN dotnet publish --configuration release --output built
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS run
 # copy built app from previous stage
 WORKDIR /webapi
-COPY --from=build source/built ./
+COPY --from=build source/build ./
 # run the app
 ENTRYPOINT ["dotnet", "webapi.dll"]
