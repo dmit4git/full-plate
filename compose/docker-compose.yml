@@ -45,7 +45,7 @@ services:
     network_mode: "host"
 
   nginx-dev:
-    container_name: nginx
+    container_name: nginx-dev
     profiles:
       - dev
     image: nginx:1.22.0
