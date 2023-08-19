@@ -17,6 +17,7 @@
       margin-top: initial;
     }
     &>.p-password-panel {
+      position: initial;
       margin-top: 4px;
       background-color: rgba(var(--primary-color-rgb), 0.025);
       &.p-connected-overlay-enter {
