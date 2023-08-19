@@ -4,9 +4,9 @@ Demo available at [fullplate.dev](https://fullplate.dev).
 It is currently in prototype stage. Only authentication and themes features work, there is no documentation or tests coverage.
 
 ## Tech Stack
- * **React** frontend
- * **.Net Core 7.0** backend 
- * **PostgresQL** database 
+ * **React** frontend, because it is most used ([stateofjs.com](https://2022.stateofjs.com/en-US/libraries/front-end-frameworks/)) and has the largest community 
+ * **.Net Core 7.0** backend, because its performance is top tier ([techempower.com](https://www.techempower.com/benchmarks/#section=data-r21)) and it has one of the largest communities
+ * **PostgreSQL** database 
  * **Nginx** web server / reverse proxy
 
 Documentation with details is coming soon.
