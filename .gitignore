@@ -14,3 +14,4 @@
 /.vscode/
 /webapi/netcore/Migrations/
 /postgres/data/
+/webapi/data/
