@@ -53,6 +53,8 @@ services:
     image: webapi
     build:
       context: ../webapi
+    volumes:
+      - ../webapi/data/aspnet:/root/.aspnet
     network_mode: "host"
 #    networks:
 #      - backend
