@@ -69,7 +69,7 @@ public class AwsSesService : IEmailService
         return _encodedSvg;
     }
     
-    private string MakeVerificationHtmlBody(string email, string varificationUrl, Dictionary<string, string> cssVariables)
+    private string MakeVerificationHtmlBody(string email, string verificationUrl, Dictionary<string, string> cssVariables)
     {
         if (cssVariables.TryGetValue("--primary-color", out var opaqueButton))
         {
@@ -84,7 +84,8 @@ public class AwsSesService : IEmailService
             // set values
             .Replace("<!--email-->", email)
             .Replace("<!--website-->", Website)
-            .Replace("<!--verificationUrl-->", varificationUrl);
+            .Replace("<a href=\"\" class=\"p-button p-component\">Verify Email</a>", 
+                $"<a href=\"{verificationUrl}\" class=\"p-button p-component\">Verify Email</a>");
     }
 
     public async Task<string?> SendEmailVerificationMessage(
