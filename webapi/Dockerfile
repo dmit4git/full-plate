@@ -8,7 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 
 # copy source
 WORKDIR /source
-COPY netcore/webapi .
+COPY NetCore/WebApi .
 
 # build
 RUN dotnet publish --configuration release --output build
@@ -22,8 +22,8 @@ RUN dotnet publish --configuration release --output build
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS run
 
 # copy built app from previous stage
-WORKDIR /webapi
+WORKDIR /WebApi
 COPY --from=build source/build ./
 
 # run the app
-ENTRYPOINT ["dotnet", "webapi.dll"]
+ENTRYPOINT ["dotnet", "WebApi.dll"]

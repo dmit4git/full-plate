@@ -21,9 +21,9 @@ docker compose --profile frontend --profile backend --build --detach
 ```
 This will:
  * start PostgreSQL database container
- * build .Net Core webapi backend container and start it
+ * build .Net Core WebApi backend container and start it
  * build React webapp and start Nginx container to serve it
-   * Nginx will also forward all `/webapi` calls to the webapi backend (port 10090)
+   * Nginx will also forward all `/webapi` calls to the WebApi backend (port 10090)
  
 Open it at [localhost](http://localhost).  
 Stop containers to shut it down: `docker compose --profile frontend --profile backend down`
@@ -35,9 +35,9 @@ This will:
 * start PostgreSQL database container
 * start Dozzle container to show containers logs at [localhost:8080](http://localhost:8080)
 * start Nginx container to forward port 80 calls to port 3000 (default React dev server port)  
-   * Nginx will also forward all `/webapi` calls to the webapi backend (port 10090)
+   * Nginx will also forward all `/webapi` calls to the WebApi backend (port 10090)
 
-Run/debug .Net Core app in `webapi/netcore` with your IDE, it listens on port 10090 which Nginx forwards to.  
+Run/debug .Net Core app in `webapi/NetCore/WebApi` with your IDE, it listens on port 10090 which Nginx forwards to.  
 Start React development with `npm run start` in `webapp/react`, dev server listens on port 3000 which Nginx forwards to.  
 Open it at [localhost](http://localhost).  
 Stop containers to shut it down: `docker compose --profile dev down`

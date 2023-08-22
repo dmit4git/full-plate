@@ -24,7 +24,7 @@
 LICENSE
 README.md
 
-netcore/webapi/build
-netcore/webapi/Tests
-netcore/webapi/archive
-netcore/webapi/appsettings.Development.json
+NetCore/WebApi/build
+NetCore/WebApi/Tests
+NetCore/WebApi/archive
+NetCore/WebApi/appsettings.Development.json
