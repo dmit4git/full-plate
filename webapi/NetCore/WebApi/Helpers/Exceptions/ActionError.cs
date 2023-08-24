@@ -4,6 +4,8 @@ namespace WebApi.Helpers.Exceptions;
 
 public class ActionError
 {
+    public ActionError() { }
+    
     [JsonProperty("code", NullValueHandling=NullValueHandling.Ignore)]
     public string? Code { get; set; }
     

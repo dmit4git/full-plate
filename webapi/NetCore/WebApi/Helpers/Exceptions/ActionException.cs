@@ -9,6 +9,7 @@ namespace WebApi.Helpers.Exceptions;
 [JsonObject(MemberSerialization.OptIn)]
 public class ActionException : Exception
 {
+    public ActionException(): base() { }
     public int Status { get; set; } = 500;
     
     public string ContentType { get; set; } = MediaTypeNames.Application.Json;

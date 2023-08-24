@@ -16,3 +16,6 @@
 /webapp/react/build/
 /webapp/react/node_modules/
 /webapp/react/not-used/
+/webapi/NetCore/WebApi.Tests/bin/
+/webapi/NetCore/WebApi.Tests/obj/
+/webapi/NetCore/NetCore.sln.DotSettings.user
