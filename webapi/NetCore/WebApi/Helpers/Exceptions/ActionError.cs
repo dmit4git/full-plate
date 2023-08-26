@@ -1,29 +1,39 @@
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Identity;
 
 namespace WebApi.Helpers.Exceptions;
 
 public class ActionError: IEquatable<ActionError>, IEqualityComparer<ActionError>
 {
+    /***** Properties *****/
+    
+    [JsonPropertyName("code")] public string? Code { get; init; }
+
+    [JsonPropertyName("description")] public string? Description { get; init; }
+ 
+    /***** Constructors *****/
+    
     public ActionError() { }
     
-    [JsonProperty("code", NullValueHandling=NullValueHandling.Ignore)]
-    public string? Code { get; }
-    
-    [JsonProperty("description", NullValueHandling=NullValueHandling.Ignore)]
-    
-    public string? Description { get; }
-    
-    [JsonConstructor]
     public ActionError(string code)
     {
         Code = code;
     }
     
-    public ActionError(string code, string description): this(code)
+    public ActionError(string code, string? description): this(code)
     {
         Description = description;
     }
 
+    public ActionError(IdentityError identityError)
+    {
+        Code = identityError.Code;
+        Description = identityError.Description;
+    }
+
+    /***** Comparison methods *****/
+    
     public bool Equals(ActionError? other)
     {
         if (ReferenceEquals(null, other)) return false;
@@ -44,6 +54,8 @@ public class ActionError: IEquatable<ActionError>, IEqualityComparer<ActionError
         return HashCode.Combine(Code, Description);
     }
 
+    /***** JSON serialization *****/
+    
     public bool Equals(ActionError? x, ActionError? y)
     {
         if (ReferenceEquals(x, y)) return true;
@@ -56,5 +68,20 @@ public class ActionError: IEquatable<ActionError>, IEqualityComparer<ActionError
     public int GetHashCode(ActionError obj)
     {
         return HashCode.Combine(obj.Code, obj.Description);
+    }
+    
+    public string ToJsonString()
+    {
+        return JsonSerializer.Serialize(this, ActionException.JsonSerializerOptions);
+    }
+    
+    public static ActionError? FromJsonString(string jsonString)
+    {
+        return JsonSerializer.Deserialize<ActionError>(jsonString, ActionException.JsonSerializerOptions);
+    }
+    
+    public override string ToString()
+    {
+        return ToJsonString();
     }
 }
