@@ -1,56 +1,69 @@
 using System.Net.Mime;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json;
 
 namespace WebApi.Helpers.Exceptions;
 
-[JsonObject(MemberSerialization.OptIn)]
 public class ActionException : Exception, IEquatable<ActionException>
 {
-    public int Status { get; }
+    /***** Properties *****/
     
-    public string ContentType { get; }
-    
-    [JsonProperty("error", NullValueHandling=NullValueHandling.Ignore)]
-    public ActionError? Error { get; set; }
-    
-    [JsonProperty("errors", NullValueHandling=NullValueHandling.Ignore)]
-    public List<ActionError>? Errors { get; }
+    [JsonIgnore] public int Status { get; init; } = StatusCodes.Status500InternalServerError;
 
-    public ActionException(): this(StatusCodes.Status500InternalServerError, MediaTypeNames.Application.Json) { }
+    [JsonIgnore] public string ContentType { get; init; } = MediaTypeNames.Application.Json;
+
+    [JsonPropertyName("errors")] public List<ActionError>? Errors { get; init; }
+
+    public ActionError? Error => Errors is not null && Errors.Count > 0 ? Errors[0] : null;
+
+    /***** Constructors *****/
     
-    public ActionException(int status): this(status, MediaTypeNames.Application.Json) { }
-    
-    public ActionException(int status, string mediaType)
+    static ActionException()
     {
-        Status = status;
-        ContentType = MediaTypeNames.Application.Json;
+        // JSON serialization options
+        JsonSerializerOptions = new()
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            TypeInfoResolver = new DefaultJsonTypeInfoResolver
+            {
+                Modifiers = { TypeInfoModifier }
+            }
+        };
     }
     
-    public ActionException(string errorCode): this()
+    public ActionException() { }
+
+    public ActionException(string errorCode)
     {
-        Error = new ActionError(errorCode);
+        var error = new ActionError(errorCode);
+        Errors = new List<ActionError>{ error };
     }
-    public ActionException(List<string> errorCodes): this()
+    
+    public ActionException(List<string> errorCodes)
     {
         Errors = errorCodes.Select(ec => new ActionError(ec)).ToList();
     }
     
-    public ActionException(string errorCode, string description): this()
+    public ActionException(string errorCode, string description)
     {
-        Error = new ActionError(errorCode, description);
+        var error = new ActionError(errorCode, description);
+        Errors = new List<ActionError>{ error };
     }
 
-    public ActionException(IdentityResult result): this()
+    public ActionException(IdentityResult identityResult)
     {
-        Errors = result.Errors.Select(e => new ActionError(e.Code, e.Description)).ToList();
+        Errors = identityResult.Errors.Select(identityError => new ActionError(identityError)).ToList();
     }
 
+    /***** Comparison methods *****/
+    
     public bool Equals(ActionException? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
-        if (Status != other.Status || ContentType != other.ContentType || !Equals(Error, other.Error)) return false;
+        if (Status != other.Status || ContentType != other.ContentType) return false;
         // Errors lists comparison 
         if (Errors == null) return other.Errors == null;
         if (other.Errors == null) return false;
@@ -67,6 +80,37 @@ public class ActionException : Exception, IEquatable<ActionException>
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Status, ContentType, Error, Errors);
+        return HashCode.Combine(Status, ContentType, Errors);
+    }
+
+    /***** JSON serialization *****/
+    
+    public static readonly JsonSerializerOptions JsonSerializerOptions;
+    
+    private static void TypeInfoModifier(JsonTypeInfo typeInfo)
+    {
+        var fieldNamesSet = new HashSet<string>{ "errors", "code", "description"};
+        foreach (var propertyInfo in typeInfo.Properties)
+        {
+            if (!fieldNamesSet.Contains(propertyInfo.Name))
+            {
+                propertyInfo.ShouldSerialize = (object obj, object? nullable) => false;
+            }
+        }
+    }
+    
+    public string ToJsonString()
+    {
+        return JsonSerializer.Serialize(this, JsonSerializerOptions);
+    }
+
+    public static ActionException? FromJsonString(string jsonString)
+    {
+        return JsonSerializer.Deserialize<ActionException>(jsonString, JsonSerializerOptions);
+    }
+
+    public override string ToString()
+    {
+        return ToJsonString();
     }
 }

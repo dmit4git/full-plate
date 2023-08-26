@@ -1,6 +1,5 @@
 using System.Net.Mime;
 using Duende.IdentityServer.Extensions;
-using Newtonsoft.Json;
 using Serilog;
 using WebApi.Helpers.Exceptions;
 
@@ -34,8 +33,7 @@ public class ActionExceptionMiddleware
             switch (exception.ContentType)
             {
                 case MediaTypeNames.Application.Json:
-                    var json = JsonConvert.SerializeObject(exception);
-                    await context.Response.WriteJsonAsync(json);
+                    await context.Response.WriteJsonAsync(exception.ToJsonString());
                     break;
                 case MediaTypeNames.Text.Plain:
                     await context.Response.WriteJsonAsync(exception.Error != null ? exception.Error.Code : "");
@@ -44,7 +42,7 @@ public class ActionExceptionMiddleware
         }
         catch (Exception exception)
         {
-            Log.Error(exception, "Message of uncaught exception: {message}", exception.Message);
+            Log.Error(exception, "Message of uncaught exception: {Message}", exception.Message);
             context.Response.Clear();
             context.Response.StatusCode = 500;
         }
