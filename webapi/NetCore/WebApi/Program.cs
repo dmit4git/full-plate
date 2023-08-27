@@ -96,11 +96,10 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<EF_DataContext>();
     Console.WriteLine("Waiting for EF database");
     await WaitForDatabase(db.Database);
-    db.Database.Migrate();
+    await db.Database.MigrateAsync();
 }
 
 app.UseSerilogRequestLogging();
-app.UseMiddleware<ActionExceptionMiddleware>();
 app.UseHttpLogging();
 app.UseForwardedHeaders(new ForwardedHeadersOptions() // adds HttpContext.Connection.RemoteIpAddress
 {
@@ -109,5 +108,6 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions() // adds HttpContext.Connec
 app.UseAuthentication();
 app.MapControllers();
 app.UseAuthorization();
+app.UseMiddleware<ActionExceptionMiddleware>();
 Console.WriteLine("Running the WebAPI app");
 app.Run();

@@ -32,6 +32,7 @@
     <EmbeddedResource Include="Services\Email\EmailVerificationMessage.html" />
     <None Remove="Services\Email\at.svg" />
     <EmbeddedResource Include="Services\Email\at.svg" />
+    <None Include="appsettings.Tests.json" />
   </ItemGroup>
 
   <ItemGroup>

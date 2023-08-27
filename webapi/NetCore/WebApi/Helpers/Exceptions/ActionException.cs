@@ -41,7 +41,7 @@ public class ActionException : Exception, IEquatable<ActionException>
         Errors = new List<ActionError>{ error };
     }
     
-    public ActionException(List<string> errorCodes)
+    public ActionException(IList<string> errorCodes)
     {
         Errors = errorCodes.Select(ec => new ActionError(ec)).ToList();
     }
