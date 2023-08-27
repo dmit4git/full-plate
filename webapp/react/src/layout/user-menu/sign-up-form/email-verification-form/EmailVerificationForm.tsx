@@ -26,7 +26,9 @@ function EmailConfirmFormComponent(props: EmailConfirmFormProps): ReactElement  
 
     const messagesRef = useRef<Messages>(null);
     let [searchParams, setSearchParams] = useSearchParams();
-    useEffect(queryEmailConfirmation, [messagesRef, verificationEmailTrigger, verificationEmailResult, props.confirmation]);
+    useEffect(queryEmailConfirmation, [
+        messagesRef, verificationEmailTrigger, verificationEmailResult, props.confirmation, searchParams, setSearchParams
+    ]);
 
     function queryEmailConfirmation() {
         const errors: MessagesMessage[] = [];
@@ -49,23 +51,26 @@ function EmailConfirmFormComponent(props: EmailConfirmFormProps): ReactElement  
             }
             messagesRef.current?.show(errors);
         }
+        // shrugs off parameters for email verification
+        function removeUsedSearchParameters() {
+            searchParams.delete('overlay');
+            searchParams.delete('email');
+            searchParams.delete('username');
+            searchParams.delete('email-verification');
+            setSearchParams(searchParams);
+        }
+
         if (!props.confirmation) { return; }
         if (verificationEmailResult.isUninitialized) {
             verificationEmailTrigger(props.confirmation);
-        } else {
-            if (verificationEmailResult.isError) {
-                processErrors(verificationEmailResult);
-            }
+        } else if (verificationEmailResult.isSuccess) {
+            removeUsedSearchParameters();
+        } else if (verificationEmailResult.isError) {
+            processErrors(verificationEmailResult);
         }
     }
 
     function onSignInClick() {
-        // shrug off parameters for email verification
-        searchParams.delete('overlay');
-        searchParams.delete('email');
-        searchParams.delete('username');
-        searchParams.delete('email-verification');
-        setSearchParams(searchParams);
         // open sign in menu branch
         signInFormTab.expand();
         // callback

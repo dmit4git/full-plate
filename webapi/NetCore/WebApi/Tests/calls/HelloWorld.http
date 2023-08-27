@@ -1,4 +1,0 @@
-﻿### hello-world
-GET http://localhost:9080/webapi/hello-world
-Accept: application/json
-###

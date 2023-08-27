@@ -1,7 +1,7 @@
 # Full-Plate
 A fullstack project template. 
 Demo available at [fullplate.dev](https://fullplate.dev).  
-It is currently in prototype stage. Only authentication and themes features work, there is no documentation or tests coverage.
+It is currently in prototype stage, only authentication and themes features work, there is no documentation or tests coverage.
 
 ## Tech Stack
  * **React** frontend, because it is most used ([stateofjs.com](https://2022.stateofjs.com/en-US/libraries/front-end-frameworks/)) and has the largest community 
@@ -32,7 +32,8 @@ Stop containers to shut it down: `docker compose --profile frontend --profile ba
 For development, use `dev` profile with `docker compose`:  
 `docker compose --profile dev --build --detach`
 This will:
-* start PostgreSQL database container
+* start container with PostgreSQL database listening on default port 5432
+  * start container with PostgreSQL test database listening on port 5433
 * start Dozzle container to show containers logs at [localhost:8080](http://localhost:8080)
 * start Nginx container to forward port 80 calls to port 3000 (default React dev server port)  
    * Nginx will also forward all `/webapi` calls to the WebApi backend (port 10090)
@@ -45,6 +46,7 @@ Stop containers to shut it down: `docker compose --profile dev down`
 ## Features
  * **authentication**: user can create new account. sign-in and sign-out
    * todo: wiki page with detailed feature description, dev docs, tests
+     * test coverage is currently in progress
  * **themes**: user can choose from variety of themes
    * todo: wiki page with detailed feature description, dev docs, tests
  * todo: **multi-language support**
