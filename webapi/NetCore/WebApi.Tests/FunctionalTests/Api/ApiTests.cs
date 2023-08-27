@@ -1,5 +1,7 @@
+using System.Net;
 using System.Text;
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -55,26 +57,68 @@ public class ApiTests
     [Test]
     public async Task SignInTest()
     {
-        // Sign-in with wrong credentials
-        var userBody = new SignUpAccount { Username = "wrong_name", Password = "wrong_password" };
+        var account = new AccountData 
+            { Username = "user_name", Password = "Some_Password_123", Email = "user@some.email"};
+        await CreateAppUser(account);
+        await SignInWrongUsernameTest();
+        await SignInUnconfirmedEmailTest(account);
+        await ConfirmUserEmail(account);
+        await SignInWrongPasswordTest(account);
+        await SignInOkTest(account);
+    }
+
+    // Sign-in with wrong username
+    public async Task SignInWrongUsernameTest()
+    {
+        var userBody = new AccountData { Username = "wrong_name", Password = "wrong_password" };
         var response = await SendSignInRequest(userBody);
         var actualException = await ResponseToException(response);
         var expectedException = new ActionException("WrongCredentials");
         Assert.That(actualException, Is.EqualTo(expectedException));
-        
-        // Sing-in with not confirmed email
-        var user = new AppUser { UserName = "user_name", Email = "user@some.email" };
-        var password = "Some_Password_123!";
-        var result = await _userManager.CreateAsync(user, password);
-        Assert.IsTrue(result.Succeeded);
-        userBody = new SignUpAccount { Username = user.UserName, Password = password };
-        response = await SendSignInRequest(userBody);
-        actualException = await ResponseToException(response);
-        expectedException = new ActionException("EmailNotConfirmed");
+    }
+
+    // Sign-in with wrong password
+    public async Task SignInWrongPasswordTest(AccountData account)
+    {
+        var userBody = new AccountData { Username = account.Username, Password = "wrong_password" };
+        var response = await SendSignInRequest(userBody);
+        var actualException = await ResponseToException(response);
+        var expectedException = new ActionException("WrongCredentials");
         Assert.That(actualException, Is.EqualTo(expectedException));
     }
 
-    public async Task<HttpResponseMessage> SendSignInRequest(SignUpAccount requestBody)
+    public async Task CreateAppUser(AccountData account)
+    {
+        var user = new AppUser { UserName = account.Username, Email = account.Email };
+        var result = await _userManager.CreateAsync(user, account.Password!);
+        Assert.IsTrue(result.Succeeded);
+    }
+
+    // Sing-in with not confirmed email
+    public async Task SignInUnconfirmedEmailTest(AccountData account)
+    {
+        var response = await SendSignInRequest(account);
+        var actualException = await ResponseToException(response);
+        var expectedException = new ActionException("EmailNotConfirmed");
+        Assert.That(actualException, Is.EqualTo(expectedException));
+    }
+
+    public async Task ConfirmUserEmail(AccountData account)
+    {
+        var user = await _userManager.FindByNameAsync(account.Username!);
+        Assert.NotNull(user);
+        var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user!);
+        var result = await _userManager.ConfirmEmailAsync(user!, confirmationToken);
+        Assert.IsTrue(result.Succeeded);
+    }
+
+    public async Task SignInOkTest(AccountData account)
+    {
+        var response = await SendSignInRequest(account);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+    }
+
+    public async Task<HttpResponseMessage> SendSignInRequest(AccountData requestBody)
     {
         var appClient = _appTestFactory.CreateClient();
         var jsonBody = JsonSerializer.Serialize(

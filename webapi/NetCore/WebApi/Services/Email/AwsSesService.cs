@@ -9,7 +9,6 @@ namespace WebApi.Services.Email;
 public class AwsSesService : IEmailService
 {
     // private readonly IConfiguration _config;
-    private readonly IEmbeddedResourceReader _resourceReader;
     private readonly string _awsAccessKey;
     private readonly string _awsSecretKey;
     private readonly string? _contents;
@@ -21,9 +20,8 @@ public class AwsSesService : IEmailService
         // _config = config;
         _awsAccessKey = config.GetValue<string>("AWS:AwsAccessKey")!;
         _awsSecretKey = config.GetValue<string>("AWS:AwsSecretKey")!;
-        _resourceReader = resourceReader;
-        _contents = _resourceReader.GetString("Services.Email.EmailVerificationMessage.html");
-        var svg = _resourceReader.GetString("WebApi.Services.Email.at.svg");
+        _contents = resourceReader.GetString("Services.Email.EmailVerificationMessage.html");
+        var svg = resourceReader.GetString("WebApi.Services.Email.at.svg");
         // _contents = File.ReadAllText("resources/email/EmailVerificationMessage.html");
         // var svg = File.ReadAllText("WebApi.Services.Email.at.svg");
         _encodedSvg = EncodeSvg(svg);
@@ -44,7 +42,7 @@ public class AwsSesService : IEmailService
         return svg;
     }
 
-    private string MakeSvgUri(Dictionary<string, string> cssVariables)
+    private string? MakeSvgUri(Dictionary<string, string> cssVariables)
     {
         if (cssVariables.TryGetValue("--primary-color", out var primaryColor))
         {
@@ -63,13 +61,16 @@ public class AwsSesService : IEmailService
                         return _encodedSvg;
                     }
                 }
-                return _encodedSvg.Replace("abcdef", hexColor);
+                if (_encodedSvg is not null)
+                {
+                    return _encodedSvg.Replace("abcdef", hexColor);
+                }
             }
         }
         return _encodedSvg;
     }
     
-    private string MakeVerificationHtmlBody(string email, string verificationUrl, Dictionary<string, string> cssVariables)
+    private string? MakeVerificationHtmlBody(string email, string verificationUrl, Dictionary<string, string> cssVariables)
     {
         if (cssVariables.TryGetValue("--primary-color", out var opaqueButton))
         {
@@ -78,14 +79,20 @@ public class AwsSesService : IEmailService
         }
         var cssVariablesEnumerable = cssVariables.Keys.Select(key => key + ": " + cssVariables[key] + ';');
         var cssVariablesString = string.Join(Environment.NewLine, cssVariablesEnumerable);
-        return _contents
-            .Replace("/*styles*/", cssVariablesString) // add styles
-            // .Replace("<!--svg-->", MakeSvgUri(cssVariables)) // set svg
-            // set values
-            .Replace("<!--email-->", email)
-            .Replace("<!--website-->", Website)
-            .Replace("<a href=\"\" class=\"p-button p-component\">Verify Email</a>", 
-                $"<a href=\"{verificationUrl}\" class=\"p-button p-component\">Verify Email</a>");
+        
+        if (_contents is not null)
+        {
+            return _contents
+                .Replace("/*styles*/", cssVariablesString) // add styles
+                // .Replace("<!--svg-->", MakeSvgUri(cssVariables)) // set svg
+                // set values
+                .Replace("<!--email-->", email)
+                .Replace("<!--website-->", Website)
+                .Replace("<a href=\"\" class=\"p-button p-component\">Verify Email</a>",
+                    $"<a href=\"{verificationUrl}\" class=\"p-button p-component\">Verify Email</a>");
+        }
+
+        return _contents;
     }
 
     public async Task<string?> SendEmailVerificationMessage(

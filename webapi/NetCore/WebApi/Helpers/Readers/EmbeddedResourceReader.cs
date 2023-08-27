@@ -31,6 +31,6 @@ public class EmbeddedResourceReader : IEmbeddedResourceReader
     public async Task<string?> GetStringAsync(string resource)
     {
         var reader = GetStreamReader(resource);
-        return await reader.ReadToEndAsync();
+        return reader is not null ? await reader.ReadToEndAsync() : null;
     }
 }

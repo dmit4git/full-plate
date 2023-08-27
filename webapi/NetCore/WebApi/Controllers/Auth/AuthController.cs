@@ -29,31 +29,31 @@ public class AuthController : Controller
         _emailService = emailService;
     }
     
-    private async Task<string> MakeVerificationUrl(SignUpAccount requestBody, AppUser user)
+    private async Task<string> MakeVerificationUrl(AccountData requestBody, AppUser user)
     {
-        var verificationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         var scheme = Request.GetHeader("OriginScheme") ?? Request.Scheme;
         var host = Request.GetHeader("OriginHost") ?? Request.Host.Host;
-        var verificationUrl = $"{scheme}://{host}";
+        var confirmationUrl = $"{scheme}://{host}";
         if (requestBody.ReturnPath != null)
         {
-            verificationUrl += requestBody.ReturnPath;
+            confirmationUrl += requestBody.ReturnPath;
         }
         var parameter = new Dictionary<string, string?>() { 
             { "overlay", "email-verification" },
             { "email", user.Email },
             { "username", user.UserName },
-            { "email-verification", verificationToken }
+            { "email-verification", confirmationToken }
         };
-        return new Uri(QueryHelpers.AddQueryString(verificationUrl, parameter)).ToString();
+        return new Uri(QueryHelpers.AddQueryString(confirmationUrl, parameter)).ToString();
     }
 
     [HttpPost]
     [Produces(MediaTypeNames.Application.Json)]
-    public async Task<IActionResult> SignUp([FromBody] SignUpData body)
+    public async Task<IActionResult> SignUp([FromBody] AccountDataDto body)
     {
         // create new user
-        var account = body.Account ?? new SignUpAccount();
+        var account = body.Account ?? new AccountData();
         var user = new AppUser { UserName = account.Username, Email = account.Email }; 
         var result = await _userManager.CreateAsync(user, account.Password!);
         if (!result.Succeeded)
@@ -118,7 +118,7 @@ public class AuthController : Controller
 
     [HttpPost]
     [Produces(MediaTypeNames.Application.Json)]
-    public async Task<IActionResult> SignIn([FromBody] SignUpAccount request)
+    public async Task<IActionResult> SignIn([FromBody] AccountData request)
     {
         const string loginErrorCode = "WrongCredentials";
         

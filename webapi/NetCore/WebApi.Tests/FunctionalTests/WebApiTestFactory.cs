@@ -20,20 +20,21 @@ public class WebApiTestFactory<TProgram> : WebApplicationFactory<TProgram> where
                 d => d.ServiceType == typeof(DbContextOptions<EF_DataContext>));
             if (dbContextDescriptor is null)
             {
-                throw new NullReferenceException("Service descriptor for EF_DataContext was not found");
+                throw new NullReferenceException("Service descriptor for EF_DataContext was not found.");
             }
             services.Remove(dbContextDescriptor);
 
             var dbConnectionDescriptor = services.SingleOrDefault(
-                d => d.ServiceType ==
-                     typeof(DbConnection));
-            services.Remove(dbConnectionDescriptor);
+                d => d.ServiceType == typeof(DbConnection));
+            if (dbConnectionDescriptor is not null)
+            {
+                services.Remove(dbConnectionDescriptor);
+            }
             
             services.AddSingleton<DbConnection>(container =>
             {
                 var connectionString = configuration.GetConnectionString("backend_test_db");
                 var connection = new NpgsqlConnection(connectionString);
-                connection.Open(); // create open connection so EF won't automatically close it
                 return connection;
             });
             

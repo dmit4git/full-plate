@@ -1,6 +1,6 @@
 ﻿namespace WebApi.Controllers.Auth.Dto;
 
-public class SignUpAccount
+public class AccountData
 {
     public string? Email { get; set; }
     public string? Username { get; set; }
@@ -8,8 +8,8 @@ public class SignUpAccount
     public string? ReturnPath { get; set; }
 }
 
-public class SignUpData
+public class AccountDataDto
 {
-    public SignUpAccount? Account { get; set; }
+    public AccountData? Account { get; set; }
     public Dictionary<string, string>? Styles { get; set; }
 }
