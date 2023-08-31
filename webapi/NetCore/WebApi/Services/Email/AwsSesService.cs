@@ -95,7 +95,7 @@ public class AwsSesService : IEmailService
         return _contents;
     }
 
-    public async Task<string?> SendEmailVerificationMessage(
+    public virtual async Task<string?> SendEmailVerificationMessage(
         string toAddress, string verificationUrl, Dictionary<string, string> cssVariables)
     {
         var toAddresses = new List<string> {toAddress};

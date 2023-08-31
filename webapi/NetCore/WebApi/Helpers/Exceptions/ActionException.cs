@@ -56,6 +56,11 @@ public class ActionException : Exception, IEquatable<ActionException>
     {
         Errors = identityResult.Errors.Select(identityError => new ActionError(identityError)).ToList();
     }
+    
+    public ActionException(params ActionError[] errors)
+    {
+        Errors = new List<ActionError>(errors);
+    }
 
     /***** Comparison methods *****/
     

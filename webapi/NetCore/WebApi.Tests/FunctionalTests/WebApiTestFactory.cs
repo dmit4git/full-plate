@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
+using WebApi.Services.Email;
+using WebApi.Tests.Mocks;
 
 namespace WebApi.Tests.FunctionalTests;
 
@@ -16,35 +18,52 @@ public class WebApiTestFactory<TProgram> : WebApplicationFactory<TProgram> where
         
         builder.ConfigureServices(services =>
         {
-            var dbContextDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<EF_DataContext>));
-            if (dbContextDescriptor is null)
-            {
-                throw new NullReferenceException("Service descriptor for EF_DataContext was not found.");
-            }
-            services.Remove(dbContextDescriptor);
-
-            var dbConnectionDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbConnection));
-            if (dbConnectionDescriptor is not null)
-            {
-                services.Remove(dbConnectionDescriptor);
-            }
-            
-            services.AddSingleton<DbConnection>(container =>
-            {
-                var connectionString = configuration.GetConnectionString("backend_test_db");
-                var connection = new NpgsqlConnection(connectionString);
-                return connection;
-            });
-            
-            services.AddDbContext<EF_DataContext>((container, options) =>
-            {
-                var connection = container.GetRequiredService<DbConnection>();
-                options.UseNpgsql(connection);
-            });
+            ReplaceDatabaseConnection(services, configuration);
+            ReplaceEmailService(services);
         });
         
         builder.UseEnvironment("Development");
+    }
+
+    private void ReplaceDatabaseConnection(IServiceCollection services, IConfigurationRoot configuration)
+    {
+        var dbContextDescriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(DbContextOptions<EF_DataContext>));
+        if (dbContextDescriptor is null)
+        {
+            throw new NullReferenceException("Service descriptor for EF_DataContext was not found.");
+        }
+        services.Remove(dbContextDescriptor);
+
+        var dbConnectionDescriptor = services.SingleOrDefault(
+            d => d.ServiceType == typeof(DbConnection));
+        if (dbConnectionDescriptor is not null)
+        {
+            services.Remove(dbConnectionDescriptor);
+        }
+        
+        services.AddSingleton<DbConnection>(container =>
+        {
+            var connectionString = configuration.GetConnectionString("backend_test_db");
+            var connection = new NpgsqlConnection(connectionString);
+            return connection;
+        });
+        
+        services.AddDbContext<EF_DataContext>((container, options) =>
+        {
+            var connection = container.GetRequiredService<DbConnection>();
+            options.UseNpgsql(connection);
+        });
+    }
+
+    private void ReplaceEmailService(IServiceCollection services)
+    {
+        var dbConnectionDescriptor = services.SingleOrDefault(
+            d => d.ServiceType == typeof(IEmailService));
+        if (dbConnectionDescriptor is not null)
+        {
+            services.Remove(dbConnectionDescriptor);
+        }
+        services.AddSingleton<IEmailService, FakeAwsSesService>();
     }
 }

@@ -1,6 +1,7 @@
 using System.Reflection;
+using WebApi.Helpers.Readers;
 
-namespace WebApi.Helpers.Readers;
+namespace WebApi.Services.Readers;
 
 public class EmbeddedResourceReader : IEmbeddedResourceReader
 {
@@ -8,7 +9,7 @@ public class EmbeddedResourceReader : IEmbeddedResourceReader
     
     public EmbeddedResourceReader()
     {
-        _assembly = Assembly.GetEntryAssembly();
+        _assembly = typeof(Program).Assembly;
     }
 
     public Stream? GetStream(string resource)

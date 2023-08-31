@@ -39,7 +39,7 @@ public class AuthController : Controller
         {
             confirmationUrl += requestBody.ReturnPath;
         }
-        var parameter = new Dictionary<string, string?>() { 
+        var parameter = new Dictionary<string, string?>{ 
             { "overlay", "email-verification" },
             { "email", user.Email },
             { "username", user.UserName },

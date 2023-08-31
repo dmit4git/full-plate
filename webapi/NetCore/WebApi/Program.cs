@@ -9,6 +9,7 @@ using WebApi.Helpers.Readers;
 using WebApi.Middlewares;
 using WebApi.Models.Security;
 using WebApi.Services.Email;
+using WebApi.Services.Readers;
 using static WebApi.Helpers.Waiter;
 
 Console.WriteLine("Staring WebAPI");
