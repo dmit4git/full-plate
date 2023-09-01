@@ -46,7 +46,7 @@ Stop containers to shut it down: `docker compose --profile dev down`
 ## Features
  * **authentication**: user can create new account. sign-in and sign-out
    * todo: wiki page with detailed feature description, dev docs, tests
-     * test coverage is currently in progress
+     * backend test coverage is complete, frontend test are coming soon
  * **themes**: user can choose from variety of themes
    * todo: wiki page with detailed feature description, dev docs, tests
  * todo: **multi-language support**

@@ -25,6 +25,7 @@ public class WebApiTestFactory<TProgram> : WebApplicationFactory<TProgram> where
         builder.UseEnvironment("Development");
     }
 
+    // replaces prod database connection with test database connection
     private void ReplaceDatabaseConnection(IServiceCollection services, IConfigurationRoot configuration)
     {
         var dbContextDescriptor = services.SingleOrDefault(
@@ -56,6 +57,7 @@ public class WebApiTestFactory<TProgram> : WebApplicationFactory<TProgram> where
         });
     }
 
+    // replace AwsSesService with FakeAwsSesService to test verification url
     private void ReplaceEmailService(IServiceCollection services)
     {
         var dbConnectionDescriptor = services.SingleOrDefault(
