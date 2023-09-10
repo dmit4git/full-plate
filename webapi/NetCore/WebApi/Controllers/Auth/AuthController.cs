@@ -1,4 +1,5 @@
 ﻿using System.Net.Mime;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using WebApi.Controllers.Auth.Dto;
 using WebApi.Helpers;
 using WebApi.Helpers.Exceptions;
-using WebApi.Models.Security;
+using WebApi.Models.Auth;
 using WebApi.Services.Email;
 
 namespace WebApi.Controllers.Auth;
@@ -15,18 +16,21 @@ namespace WebApi.Controllers.Auth;
 public class AuthController : Controller
 {
     private readonly UserManager<AppUser> _userManager;
-    private readonly SignInManager<AppUser> _signInManager;
+    private readonly AppSignInManager _signInManager;
     private readonly IEmailService _emailService;
+    private readonly ISecureDataFormat<RefreshToken> _refreshTokenProtector;
 
     public AuthController(
         UserManager<AppUser> userManager,
-        SignInManager<AppUser> signInManager,
-        IEmailService emailService
+        AppSignInManager signInManager,
+        IEmailService emailService,
+        ISecureDataFormat<RefreshToken> refreshTokenProtector
         )
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _emailService = emailService;
+        _refreshTokenProtector = refreshTokenProtector;
     }
     
     private async Task<string> MakeVerificationUrl(AccountData requestBody, AppUser user)
@@ -70,10 +74,6 @@ public class AuthController : Controller
             await _userManager.DeleteAsync(user); // delete newly created user
             throw new ActionException("EmailVerificationSendFail", "Failed to send email verification message");
         }
-
-        // // add claims
-        // var defaultClaims = new Claim[] { new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()) };
-        // await _userManager.AddClaimsAsync(user, defaultClaims);
         
         return StatusCode(201);
     }
@@ -122,26 +122,30 @@ public class AuthController : Controller
     {
         const string loginErrorCode = "WrongCredentials";
         
-        // find user
+        // Find user.
         var user = await _userManager.FindByNameAsync(request.Username!);
         if (user == null)
         {
             throw new ActionException(loginErrorCode);
         }
         
-        // check if user's email is verified
+        // Check if user's email is verified.
         if (!user.EmailConfirmed)
         {
             throw new ActionException("EmailNotConfirmed");
         }
         
-        // sign the user in
+        // Sign the user in.
         var signInResult = await _signInManager.PasswordSignInAsync(
             user, request.Password!, isPersistent: true, lockoutOnFailure: false);
         if (!signInResult.Succeeded)
         {
             throw new ActionException(loginErrorCode);
         }
+        
+        // Update refresh token.
+        await _userManager.UpdateRefreshToken(user, HttpContext, _refreshTokenProtector);
+        
         return Ok(new { username = user.UserName });
     }
     

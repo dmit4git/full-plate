@@ -1,4 +1,4 @@
-﻿using WebApi.Models.Security;
+﻿using WebApi.Models.Auth;
 
 namespace WebApi.Services.Users;
 

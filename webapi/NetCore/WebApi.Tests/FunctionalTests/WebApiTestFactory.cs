@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
+using WebApi.Models.Data;
 using WebApi.Services.Email;
 using WebApi.Tests.Mocks;
 
@@ -29,7 +30,7 @@ public class WebApiTestFactory<TProgram> : WebApplicationFactory<TProgram> where
     private void ReplaceDatabaseConnection(IServiceCollection services, IConfigurationRoot configuration)
     {
         var dbContextDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<EF_DataContext>));
+                d => d.ServiceType == typeof(DbContextOptions<EntityContext>));
         if (dbContextDescriptor is null)
         {
             throw new NullReferenceException("Service descriptor for EF_DataContext was not found.");
@@ -50,7 +51,7 @@ public class WebApiTestFactory<TProgram> : WebApplicationFactory<TProgram> where
             return connection;
         });
         
-        services.AddDbContext<EF_DataContext>((container, options) =>
+        services.AddDbContext<EntityContext>((container, options) =>
         {
             var connection = container.GetRequiredService<DbConnection>();
             options.UseNpgsql(connection);

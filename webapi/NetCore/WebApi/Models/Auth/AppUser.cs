@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace WebApi.Models.Security;
+namespace WebApi.Models.Auth;
 
-public class AppUser : IdentityUser { 
+public class AppUser : IdentityUser
+{
+    public RefreshToken? RefreshToken { get; set; }
 }

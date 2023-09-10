@@ -1,12 +1,13 @@
-﻿using WebApi.Models.Security;
+﻿using WebApi.Models.Auth;
+using WebApi.Models.Data;
 
 namespace WebApi.Services.Users;
 
 public class UsersService : IUsersService
 {
-    private EF_DataContext _dataContext;
+    private EntityContext _dataContext;
 
-    public UsersService(EF_DataContext dataContext)
+    public UsersService(EntityContext dataContext)
     {
         _dataContext = dataContext;
     }

@@ -1,7 +1,7 @@
 # Full-Plate
 A fullstack project template. 
 Demo available at [fullplate.dev](https://fullplate.dev).  
-It is currently in prototype stage, only authentication and themes features work, there is no documentation or tests coverage.
+It is currently in prototype stage, only authentication and themes features work, there is no documentation very small test coverage.
 
 ## Tech Stack
  * **React** frontend, because it is most used ([stateofjs.com](https://2022.stateofjs.com/en-US/libraries/front-end-frameworks/)) and has the largest community 

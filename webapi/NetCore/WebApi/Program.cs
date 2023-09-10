@@ -1,100 +1,31 @@
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Serilog.Events;
-using WebApi.Configurations;
-using WebApi.Helpers.Readers;
+using WebApi;
 using WebApi.Middlewares;
-using WebApi.Models.Security;
-using WebApi.Services.Email;
-using WebApi.Services.Readers;
+using WebApi.Models.Data;
 using static WebApi.Helpers.Waiter;
 
 Console.WriteLine("Staring WebAPI");
 
-// add router tokens hyphenation
+// Add router tokens hyphenation.
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
-services.AddControllers(
-    options => { options.Conventions.Add(
-        new RouteTokenTransformerConvention(new SlugifyParameterTransformer())
-        ); 
-    }
-);
+// Add services.
+builder.AddAppLogging();
+services.AddAppDatabaseContext(builder);
+services.AddAppIdentity(builder);
+services.AddAppControllers();
+services.AddAppAuthentication();
 
-// add logging
-Log.Logger = new LoggerConfiguration() // Serilog
-    .WriteTo.Console()
-    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", Serilog.Events.LogEventLevel.Warning)
-    .CreateLogger();
-builder.Host.UseSerilog(); // redirect all log events through Serilog pipeline
-
-// database context(s)
-services.AddDbContext<EF_DataContext> (options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("backend_db"))
-);
-
-
-
-// Identity
-services.AddIdentity<AppUser, IdentityRole>(options =>
-    options.SignIn.RequireConfirmedAccount = false)
-    .AddEntityFrameworkStores<EF_DataContext>()
-    .AddDefaultTokenProviders()
-    .AddTokenProvider<DataProtectorTokenProvider<AppUser>>("defaultTokenProvider");
-
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    // Password settings.
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequiredLength = 8;
-    options.Password.RequiredUniqueChars = 4;
-    
-    // Token Providers
-    options.Tokens.EmailConfirmationTokenProvider = "defaultTokenProvider";
-    options.Tokens.PasswordResetTokenProvider = "defaultTokenProvider";
-
-    // Lockout settings.
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    options.Lockout.MaxFailedAccessAttempts = 5;
-    options.Lockout.AllowedForNewUsers = true;
-
-    // User settings.
-    options.User.AllowedUserNameCharacters =
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = true;
-});
-
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    // Cookie settings
-    options.Cookie.Name = "st";
-    options.Cookie.HttpOnly = true;
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-
-    options.LoginPath = "/Identity/Account/Login";
-    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-    options.SlidingExpiration = true;
-});
-services.AddAuthentication().AddCookie();
-
-// Custom services
-services.AddSingleton<IEmailService, AwsSesService>(); // email service
-services.AddSingleton<IEmbeddedResourceReader, EmbeddedResourceReader>(); // resources reader
-
+// Build the app
 var app = builder.Build();
 
-// run EF migration
+// Wait for the database and run EF migration.
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<EF_DataContext>();
+    var db = scope.ServiceProvider.GetRequiredService<EntityContext>();
     Console.WriteLine("Waiting for EF database");
     await WaitForDatabase(db.Database);
     await db.Database.MigrateAsync();
@@ -102,9 +33,9 @@ using (var scope = app.Services.CreateScope())
 
 app.UseSerilogRequestLogging();
 app.UseHttpLogging();
-app.UseForwardedHeaders(new ForwardedHeadersOptions() // adds HttpContext.Connection.RemoteIpAddress
+app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor // Adds HttpContext.Connection.RemoteIpAddress
 });
 app.UseAuthentication();
 app.MapControllers();

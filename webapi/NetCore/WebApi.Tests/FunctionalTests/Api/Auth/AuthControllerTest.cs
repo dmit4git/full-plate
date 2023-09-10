@@ -3,13 +3,13 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using WebApi.Controllers.Auth.Dto;
 using WebApi.Helpers.Exceptions;
-using WebApi.Models.Security;
+using WebApi.Models.Auth;
+using WebApi.Models.Data;
 using WebApi.Services.Email;
 using WebApi.Services.Parsers;
 using WebApi.Tests.Mocks;
@@ -23,7 +23,7 @@ public class AuthControllerTest
     private readonly WebApiTestFactory<Program> _appTestFactory;
     private readonly IServiceProvider _serviceProvider;
     private readonly UserManager<AppUser> _userManager;
-    private readonly EF_DataContext _dataContext;
+    private readonly EntityContext _dataContext;
 
     public AuthControllerTest()
     {
@@ -31,7 +31,7 @@ public class AuthControllerTest
         _appTestFactory = new();
         _serviceProvider = _appTestFactory.Services.CreateScope().ServiceProvider;
         _userManager = _serviceProvider.GetRequiredService<UserManager<AppUser>>();
-        _dataContext = _serviceProvider.GetRequiredService<EF_DataContext>();
+        _dataContext = _serviceProvider.GetRequiredService<EntityContext>();
     }
     
     /* Setup and teardown */
@@ -253,7 +253,7 @@ public class AuthControllerTest
         // sign-out user with wrong token
         var cookie = new KeyValuePair<string, string>("st", "wrong_token");
         var response = await PostRequest("/webapi/auth/sign-out", account, cookie);
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         // sign-in user
         var token = await SignInOkTest(account);
         response = await PostRequest("/webapi/auth/sign-in", account);
