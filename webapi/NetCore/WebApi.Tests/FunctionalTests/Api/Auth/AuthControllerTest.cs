@@ -43,6 +43,7 @@ public class AuthControllerTest
         Console.WriteLine("Waiting for test EF database");
         await WaitForDatabase(_dataContext.Database);
         await _dataContext.Database.MigrateAsync();
+        await ClearDatabase();
     }
 
     [TearDown]
@@ -53,7 +54,8 @@ public class AuthControllerTest
 
     private async Task ClearDatabase()
     {
-        await _dataContext.Users.ExecuteDeleteAsync();
+        await _dataContext.Users.IgnoreAutoIncludes().ExecuteDeleteAsync();
+        await _dataContext.RefreshTokens.ExecuteDeleteAsync();
         await _dataContext.UserClaims.ExecuteDeleteAsync();
         await _dataContext.UserLogins.ExecuteDeleteAsync();
         await _dataContext.UserRoles.ExecuteDeleteAsync();
@@ -228,10 +230,10 @@ public class AuthControllerTest
             header => header.Key == "Set-Cookie").Value.GetEnumerator();
         Assert.True(cookies.MoveNext());
         Assert.That(cookies.Current, Is.Not.Null);
-        Assert.That(cookies.Current, Does.StartWith("st="));
-        Assert.That(cookies.Current, Has.Length.GreaterThan(3));
+        Assert.That(cookies.Current, Does.StartWith("ost="));
+        Assert.That(cookies.Current, Has.Length.GreaterThan(4));
         cookies.Dispose();
-        return cookies.Current.Remove(0, 3);
+        return cookies.Current.Remove(0, 4); // Remove token without leading "ost="
     }
 
     public async Task<ActionException?> ResponseToException(HttpResponseMessage response)
@@ -251,7 +253,7 @@ public class AuthControllerTest
         await CreateAppUser(account);
         await ConfirmUserEmail(account);
         // sign-out user with wrong token
-        var cookie = new KeyValuePair<string, string>("st", "wrong_token");
+        var cookie = new KeyValuePair<string, string>("ost", "wrong_token");
         var response = await PostRequest("/webapi/auth/sign-out", account, cookie);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         // sign-in user
@@ -259,7 +261,7 @@ public class AuthControllerTest
         response = await PostRequest("/webapi/auth/sign-in", account);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         // sign-out user
-        cookie = new KeyValuePair<string, string>("st", token);
+        cookie = new KeyValuePair<string, string>("ost", token);
         response = await PostRequest("/webapi/auth/sign-out", account, cookie);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
