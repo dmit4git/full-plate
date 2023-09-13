@@ -14,6 +14,7 @@ using WebApi.Services.Email;
 using WebApi.Services.Parsers;
 using WebApi.Tests.Mocks;
 using static WebApi.Helpers.Waiter;
+using static WebApi.Helpers.Constants.AppConstants;
 
 namespace WebApi.Tests.FunctionalTests.Api.Auth;
 
@@ -230,10 +231,10 @@ public class AuthControllerTest
             header => header.Key == "Set-Cookie").Value.GetEnumerator();
         Assert.True(cookies.MoveNext());
         Assert.That(cookies.Current, Is.Not.Null);
-        Assert.That(cookies.Current, Does.StartWith("ost="));
-        Assert.That(cookies.Current, Has.Length.GreaterThan(4));
+        Assert.That(cookies.Current, Does.StartWith(OpaqueSelfContainedTokenCookieName + "="));
+        Assert.That(cookies.Current, Has.Length.GreaterThan(OpaqueSelfContainedTokenCookieName.Length + 1));
         cookies.Dispose();
-        return cookies.Current.Remove(0, 4); // Remove token without leading "ost="
+        return cookies.Current.Remove(0, OpaqueSelfContainedTokenCookieName.Length + 1);
     }
 
     public async Task<ActionException?> ResponseToException(HttpResponseMessage response)
@@ -253,7 +254,7 @@ public class AuthControllerTest
         await CreateAppUser(account);
         await ConfirmUserEmail(account);
         // sign-out user with wrong token
-        var cookie = new KeyValuePair<string, string>("ost", "wrong_token");
+        var cookie = new KeyValuePair<string, string>(OpaqueSelfContainedTokenCookieName, "wrong_token");
         var response = await PostRequest("/webapi/auth/sign-out", account, cookie);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         // sign-in user
@@ -261,7 +262,7 @@ public class AuthControllerTest
         response = await PostRequest("/webapi/auth/sign-in", account);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         // sign-out user
-        cookie = new KeyValuePair<string, string>("ost", token);
+        cookie = new KeyValuePair<string, string>(OpaqueSelfContainedTokenCookieName, token);
         response = await PostRequest("/webapi/auth/sign-out", account, cookie);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
