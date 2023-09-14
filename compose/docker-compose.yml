@@ -43,8 +43,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-}
       - POSTGRES_DB=backend_test_db
-#    volumes:
-#      - ../postgres/data/tests:/var/lib/postgresql/data
+    volumes:
+      - ../postgres/data/webapi_test:/var/lib/postgresql/data
     network_mode: "host"
 
   ########## frontend ##########
@@ -76,6 +76,18 @@ services:
     image: webapi
     build:
       context: ../webapi
+    volumes:
+      - ../webapi/data/aspnet:/root/.aspnet
+    network_mode: "host"
+
+  webapi-test:
+    container_name: webapi-test
+    profiles:
+      - tests
+    image: webapi-test
+    build:
+      context: ../webapi
+      dockerfile: Dockerfile.test
     volumes:
       - ../webapi/data/aspnet:/root/.aspnet
     network_mode: "host"

@@ -1,0 +1,18 @@
+on:
+  push:
+    branches: [ $default-branch ]
+jobs:
+  webapi-test-job:
+    runs-on: self-hosted
+    defaults:
+      run:
+        working-directory: ./compose
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+      - name: Start test database container
+        run: docker compose --profile tests up --detach postgres-test
+      - name: Run NetCore WebApi tests
+        run: docker compose --profile tests up --no-log-prefix webapi-test
+      - name: Stop test database container
+        run: docker compose --profile tests down
