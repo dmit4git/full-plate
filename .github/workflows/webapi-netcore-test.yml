@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [ $default-branch ]
+    branches: [ "main" ]
 jobs:
   webapi-test-job:
     runs-on: self-hosted
