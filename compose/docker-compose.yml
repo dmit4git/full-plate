@@ -80,7 +80,7 @@ services:
       - ../webapi/data/aspnet:/root/.aspnet
     network_mode: "host"
 
-  webapi-test:
+  webapi-test: # runs tests
     container_name: webapi-test
     profiles:
       - tests
