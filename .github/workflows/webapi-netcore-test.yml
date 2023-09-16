@@ -1,8 +1,11 @@
-name: webapi-netcore-test
+name: webapi
+
 on:
   push:
     branches: [ "main" ]
+
 jobs:
+
   webapi-test-job:
     runs-on: self-hosted
     defaults:
@@ -17,3 +20,23 @@ jobs:
         run: docker compose --profile tests up --no-log-prefix webapi-test
       - name: Stop test database container
         run: docker compose --profile tests down
+
+  deploy-job:
+    runs-on: fx-6300
+    needs:
+      - webapi-test-job
+    steps:
+      - name: Update local repository
+        run: git pull
+        working-directory: /home/dmitry/projects/full-plate
+      - name: Install React app dependencies
+        run: npm install
+        working-directory: /home/dmitry/projects/full-plate/webapp/react
+      - name: Build React app
+        run: npm run build
+        working-directory: /home/dmitry/projects/full-plate/webapp/react
+      - name: Deploy React app
+        run: ./deploy-react.sh
+        working-directory: /home/dmitry/projects/full-plate/infra
+      - name: Build and restart backend containers
+        run: sudo systemctl restart full-plate
