@@ -1,3 +1,4 @@
+name: webapi-netcore-test
 on:
   push:
     branches: [ "main" ]
