@@ -1,6 +1,6 @@
 const fse = require('fs-extra');
 const { execSync } = require('child_process');
-const cssom = require('cssom');
+const csstree = require('css-tree');
 
 const themeNames = ['arya', 'bootstrap4', 'fluent', 'lara', 'md', 'mdc', 'mira', 'saga', 'soho', 'tailwind', 'vela', 'viva'];
 const primeReactThemesDir = "./node_modules/primereact/resources/themes/";
@@ -8,11 +8,12 @@ const publicThemesDir = "./public/prime-themes/";
 const publicThemesFile = './src/resourses/themes.json';
 
 const themesJson = fse.readJsonSync(publicThemesFile, { throws: false }) || {};
-let version = execSync("npm list primereact");
+let version = execSync("npm list primereact").toString();
 version = /primereact@([\d.]+)/.exec(version.toString().trim())[1];
+
 if (themesJson['primereact-version'] === version) {
     console.log(`PrimeReact version has not changed: \x1b[32m${version}\x1b[0m. Skipping \x1b[33mthemes adjustments\x1b[0m.`);
-    return;
+    process.exit();
 }
 console.log(`Running \x1b[33mthemes adjustments\x1b[0m for PrimeReact version \x1b[32m${version}\x1b[0m.`);
 
@@ -24,7 +25,7 @@ themesJson['theme-directories'] = copiedThemes;
 const themeDirs = fse.readdirSync(primeReactThemesDir)
     .filter(dir => themeNames.some(name => dir.startsWith(name)));
 
-const queries = [
+const queriesCssOm = [
     {
         selector: ".p-inputtext",
         property: "font-size",
@@ -63,6 +64,59 @@ const queries = [
     },
     {
         selector: ".p-divider.p-divider-horizontal",
+        property: "margin",
+        variable: '--p-divider-horizontal-margin'
+    }
+];
+
+const queries = [
+    {
+        selector: {ClassSelector: 'p-inputtext'},
+        queries: [
+            {
+                property: "font-size",
+                variable: '--input-font-size'
+            },
+            {
+                property: "padding",
+                values: [
+                    {
+                        index: 0,
+                        variable: '--input-vertical-padding'
+                    },
+                    {
+                        index: 1,
+                        variable: '--input-horizontal-padding'
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        selector: {PseudoClassSelector: 'root'},
+        queries: [
+            {
+                property: "--primary-color",
+                clone: {
+                    variable: "--primary-color-rgb",
+                    convertor: value => {
+                        const rgb = hexToRgb(value);
+                        return `${rgb.r}, ${rgb.g}, ${rgb.b}`;
+                    }
+                }
+            },
+            {
+                property: "--surface-a"
+            }
+        ]
+    },
+    {
+        selector: {ClassSelector: 'p-password-panel'},
+        property: "padding",
+        variable: '--p-password-panel-padding'
+    },
+    {
+        selector: [{ClassSelector: 'p-divider'}, {ClassSelector: 'p-divider-horizontal'}],
         property: "margin",
         variable: '--p-divider-horizontal-margin'
     }
@@ -143,15 +197,19 @@ function adjustAndCopyTheme(dir, queries) {
     console.log(`Adjusting \x1b[32m${dir}\x1b[0m theme`);
     try {
         let css = fse.readFileSync(sourceDir + '/theme.css').toString();
-        const ast = cssom.parse(css);
+        // const ast = cssom.parse(css);
+        const ast = csstree.parse(css, {});
         addCssVariables(ast, queries);
-        css = ast.toString();
+        // css = ast.toString();
+        css = csstree.generate(ast, {});
         fse.ensureDirSync(destinationDir);
         fse.writeFileSync(destinationDir + '/theme.css', css);
         // copy fonts
         fse.readdirSync(sourceDir).filter(fileName => fileName !== 'theme.css')
             .forEach(fileName => fse.copySync(sourceDir + '/' + fileName, destinationDir + '/' + fileName));
-        const cssVars = queries.filter(q => !q.variable).reduce((a, q) => ({ ...a, [q.property]: q.value}), {});
+        const flatQueries = queries.reduce((a, q) => a.concat(q.queries ? q.queries : q), []);
+        const cssVars = flatQueries.filter(q => !q.variable && !q.values)
+            .reduce((a, q) => ({ ...a, [q.property]: q.value}), {});
         copiedThemes[consistentThemeDir] = cssVars;
     } catch (e) {
         console.error(`\x1b[31mError\x1b[0m in attempt to adjust \x1b[31m${dir}\x1b[0m theme`);
@@ -159,53 +217,98 @@ function adjustAndCopyTheme(dir, queries) {
     }
 }
 
-function addCopiedTheme(dir, vars) {
-    let tree = themesJson['themes-tree'];
-    for (let part of dir.split('-')) {
-        if (!(part in tree)) {
-            tree[part] = {};
-        }
-        tree = tree[part];
-    }
-    Object.assign(tree, vars);
-}
-
 function addCssVariables(ast, queries) {
-    let root = null;
-    let undoneQueries = queries.length;
     // get properties values
-    for (let rule of ast.cssRules) {
-        if (!root && rule.selectorText === ':root') {
-            root = rule.style;
-        }
-        for (let query of queries) {
-            if (query.selector === rule.selectorText) {
-                const fullValue = rule.style[query.property];
-                if (fullValue !== undefined) {
-                    query.value = fullValue.split(' ')[query.index || 0];
-                    undoneQueries--;
-                }
-            }
-        }
-        if (undoneQueries === 0) { break; }
+    for (let query of queries) {
+        const node = findNodeBySelector(ast, query.selector);
+        readPropertiesValues(node, query);
     }
     // add values to :root
+    let node = findNodeBySelector(ast, {PseudoClassSelector: 'root'});
     for (let query of queries) {
-        const variable = query.variable;
-        if (variable) {
-            root[root.length.toString()] = variable;
-            root['_importants'][variable] = '';
-            root[variable] = query.value;
-            root.length++;
+        insertDeclarations(node, query);
+    }
+}
+
+function findNodeBySelector(ast, selectors) {
+    return csstree.find(ast, (node, item, list) => {
+        if (node.type !== 'Rule') { return false; }
+        if (!node.prelude || node.prelude.type !== 'SelectorList' || !node.prelude.children) { return false; }
+        if (node.prelude.children.size !== 1) { return false; }
+        const nodeSelectors = node.prelude.children.head.data.children;
+        const selectorsArr = isArray(selectors) ? selectors : [selectors];
+        let cursor = nodeSelectors.head;
+        for (let selector of selectorsArr) {
+            if (!cursor) { return false; }
+            const [type, name] = Object.entries(selector)[0];
+            if (cursor.data.type !== type || cursor.data.name !== name) { return false; }
+            cursor = cursor.next;
         }
-        const clone = query.clone;
-        if (clone) {
-            const variable = clone.variable;
-            root[root.length.toString()] = variable;
-            root['_importants'][variable] = '';
-            root[variable] = clone.convertor ? clone.convertor(query.value) : query.value;
-            root.length++;
+        return !cursor;
+    });
+}
+
+function isArray(variable) {
+    return Object.prototype.toString.call(variable) === '[object Array]';
+}
+
+function readPropertiesValues(node, queryObj) {
+    if (!node || !node.block || !node.block.children) { return; }
+    let queries = queryObj.queries || [queryObj];
+    for (let query of queries) {
+        let cursor = node.block.children.head;
+        while (cursor) {
+            if (cursor.data.type === 'Declaration' && cursor.data.property === query.property && cursor.data.value) {
+                const valueObj = cursor.data.value;
+                if (valueObj.type === 'Value' && valueObj.children) {
+                    const values = query.values || [query];
+                    let [valuesCursor, index] = [valueObj.children.head, 0];
+                    for (let value of values) {
+                        while (valuesCursor) {
+                            if ((value.index || 0) === index) {
+                                value.value = valuesCursor.data.value;
+                                if (valuesCursor.data.unit) { value.value += valuesCursor.data.unit; }
+                            }
+                            valuesCursor = valuesCursor.next;
+                            index++;
+                            if (value.value) { break; }
+                        }
+                    }
+                } else if (valueObj.type === 'Raw') {
+                    query.value = valueObj.value;
+                }
+            }
+            cursor = cursor.next;
         }
     }
 }
 
+function insertDeclarations(node, queryObj) {
+    if (!node || !node.block || !node.block.children) { return; }
+    const queries = queryObj.queries || [queryObj];
+    for (let query of queries) {
+        const values = query.values || [query];
+        for (let value of values) {
+            const declaration = makeDeclaration(value);
+            if (declaration) {
+                node.block.children.appendData(declaration);
+            }
+        }
+    }
+}
+
+function makeDeclaration(query) {
+    if (!query.variable && !query.clone) { return null; }
+    const clone = query.clone;
+    return {
+        "type": "Declaration",
+        "loc": null,
+        "important": false,
+        "property": clone ? clone.variable : query.variable,
+        "value": {
+            "type": "Raw",
+            "loc": null,
+            "value": clone ? clone.convertor(query.value) : query.value
+        }
+    };
+}
