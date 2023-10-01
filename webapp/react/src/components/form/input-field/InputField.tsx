@@ -140,11 +140,11 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
     }
     function makePasswordContent(passwordChecks: PasswordCheck[]) {
         const checked = passwordChecks.filter(check => check.check).length;
-        const progressLabel = (value: undefined | null | string | number) => <>{`${checked}/${passwordChecks.length}`}</>;
-        return <div className="flex w-full gap-2">
+        const progressLabel = () => <>{`${checked}/${passwordChecks.length}`}</>;
+        return <div className="flex w-full gap-4 align-items-center">
             <span>Password requirements:</span>
-            <ProgressBar
-                className="flex-grow-1 h-1rem" value={checked * 20} displayValueTemplate={progressLabel}
+            <ProgressBar className="h-1rem" style={{flexGrow: 1}}
+                         value={checked * 20} displayValueTemplate={progressLabel}
             ></ProgressBar>
         </div>
     }
@@ -177,7 +177,7 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
     // makes single password requirement bullet point
     function makePasswordBulletPoint(check: boolean, text: string, key: number | string) {
         return <span className="flex" key={key}>
-                <i className={'pi ' + (check ? 'pi-check-circle' : 'pi-circle')}
+                <i className={'pi ' + (check ? 'pi-check-circle' : 'pi-circle') + ' mr-2'}
                    style={check ? { color: 'var(--primary-color)' } : undefined}></i>
                 &nbsp;
                 <span>{text}</span>
