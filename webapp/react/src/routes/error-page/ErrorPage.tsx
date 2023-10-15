@@ -13,15 +13,15 @@ function ErrorPageComponent(props: {style?: CSSProperties}): ReactElement {
 
     const errorTab = new MenuTreeTab('Error', undefined, undefined, []);
     if (error.message) {
-        const errorFieldTab = new MenuTreeTab('Error message', undefined, error.message.toString());
+        const errorFieldTab = new MenuTreeTab('Error message', undefined, <p>{error.message.toString()}</p>);
         errorTab.children?.push(errorFieldTab);
     }
     if (error.stack) {
-        const errorFieldTab = new MenuTreeTab('Error stack', undefined, error.stack.toString());
+        const errorFieldTab = new MenuTreeTab('Error stack', undefined, <p>{error.stack.toString()}</p>);
         errorTab.children?.push(errorFieldTab);
     }
     if (errorTab.children?.length === 0) {
-        errorTab.content = String(error);
+        errorTab.content = <p>{String(error)}</p>;
     }
 
     const errorTabs: MenuTreeTab[] = [errorTab];
@@ -33,7 +33,9 @@ function ErrorPageComponent(props: {style?: CSSProperties}): ReactElement {
                 <span className="text-4xl mr-3">Whoops...</span>
             </div>
             <p className="text-4xl text-primary">Something went wrong</p>
-            <PanelTree tabs={errorTabs} />
+            <div className="ml-4 mr-4">
+                <PanelTree tabs={errorTabs}/>
+            </div>
         </div>
     );
 }
