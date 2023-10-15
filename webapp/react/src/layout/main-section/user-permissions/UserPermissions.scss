@@ -1,0 +1,15 @@
+.user-permissions {
+
+  margin: 0 2rem;
+
+  .p-datatable  {
+    .p-datatable-thead > tr > th {
+      background: rgba(var(--primary-color-rgb), 0.05);
+    }
+  }
+
+  .p-divider-solid.p-divider-horizontal:before {
+    border-top-style: solid;
+  }
+
+}

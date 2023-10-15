@@ -55,7 +55,7 @@ public static class AppBuilderSetup {
             options.Lockout.AllowedForNewUsers = true;
 
             // User settings.
-            options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+            options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+ ";
             options.User.RequireUniqueEmail = true;
         });
     }
@@ -93,7 +93,7 @@ public static class AppServicesSetup
             options.Cookie.Name = OpaqueSelfContainedTokenCookieName;
             options.Cookie.HttpOnly = true;
             options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-            options.SlidingExpiration = true;
+            options.SlidingExpiration = false;
         });
         authenticationBuilder.AddScheme<CookieAuthenticationOptions, OpaqueTokenCookieAuthenticationHandler>(OpaqueTokenCookieScheme, cookieAuthenticationOptions);
         

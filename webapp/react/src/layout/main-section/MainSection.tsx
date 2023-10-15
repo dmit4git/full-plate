@@ -6,7 +6,7 @@ import {accountMenuTab, signUpFormTab} from "../user-menu/UserMenu";
 import {queryParams} from "../MainLayout";
 
 export const rootPlaceholder = (
-    <div className="image-placeholder flex justify-content-center" style={{height: 'calc(100vh - 4rem)'}}>
+    <div className="image-placeholder flex justify-content-center h-full">
         <img src="/PancakesFullPlate.svg" alt=""/>
     </div>
 );
@@ -32,7 +32,7 @@ function MainSectionComponent(): ReactElement {
 
     return(
         <div className="main-section-wrapper">
-            <div className="main-section h-full mx-auto">
+            <div className="main-section mx-auto">
                 <Outlet />
             </div>
         </div>

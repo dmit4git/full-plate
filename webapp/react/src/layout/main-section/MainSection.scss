@@ -5,6 +5,8 @@
   .main-section {
     width: 1200px;
     background: var(--surface-f);
+    height: calc(100vh - 4rem);
+    overflow: auto;
   }
 
 }

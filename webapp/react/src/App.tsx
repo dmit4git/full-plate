@@ -23,7 +23,6 @@ function App() {
         <div className="app-css-class">
             <Provider store={store}>
                 <RouterProvider router={router} />
-                {/*<MainLayout/>*/}
             </Provider>
         </div>
     );

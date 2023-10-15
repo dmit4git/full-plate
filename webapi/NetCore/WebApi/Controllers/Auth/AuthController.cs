@@ -20,6 +20,24 @@ public class AuthController : Controller
     private readonly IEmailService _emailService;
     private readonly ISecureDataFormat<RefreshToken> _refreshTokenProtector;
 
+    // private async Task AddFakeUsers()
+    // {
+    //     using var reader = new StreamReader("/home/dmitry/Downloads/MOCK_DATA.csv");
+    //     var line = await reader.ReadLineAsync();
+    //     while (!reader.EndOfStream)
+    //     {
+    //         line = await reader.ReadLineAsync();
+    //         if (line is null) { continue; }
+    //         var values = line.Split(',');
+    //         var user = new AppUser { UserName = values[1], Email = values[2], EmailConfirmed = true}; 
+    //         var result = await _userManager.CreateAsync(user, values[3]);
+    //         if (!result.Succeeded)
+    //         {
+    //             throw new ActionException(result);
+    //         }
+    //     }
+    // }
+
     public AuthController(
         UserManager<AppUser> userManager,
         AppSignInManager signInManager,

@@ -146,7 +146,7 @@ function NewAccountFormComponent(props: IPanelBranchContent): ReactElement {
                 <InputField name="password repeat" idPrefix="sign-up" control={control} match="password"
                             type={FieldType.password} required={true} valueCallback={onInputChange} />
                 <Button className="w-full mt-3" label="Create Account"
-                        onClick={handleSubmit(onSignUpClick)} loading={signUpResult.isLoading} severity={buttonSeverity} />
+                        onClick={handleSubmit(onSignUpClick)} loading={signUpResult.isFetching} severity={buttonSeverity} />
                 <Messages ref={messagesRef} />
             </div>
         </>

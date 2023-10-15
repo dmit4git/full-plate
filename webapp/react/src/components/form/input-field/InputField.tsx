@@ -1,6 +1,6 @@
 import "./InputField.scss"
 import { InputText } from "primereact/inputtext";
-import React, { ReactElement } from "react";
+import React, {DOMAttributes, KeyboardEventHandler, ReactElement} from "react";
 import { useDispatch } from "react-redux";
 import { useMemoState } from "../../../helpers/hooks";
 import { useController, UseControllerProps, Validate } from "react-hook-form";
@@ -10,10 +10,12 @@ import { Divider } from "primereact/divider";
 import { CharType, charTypesInString, emailRegExp } from "../../../helpers/checks";
 import { ProgressBar } from "primereact/progressbar";
 import { KeyFilterType } from "primereact/keyfilter";
+import {classNames} from "primereact/utils";
 
 export enum FieldType {
-    email,
-    password
+    email = 'email',
+    password = 'password',
+    search = 'search'
 }
 
 interface InputFieldProps extends UseControllerProps<any> {
@@ -26,10 +28,16 @@ interface InputFieldProps extends UseControllerProps<any> {
     disabled?: boolean,
     passwordMeter?: boolean,
     error?: string,
-    match?: string
+    // password attributes
+    match?: string,
+    // search attributes
+    bottomSpace?: boolean,
+    onSearch?: (search: string) => any,
+    isSearching?: boolean
 }
 
-interface InputAttributes extends ControllerRenderProps {
+interface InputDomAttributes extends Omit<DOMAttributes<HTMLInputElement>, 'onChange' | 'onBlur'> {}
+interface InputAttributes extends ControllerRenderProps, InputDomAttributes {
     value: string,
     id?: string,
     className?: string,
@@ -37,7 +45,7 @@ interface InputAttributes extends ControllerRenderProps {
     appendTo?: null | HTMLElement | 'self',
     disabled?: boolean,
     feedback?: boolean,
-    keyfilter?: KeyFilterType,
+    keyFilter?: KeyFilterType,
     onFocus?: () => void,
     onShow?: () => void,
     onHide?: () => void
@@ -121,10 +129,11 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
     const errorAnimation = "animation-ease-in-out animation-duration-500 "
         + (fieldState.invalid ? "fadeindown" : "fadeoutdown animation-fill-forwards");
     const inputId = props.idPrefix ? `${props.idPrefix}-${props.name}` : props.name;
-    const classNames = "w-full " + (fieldState.invalid ? 'p-invalid' : '');
+    const inputClassNames = {'w-full': true, 'p-invalid': fieldState.invalid};
     const attributes: InputAttributes = {
-        id: inputId, ...field, onChange: onChange, className: classNames
+        id: inputId, ...field, onChange: onChange, className: classNames(inputClassNames)
     };
+    const domAttributes = {};
     if (props.disabled !== undefined) {
         attributes.disabled = props.disabled;
     }
@@ -195,7 +204,7 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
     }
 
     // make input element
-    let input;
+    let input, icon = null;
     if (props.type === FieldType.password) {
         const passwordChecks = makePasswordChecks(field.value);
         const panelContent = makePasswordContent(passwordChecks);
@@ -210,21 +219,44 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
         input = <Password {...attributes} content={panelContent} footer={panelFooter}/>;
     } else {
         if (props.type === FieldType.email) {
-            attributes.keyfilter = 'email';
+            attributes.keyFilter = 'email';
+        } else if (props.type === FieldType.search) {
+            attributes.onKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
+                if (event.key === 'Enter') { onSearchClick(); }
+            };
+            icon = props.isSearching ? <i className="pi pi-spin pi-spinner" /> :
+                <i className="pi pi-search" onClick={onSearchClick}/>;
         }
-        input = <InputText {...attributes}/>;
+        input = <InputText {...attributes} />;
+    }
+
+    function onSearchClick() {
+        if (props.type === FieldType.search) {
+            if (props.onSearch) {
+                props.onSearch(field.value);
+            }
+        }
     }
 
     // render
+    const wrapperClassNames = classNames({
+        'w-full': true,
+        'p-float-label': true,
+        'p-input-icon-right': props.type === FieldType.search
+    });
+    const bottomSpace = props.bottomSpace ? <div> <small className="flex">{'\u00A0'}</small> </div> : null;
+
     return (
         <div className={'input-field ' + (props.passwordMeter && showPasswordMeter ? 'password-input-meter' : '')}>
             <div className={"input-error relative z-1 flex justify-content-end " + errorAnimation}>
                 <small className="p-error">{error}</small>
             </div>
-            <div className="p-float-label">
+            <div className={wrapperClassNames}>
+                { icon }
                 { input }
                 <label htmlFor={inputId}>{props.name}</label>
             </div>
+            { bottomSpace }
         </div>
     );
 }
