@@ -23,13 +23,20 @@ public class PermissionsController : Controller
     
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
-    public async Task<IActionResult> Permissions([FromQuery] string? search, [FromQuery] int? take, [FromQuery] int? skip)
+    public async Task<IActionResult> Permissions([FromQuery] string? search, [FromQuery] int? first, [FromQuery] int? last)
     {
         var permissions = new List<UserPermissions>();
-        var appUsersList = _userManager.Users.Where(u => 
-                search == null || (u.NormalizedUserName ?? "").Contains(search.ToUpper()) 
-                               || (u.NormalizedEmail ?? "").Contains(search.ToUpper()))
-            .OrderBy(u => u.UserName).Take(Math.Min(take ?? 10, 100)).Skip(skip ?? 0).ToList();
+        var query = _userManager.Users;
+        if (search is not null && search != String.Empty)
+        {
+            query = query.Where(u => 
+                (u.NormalizedUserName ?? "").Contains(search.ToUpper()) 
+                || (u.NormalizedEmail ?? "").Contains(search.ToUpper()));
+        }
+        var count = query.Count();
+        var lastInt = Math.Min(last ?? 10, 1000);
+        var skip = first ?? 0;
+        var appUsersList = query.OrderBy(u => u.UserName).Skip(first ?? 0).Take(lastInt - skip).ToList();
         foreach (var appUser in appUsersList)
         {
             var userPermissions = new UserPermissions(appUser);
@@ -37,29 +44,25 @@ public class PermissionsController : Controller
             userPermissions.SetClaims(claims);
             permissions.Add(userPermissions);
         }
-
-        return Ok(permissions);
+        
+        return Ok(new {permissions, count });
     }
     
     [HttpPost]
     [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> Permissions([FromBody] MultiUserPermissions multiUserPermissions)
     {
-        foreach (var userInfo in multiUserPermissions.users)
+        foreach (var username in multiUserPermissions.users)
         {
-            await ApplyUserPermissions(userInfo, multiUserPermissions.Claims);
+            await ApplyUserPermissions(username, multiUserPermissions.Claims);
         }
 
         return Ok();
     }
 
-    private async Task ApplyUserPermissions(UserInfo userInfo, Dictionary<string, bool> claimsDictionary)
+    private async Task ApplyUserPermissions(string username, Dictionary<string, bool> claimsDictionary)
     {
-        if (userInfo.Email is null)
-        {
-            throw new ActionException("InvalidEmail");
-        }
-        var user = await _userManager.FindByNameAsync(userInfo.Username!);
+        var user = await _userManager.FindByNameAsync(username);
         if (user is null)
         {
             throw new ActionException("UserNotFound");

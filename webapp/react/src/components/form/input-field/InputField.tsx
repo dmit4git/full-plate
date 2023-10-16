@@ -3,7 +3,7 @@ import { InputText } from "primereact/inputtext";
 import React, {DOMAttributes, KeyboardEventHandler, ReactElement} from "react";
 import { useDispatch } from "react-redux";
 import { useMemoState } from "../../../helpers/hooks";
-import { useController, UseControllerProps, Validate } from "react-hook-form";
+import {Controller, useController, UseControllerProps, Validate} from "react-hook-form";
 import { Password } from "primereact/password";
 import { ControllerRenderProps } from "react-hook-form/dist/types/controller";
 import { Divider } from "primereact/divider";
@@ -11,8 +11,10 @@ import { CharType, charTypesInString, emailRegExp } from "../../../helpers/check
 import { ProgressBar } from "primereact/progressbar";
 import { KeyFilterType } from "primereact/keyfilter";
 import {classNames} from "primereact/utils";
+import {InputNumber, InputNumberProps, InputNumberValueChangeEvent} from "primereact/inputnumber";
 
 export enum FieldType {
+    number = 'number',
     email = 'email',
     password = 'password',
     search = 'search'
@@ -21,7 +23,7 @@ export enum FieldType {
 interface InputFieldProps extends UseControllerProps<any> {
     type?: FieldType,
     idPrefix?: string,
-    value?: string,
+    value?: string | number,
     valueAction?: Function,
     valueCallback?: Function,
     required?: boolean,
@@ -33,19 +35,20 @@ interface InputFieldProps extends UseControllerProps<any> {
     // search attributes
     bottomSpace?: boolean,
     onSearch?: (search: string) => any,
-    isSearching?: boolean
+    isSearching?: boolean,
+    className?: string
 }
 
 interface InputDomAttributes extends Omit<DOMAttributes<HTMLInputElement>, 'onChange' | 'onBlur'> {}
 interface InputAttributes extends ControllerRenderProps, InputDomAttributes {
-    value: string,
+    value: string | number,
     id?: string,
     className?: string,
     toggleMask?: boolean,
     appendTo?: null | HTMLElement | 'self',
     disabled?: boolean,
     feedback?: boolean,
-    keyFilter?: KeyFilterType,
+    keyfilter?: KeyFilterType,
     onFocus?: () => void,
     onShow?: () => void,
     onHide?: () => void
@@ -98,8 +101,8 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
     const dispatch = useDispatch();
     
     // value change handler
-    function onChange(event: React.ChangeEvent<HTMLInputElement>) {
-        const value = event.target.value;
+    function onChange(event: React.ChangeEvent<HTMLInputElement> | InputNumberValueChangeEvent) {
+        let value = ('target' in event) ? event.target.value : (event as any).value;
         if (props.valueAction) {
             dispatch(props.valueAction(value));
         }
@@ -205,7 +208,12 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
 
     // make input element
     let input, icon = null;
-    if (props.type === FieldType.password) {
+    if (props.type === FieldType.number) {
+        const inputNumberAttributes: InputNumberProps = {...attributes,
+            value: Number(attributes.value), onValueChange: onChange};
+        input = <InputNumber showButtons min={1} max={1000} {...inputNumberAttributes} />
+    }
+    else if (props.type === FieldType.password) {
         const passwordChecks = makePasswordChecks(field.value);
         const panelContent = makePasswordContent(passwordChecks);
         const panelFooter = makePasswordPanelFooter(passwordChecks);
@@ -219,7 +227,7 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
         input = <Password {...attributes} content={panelContent} footer={panelFooter}/>;
     } else {
         if (props.type === FieldType.email) {
-            attributes.keyFilter = 'email';
+            attributes.keyfilter = 'email';
         } else if (props.type === FieldType.search) {
             attributes.onKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
                 if (event.key === 'Enter') { onSearchClick(); }
@@ -227,7 +235,8 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
             icon = props.isSearching ? <i className="pi pi-spin pi-spinner" /> :
                 <i className="pi pi-search" onClick={onSearchClick}/>;
         }
-        input = <InputText {...attributes} />;
+        const inputTextAttributes = {...attributes, value: attributes.value.toString()};
+        input = <InputText {...inputTextAttributes} />;
     }
 
     function onSearchClick() {
@@ -240,14 +249,18 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
 
     // render
     const wrapperClassNames = classNames({
+        'input-field-wrapper': true,
         'w-full': true,
         'p-float-label': true,
         'p-input-icon-right': props.type === FieldType.search
     });
     const bottomSpace = props.bottomSpace ? <div> <small className="flex">{'\u00A0'}</small> </div> : null;
 
+    const passwordClassName = props.passwordMeter && showPasswordMeter ? 'password-input-meter' : '';
+    const classes = ['input-field', props.className, passwordClassName].join(' ');
+
     return (
-        <div className={'input-field ' + (props.passwordMeter && showPasswordMeter ? 'password-input-meter' : '')}>
+        <div className={classes}>
             <div className={"input-error relative z-1 flex justify-content-end " + errorAnimation}>
                 <small className="p-error">{error}</small>
             </div>

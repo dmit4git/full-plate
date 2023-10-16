@@ -1,5 +1,3 @@
-// styles
-import './UserMenu.scss';
 import React, {ReactElement} from 'react'; // react
 // components
 import { SlideBar } from "../../components/slide-bar/SlideBar";

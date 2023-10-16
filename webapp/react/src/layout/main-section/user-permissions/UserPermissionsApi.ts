@@ -1,19 +1,19 @@
 import {webApi} from "../../../store/webApi";
-import {UserPermissionsData} from "./UserPermissionsDataHelper";
+import {GetUserPermissionsResponse, UserPermissionsData} from "./UserPermissionsDataHelper";
 
 export interface PermissionsGetRequest {
     search?: string,
-    take: number,
-    skip: number
+    first: number,
+    last: number
 }
 
 export interface PermissionsPostRequest extends Omit<UserPermissionsData, 'username' | 'email'> {
-    users: Omit<UserPermissionsData, 'claims'>[]
+    users: string[]
 }
 
 export const query = webApi.injectEndpoints({
     endpoints: builder => ({
-        getUserPermissions: builder.query<UserPermissionsData[], PermissionsGetRequest>({
+        getUserPermissions: builder.query<GetUserPermissionsResponse, PermissionsGetRequest>({
             query: (params) => ({
                 url: 'admin/permissions',
                 method: 'GET',

@@ -1,5 +1,5 @@
 import "./UserPermissions.scss"
-import React, {ReactElement, useCallback, useEffect, useState} from "react";
+import React, {ReactElement, useCallback, useEffect, useRef, useState} from "react";
 import {
     PermissionsGetRequest,
     useLazyGetUserPermissionsQuery,
@@ -25,31 +25,57 @@ import {useForm} from "react-hook-form";
 import {AppTable} from "../../../components/app-table/AppTable";
 import {ColumnProps} from "primereact/column";
 import {FieldType, InputField} from "../../../components/form/input-field/InputField";
+import {Skeleton} from "primereact/skeleton";
+import {VirtualScrollerLazyEvent} from "primereact/virtualscroller";
+import {InputNumber} from "primereact/inputnumber";
 
 function UserPermissionsComponent(): ReactElement {
 
     // state
-    const [userRows, setUserRows] = useState<UserRow[]>([]);
+    const [userRows, setUserRows] = useState<UserRow[] | null>(null);
     const [selectedUserRows, setSelectedUserRows] = useState<UserRow[]>([]);
     const [permissionNodes, setPermissionNodes] =
         useState<PermissionsNode[]>(cloneDeep(defaultPermissionsWithKeys));
+    const [usersTableSize, setUsersTableSize] = useState<number>(10);
+
+    useEffect(() => setUsersTableSize(10), [setUsersTableSize]);
 
     // form
     const form = useForm<Claim>({mode: "all"});
-    const searchForm = useForm({defaultValues: {'user search': ''}});
+    const usersSearchName = 'users search';
+    const tableSizeName = 'table size';
+    const usersConfigForm = useForm(
+        {defaultValues: {[usersSearchName]: '', [tableSizeName]: usersTableSize}}
+    );
 
     // api
     const [getPermissionsTrigger, getPermissionsResult] = useLazyGetUserPermissionsQuery();
     const [setPermissionsTrigger, setPermissionsResult] = useLazySetUserPermissionsQuery();
 
     const queryPermissions = useCallback((params: PermissionsGetRequest) => {
-        const l = params.search!.length;
         getPermissionsTrigger(params).then((response) => {
             if (response.data) {
-                setUserRows(makeUserRows(response.data));
+                // setUserRows(makeUserRows(response.data));
+                let updatedRows;
+                if (userRows && userRows.length === response.data.count) {
+                    updatedRows = [...(userRows || [])];
+                }
+                else {
+                    // reset userRows in case number of rows has changed
+                    updatedRows = Array.from({length: response.data.count},
+                        (_, i) => {
+                        const id = i.toString();
+                        return {id: id, key: id, isDummy: true, username: '', email: '', claims: {}};
+                    });
+                }
+                // splice in rows from response
+                const rowsUpdate = makeUserRows(response.data.permissions);
+                updatedRows.splice(params.first, rowsUpdate.length, ...rowsUpdate);
+                // update userRows state
+                setUserRows(updatedRows);
             }
         });
-    }, [getPermissionsTrigger]);
+    }, [getPermissionsTrigger, userRows]);
 
     useEffect(queryPermissionsInitial, [getPermissionsResult, queryPermissions]);
 
@@ -57,7 +83,7 @@ function UserPermissionsComponent(): ReactElement {
 
     function queryPermissionsInitial() {
         if (getPermissionsResult.isUninitialized) {
-            queryPermissions({take: 10, skip: 0});
+            queryPermissions({first: 0, last: usersTableSize});
         }
     }
 
@@ -74,7 +100,10 @@ function UserPermissionsComponent(): ReactElement {
     // makes control elements for a given resource
     function permissionControls(node: PermissionsNode) {
         const controls = Object.keys(node.permissions || {}).map(permission => {
-            const key = node.key!.toString() + childKeyAccessor + permission;
+            let key = node.key!.toString();
+            const regexp = new RegExp(childKeyAccessor + 'permissions$');
+            key = key.replace(regexp, '');
+            key += childKeyAccessor + permission;
             const allowIndeterminate = form.getValues(key) === null;
             return <ControlledMultibox name={key} key={key} label={permission} control={form.control}
                                        disabled={noUserSelected} indeterminateChoice={allowIndeterminate}/>
@@ -121,7 +150,7 @@ function UserPermissionsComponent(): ReactElement {
 
     function onApplyClick(data: Claim) {
         if (noUserSelected) { return; }
-        const users = selectedUserRows.map(u => { return {username: u.username, email: u.email} });
+        const users = selectedUserRows.map(u => u.username);
         for (let key of Object.keys(data)) {
             if (data[key] === undefined || data[key] === null) { delete data[key]; }
         }
@@ -147,7 +176,25 @@ function UserPermissionsComponent(): ReactElement {
     }
 
     function onUserSearch(search: string) {
-        queryPermissions({search: search, take: 10, skip: 0});
+        setUserRows(null);
+        queryPermissions({search: search, first: 0, last: usersTableSize});
+    }
+
+    function onUsersScroll(event: VirtualScrollerLazyEvent) {
+        const [first, last] = [Number(event.first), Number(event.last)];
+        if (userRows === null) { return; }
+        // check if scroll window has dummy rows
+        let hasDummy = false;
+        for (let i = first; i <= last; i++) {
+            if (userRows[i].isDummy) {
+                hasDummy = true;
+                break;
+            }
+        }
+        if (!hasDummy) { return; }
+        // get rows for scroll window
+        const search = usersConfigForm.getValues(usersSearchName);
+        queryPermissions({search: search, first: first, last: last});
     }
 
     const expandedKeys = cloneDeep(permissionKeys);
@@ -163,20 +210,31 @@ function UserPermissionsComponent(): ReactElement {
         <h1>User Permissions</h1>
         <Splitter>
 
-            <SplitterPanel >
+            <SplitterPanel>
                 <div className="w-full">
                     <div className="w-full flex justify-content-between align-items-center">
-                        <h2 className="ml-4 mt-4 mb-4">Users</h2>
-                        <div className="mr-4 pl-4 w-6">
-                            <InputField name="users search" type={FieldType.search} control={searchForm.control}
+                        <div className="w-full flex justify-content-between align-items-center flex-1">
+                            <h2 className="ml-4 mt-4 mb-4">Users</h2>
+                            <div className="w-7rem">
+                                <div className="p-float-label">
+                                    <InputNumber value={usersTableSize} onValueChange={e => setUsersTableSize(e.value || 1)}
+                                                 className="w-7rem" showButtons min={1} max={1000} />
+                                    <label>{tableSizeName}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="mr-4 pl-4 w-6 flex-1">
+                            <InputField name={usersSearchName} type={FieldType.search} control={usersConfigForm.control}
                                         bottomSpace={true} isSearching={getPermissionsResult.isFetching}
                                         onSearch={onUserSearch}/>
                         </div>
                     </div>
+
                     <Divider className="mt-0 mb-0"/>
                     <AppTable rows={userRows} columns={columns} stripedRows
-                              skeletons={getPermissionsResult.isFetching ? 10 : 0}
-                              selection={selectedUserRows} onRowSelection={onUserRowSelection} />
+                              skeletons={(getPermissionsResult.isFetching && userRows === null) ? usersTableSize : 0}
+                              selection={selectedUserRows} onRowSelection={onUserRowSelection}
+                              sizeInRows={usersTableSize} onLazyLoad={onUsersScroll}/>
                 </div>
             </SplitterPanel>
 
@@ -187,8 +245,8 @@ function UserPermissionsComponent(): ReactElement {
                         <div className="flex mr-4 gap-3 align-items-center w-6">
                             <Button className="flex-1" label="Apply" severity="success" disabled={noUserSelected}
                                     onClick={form.handleSubmit(onApplyClick)} loading={setPermissionsResult.isFetching} />
-                            <Button className="flex-1" label="Reset" severity="info" disabled={noUserSelected}
-                                    onClick={onDiscardClick} />
+                            <Button className="flex-1" label="Reset" severity="info" onClick={onDiscardClick}
+                                    disabled={noUserSelected || setPermissionsResult.isFetching} />
                         </div>
                     </div>
                     <Divider className="mt-0"/>

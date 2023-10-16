@@ -11,9 +11,15 @@ export interface UserPermissionsData {
     email: string
     claims: Claim
 }
+export interface GetUserPermissionsResponse {
+    permissions: UserPermissionsData[],
+    count: number
+}
 
 export interface UserRow extends UserPermissionsData {
-    id: string
+    id: string,
+    key?: string,
+    isDummy?: boolean
 }
 
 export function makeUserNodes(data: UserPermissionsData[]): TreeNode[] {
@@ -38,7 +44,8 @@ export function makeUserNodes(data: UserPermissionsData[]): TreeNode[] {
 export function makeUserRows(data: UserPermissionsData[]): UserRow[] {
     const rows: UserRow[] = [];
     for (const userPermissions of data) {
-        rows.push({id: userPermissions.username, ...userPermissions});
+        const id = userPermissions.username;
+        rows.push({id: id, key: id, ...userPermissions});
     }
     return rows;
 }
@@ -120,7 +127,7 @@ function setKeys(permissions: PermissionsNode[], prefix: string | null = null): 
     let keys: Record<string, number> = {};
     let permissionKeys: string[] = [];
     for (let permission of permissions) {
-        let key = permission.label || 'controls';
+        let key = permission.label || 'permissions';
         key = key.replace(childKeyAccessor, '_');
         if (key in keys) {
             keys[key] += 1;
