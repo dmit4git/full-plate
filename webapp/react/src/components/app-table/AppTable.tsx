@@ -13,8 +13,8 @@ interface AppTableProps extends PropsWithChildren {
     selection?: any[],
     stripedRows?: boolean,
     onRowSelection?: (selectedRows: any[]) => void,
-    sizeInRows?: number,
-    onLazyLoad?: (event: VirtualScrollerLazyEvent) => void
+    onLazyLoad?: (event: VirtualScrollerLazyEvent) => void,
+    style?: React.CSSProperties
 }
 
 export interface RowSelectionEvent {
@@ -44,6 +44,7 @@ function AppTableComponent(props: AppTableProps): ReactElement {
     }
 
     function onRowSelection(event: RowSelectionEvent) {
+        console.log(event.value);
         if (props.onRowSelection) {
             props.onRowSelection(event.value);
         }
@@ -67,6 +68,9 @@ function AppTableComponent(props: AppTableProps): ReactElement {
         bodyTemplate = undefined;
         rows = props.rows || [];
     }
+
+    const rowHeight = 55;
+
     // make columns
     const columnWidth = (100 / props.columns.length).toString() + '%';
     const columnPassThrough = {headerCell: {style: {width: columnWidth}}};
@@ -77,17 +81,16 @@ function AppTableComponent(props: AppTableProps): ReactElement {
     );
 
     const virtualScrollerOptions: VirtualScrollerProps = {
-        lazy: true, onLazyLoad: props.onLazyLoad, itemSize: 55, delay: 200
+        lazy: true, onLazyLoad: props.onLazyLoad, itemSize: rowHeight, delay: 200
     };
     // showLoader: true, loading: Boolean(props.skeletons), loadingTemplate: skeletonBody
 
-    const tablePassThrough: DataTablePassThroughOptions = {thead: {style: {height: '55px'}}};
-    const scrollHeight = 55 + (props.sizeInRows || 10) * (Number(virtualScrollerOptions.itemSize));
-    console.log(props.sizeInRows, scrollHeight);
+    const tablePassThrough: DataTablePassThroughOptions = {thead: {style: {height: rowHeight + 'px'}}};
+
     return <DataTable value={rows} stripedRows={props.stripedRows} resizableColumns dataKey="id" pt={tablePassThrough}
-                      selectionMode="multiple" dragSelection metaKeySelection={true}
+                      selectionMode="multiple" dragSelection metaKeySelection={true} style={props.style}
                       selection={props.selection || []} onSelectionChange={onRowSelection as any}
-                      scrollable scrollHeight={scrollHeight + 'px'} virtualScrollerOptions={virtualScrollerOptions} >
+                      scrollable scrollHeight={'calc(100vh - 15.5rem)'} virtualScrollerOptions={virtualScrollerOptions} >
         {columns}
     </DataTable>;
 }

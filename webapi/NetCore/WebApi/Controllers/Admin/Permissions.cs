@@ -36,7 +36,7 @@ public class PermissionsController : Controller
         var count = query.Count();
         var lastInt = Math.Min(last ?? 10, 1000);
         var skip = first ?? 0;
-        var appUsersList = query.OrderBy(u => u.UserName).Skip(first ?? 0).Take(lastInt - skip).ToList();
+        var appUsersList = query.OrderBy(u => u.UserName).Skip(first ?? 0).Take(lastInt + 1 - skip).ToList();
         foreach (var appUser in appUsersList)
         {
             var userPermissions = new UserPermissions(appUser);

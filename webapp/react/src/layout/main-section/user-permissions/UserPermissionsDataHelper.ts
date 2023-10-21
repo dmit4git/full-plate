@@ -17,7 +17,7 @@ export interface GetUserPermissionsResponse {
 }
 
 export interface UserRow extends UserPermissionsData {
-    id: string,
+    id: string | number,
     key?: string,
     isDummy?: boolean
 }
@@ -42,12 +42,9 @@ export function makeUserNodes(data: UserPermissionsData[]): TreeNode[] {
 }
 
 export function makeUserRows(data: UserPermissionsData[]): UserRow[] {
-    const rows: UserRow[] = [];
-    for (const userPermissions of data) {
-        const id = userPermissions.username;
-        rows.push({id: id, key: id, ...userPermissions});
-    }
-    return rows;
+    return data.map((userPermissions, index) => {
+        return {id: index, key: userPermissions.username, ...userPermissions};
+    });
 }
 
 // table row of user and associated permissions, used as data of tree-table node
