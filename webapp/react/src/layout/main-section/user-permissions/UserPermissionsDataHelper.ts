@@ -1,4 +1,4 @@
-import {cloneDeep, extend} from "lodash-es";
+import {cloneDeep} from "lodash-es";
 import {TreeNode} from "primereact/treenode";
 
 export const childKeyAccessor = ' -> ';
