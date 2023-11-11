@@ -8,7 +8,7 @@ export const signInQuery = webApi.injectEndpoints({
                 url: 'auth/sign-in',
                 method: 'POST',
                 // body: makeFormBody(credentials),
-                body: JSON.stringify(credentials),
+                body: credentials,
                 headers: {
                     // 'Content-type': 'application/x-www-form-urlencoded'
                     'Content-type': 'application/json'

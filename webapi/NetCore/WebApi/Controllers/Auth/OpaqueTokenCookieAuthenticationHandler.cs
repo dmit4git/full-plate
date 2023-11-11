@@ -1,13 +1,9 @@
-using System.Security.Claims;
-using System.Security.Principal;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using WebApi.Models.Auth;
 using WebApi.Models.Data;
 using static Microsoft.AspNetCore.Http.StatusCodes;

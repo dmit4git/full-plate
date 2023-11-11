@@ -4,6 +4,7 @@ import {Home} from "./home/Home";
 import {MainLayout} from "../layout/MainLayout";
 import React from "react";
 import {ErrorPage} from "./error-page/ErrorPage";
+import {UserPermissions} from "../layout/main-section/user-permissions/UserPermissions";
 
 export const routes = [
     {

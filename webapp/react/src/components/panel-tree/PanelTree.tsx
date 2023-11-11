@@ -1,5 +1,5 @@
 import "./PanelTree.scss";
-import React, {ReactElement} from "react";
+import React, {ReactElement, ReactNode} from "react";
 import {PanelHeaderTemplateOptions} from "primereact/panel";
 import {PanelBranch} from "./panel-branch/PanelBranch";
 
@@ -13,7 +13,7 @@ export class MenuTreeTab {
     header?: string;
     icon?: string | ReactElement;
     expanded?: boolean;
-    content?: ReactElement | ReactElement[];
+    content?: ReactNode | ReactNode[];
     children?: MenuTreeTab[];
     panelHeader?: PanelHeaderTemplateOptions;
     expand = () => this.setCollapsedOfTab(false);
@@ -22,7 +22,7 @@ export class MenuTreeTab {
     fakeEvent = {preventDefault: () => {}};
 
     constructor(
-        header?: string, icon?: string | ReactElement, content?: ReactElement | ReactElement[], children?: MenuTreeTab[]
+        header?: string, icon?: string | ReactElement, content?: ReactNode | ReactNode[], children?: MenuTreeTab[]
     ) {
         if (header) { this.header = header; }
         if (icon) { this.icon = icon; }
