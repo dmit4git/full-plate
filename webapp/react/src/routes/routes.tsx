@@ -25,6 +25,11 @@ export const routes = [
                 path: "home",
                 element: <Home />,
                 errorElement: <ErrorPage />
+            },
+            {
+                path: "user-permissions",
+                element: <UserPermissions />,
+                errorElement: <ErrorPage />
             }
         ]
     }
