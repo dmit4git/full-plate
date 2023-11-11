@@ -34,7 +34,7 @@ function PanelBranchComponent(props: PanelBranchProps): ReactElement {
             const collapsed = options?.collapsed || false;
             const iconClass = "pi pi-chevron-right " + (!collapsed ? 'panel-tree-tab-expanded' : '');
             return <div className={options.className + ' justify-content-between p-ripple'} onClick={options.onTogglerClick}>
-                <div>
+                <div className="flex align-items-center">
                     <span className={options.togglerClassName + ' mr-2'}>
                         <i className={iconClass}></i>
                     </span>
