@@ -18,6 +18,7 @@ services.AddAppDatabaseContext(builder);
 services.AddAppIdentity(builder);
 services.AddAppControllers();
 services.AddAppAuthentication();
+services.AddAppAuthorization();
 
 // Build the app
 var app = builder.Build();

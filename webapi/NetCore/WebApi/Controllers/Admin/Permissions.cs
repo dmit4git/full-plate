@@ -1,5 +1,6 @@
 using System.Net.Mime;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Controllers.Admin.Dto;
@@ -23,6 +24,7 @@ public class PermissionsController : Controller
     
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
+    [Authorize(Policy = "PermissionsView")]
     public async Task<IActionResult> Permissions([FromQuery] string? search, [FromQuery] int? first, [FromQuery] int? last)
     {
         var permissions = new List<UserPermissions>();
@@ -34,8 +36,13 @@ public class PermissionsController : Controller
                 || (u.NormalizedEmail ?? "").Contains(search.ToUpper()));
         }
         var count = query.Count();
-        var lastInt = Math.Min(last ?? 10, 1000);
+        var lastInt = Math.Min(last ?? 10, count - 1); // last index can't be greater than total count 
         var skip = first ?? 0;
+        if (lastInt - skip > 10000)
+        {
+            throw new ActionException("UserPermissionsQueryTooBig", 
+                "User permissions query must not contain more than 10,000 users");
+        }
         var appUsersList = query.OrderBy(u => u.UserName).Skip(first ?? 0).Take(lastInt + 1 - skip).ToList();
         foreach (var appUser in appUsersList)
         {
@@ -50,6 +57,7 @@ public class PermissionsController : Controller
     
     [HttpPost]
     [Produces(MediaTypeNames.Application.Json)]
+    [Authorize(Policy = "PermissionsEdit")]
     public async Task<IActionResult> Permissions([FromBody] MultiUserPermissions multiUserPermissions)
     {
         foreach (var username in multiUserPermissions.users)

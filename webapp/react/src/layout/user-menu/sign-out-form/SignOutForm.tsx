@@ -1,3 +1,4 @@
+import "./SignOutForm.scss";
 import React, { ReactElement } from "react";
 import { Button } from "primereact/button";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,8 +21,8 @@ function SignOutFormComponent(): ReactElement {
     return <div>
         <div className={"flex"}> <small>&nbsp;</small> </div> {/* adds error spacing like in InputField */}
         <div className="sign-out-form flex gap-4">
-            <div className="p-float-label flex-grow-1 w-full">
-                <InputText className="text-overflow-ellipsis" id="sign-out-username" name="username"
+            <div className="sign-out-username p-float-label flex-grow-1 w-full">
+                <InputText className="w-full text-overflow-ellipsis" id="sign-out-username" name="username"
                            value={userSlice.username || ''} disabled={true}/>
                 <label htmlFor="sign-out-username">username</label>
             </div>

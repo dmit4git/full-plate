@@ -114,4 +114,15 @@ public static class AppServicesSetup
             }
         );
     }
+    
+    public static void AddAppAuthorization(this IServiceCollection services)
+    {
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("PermissionsView", 
+                policy => policy.RequireClaim("Administration -> User permissions -> view"));
+            options.AddPolicy("PermissionsEdit", 
+                policy => policy.RequireClaim("Administration -> User permissions -> edit"));
+        });
+    }
 }

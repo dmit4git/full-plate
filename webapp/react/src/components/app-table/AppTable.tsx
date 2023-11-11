@@ -1,8 +1,8 @@
 import React, {PropsWithChildren, ReactElement} from "react";
 import {range} from "lodash-es";
 import {Skeleton} from "primereact/skeleton";
-import {DataTable, DataTablePassThroughOptions} from "primereact/datatable";
-import {Column, ColumnBodyOptions, ColumnProps} from "primereact/column";
+import {DataTable, DataTablePassThroughOptions, DataTableProps} from "primereact/datatable";
+import {Column, ColumnProps} from "primereact/column";
 import {VirtualScrollerLazyEvent, VirtualScrollerProps} from "primereact/virtualscroller";
 import {UserRow} from "../../layout/main-section/user-permissions/UserPermissionsDataHelper";
 
@@ -39,12 +39,11 @@ function AppTableComponent(props: AppTableProps): ReactElement {
         });
     }
 
-    function skeletonBody(data: any, options: ColumnBodyOptions) {
+    function skeletonBody() {
         return <Skeleton className="w-full"></Skeleton>;
     }
 
     function onRowSelection(event: RowSelectionEvent) {
-        console.log(event.value);
         if (props.onRowSelection) {
             props.onRowSelection(event.value);
         }
@@ -80,17 +79,23 @@ function AppTableComponent(props: AppTableProps): ReactElement {
         </Column>
     );
 
-    const virtualScrollerOptions: VirtualScrollerProps = {
-        lazy: true, onLazyLoad: props.onLazyLoad, itemSize: rowHeight, delay: 200
-    };
-    // showLoader: true, loading: Boolean(props.skeletons), loadingTemplate: skeletonBody
+    let tablePassThrough: DataTablePassThroughOptions = {};
+    let dataTableProps: DataTableProps<any> = {};
 
-    const tablePassThrough: DataTablePassThroughOptions = {thead: {style: {height: rowHeight + 'px'}}};
+    if (props.onLazyLoad) { // if table is to use virtual scroller with lazy load
+        tablePassThrough = {thead: {style: {height: rowHeight + 'px'}}};
+        const virtualScrollerOptions: VirtualScrollerProps = {
+            lazy: true, onLazyLoad: props.onLazyLoad, itemSize: rowHeight, delay: 200
+        };
+        dataTableProps = {
+            scrollable: true, scrollHeight: 'calc(100vh - 15.5rem)', virtualScrollerOptions: virtualScrollerOptions
+        };
+    }
 
     return <DataTable value={rows} stripedRows={props.stripedRows} resizableColumns dataKey="id" pt={tablePassThrough}
                       selectionMode="multiple" dragSelection metaKeySelection={true} style={props.style}
                       selection={props.selection || []} onSelectionChange={onRowSelection as any}
-                      scrollable scrollHeight={'calc(100vh - 15.5rem)'} virtualScrollerOptions={virtualScrollerOptions} >
+                      {...dataTableProps} >
         {columns}
     </DataTable>;
 }

@@ -1,9 +1,9 @@
 import "./InputField.scss"
 import { InputText } from "primereact/inputtext";
-import React, {DOMAttributes, KeyboardEventHandler, ReactElement} from "react";
+import React, {DOMAttributes, ReactElement} from "react";
 import { useDispatch } from "react-redux";
 import { useMemoState } from "../../../helpers/hooks";
-import {Controller, useController, UseControllerProps, Validate} from "react-hook-form";
+import {useController, UseControllerProps, Validate} from "react-hook-form";
 import { Password } from "primereact/password";
 import { ControllerRenderProps } from "react-hook-form/dist/types/controller";
 import { Divider } from "primereact/divider";
@@ -30,6 +30,7 @@ interface InputFieldProps extends UseControllerProps<any> {
     disabled?: boolean,
     passwordMeter?: boolean,
     error?: string,
+    collapsed?: boolean
     // password attributes
     match?: string,
     // search attributes
@@ -136,7 +137,7 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
     const attributes: InputAttributes = {
         id: inputId, ...field, onChange: onChange, className: classNames(inputClassNames)
     };
-    const domAttributes = {};
+
     if (props.disabled !== undefined) {
         attributes.disabled = props.disabled;
     }
@@ -251,9 +252,10 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
     const wrapperClassNames = classNames({
         'input-field-wrapper': true,
         'w-full': true,
-        'p-float-label': true,
+        'p-float-label': !props.collapsed,
         'p-input-icon-right': props.type === FieldType.search
     });
+    const label = !props.collapsed ? <label htmlFor={inputId}>{props.name}</label> : null;
     const bottomSpace = props.bottomSpace ? <div> <small className="flex">{'\u00A0'}</small> </div> : null;
 
     const passwordClassName = props.passwordMeter && showPasswordMeter ? 'password-input-meter' : '';
@@ -267,7 +269,7 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
             <div className={wrapperClassNames}>
                 { icon }
                 { input }
-                <label htmlFor={inputId}>{props.name}</label>
+                { label }
             </div>
             { bottomSpace }
         </div>
