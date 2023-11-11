@@ -27,7 +27,9 @@ jobs:
       - webapi-test-job
     steps:
       - name: Clear code (package-lock.json) changes
-        run: git stash drop
+        run: git stash push --include-untracked
+        working-directory: /home/dmitry/projects/full-plate
+      - run: git stash drop
         working-directory: /home/dmitry/projects/full-plate
       - name: Update local repository
         run: git pull
