@@ -21,6 +21,7 @@ function signInReducer(state: UserState, action: PayloadAction<string | null>) {
 function signOutReducer(state: UserState) {
     state.signedIn = false;
     localStorage.removeItem('account');
+    localStorage.removeItem('accessTree');
 }
 
 export const userSlice = createSlice({

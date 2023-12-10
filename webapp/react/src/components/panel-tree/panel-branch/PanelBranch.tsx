@@ -52,7 +52,9 @@ function PanelBranchComponent(props: PanelBranchProps): ReactElement {
                onExpand={() => tab.expanded = true}
                onCollapse={() => tab.expanded = false} >
             <div className="flex flex-column gap-3">
-                <div>{tab.content}</div>
+                <div className="flex flex-column gap-2">
+                    {tab.content}
+                </div>
                 {props.children}
             </div>
         </Panel>

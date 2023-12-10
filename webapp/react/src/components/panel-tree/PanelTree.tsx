@@ -56,7 +56,6 @@ function PanelTreeComponent(props: PanelTreeProps): ReactElement {
         for (let index = 0; index < tabs.length; index++) {
             const tab = tabs[index];
             const key = keyPrefix + '-' + (tab.key || tab.header);
-            // const disabled = !tab.content && (!tab.children || tab.children.length === 0);
             panelTabs.push(
                 <PanelBranch key={key} tab={tab}>
                     {tab.children && recursivePanelTree(tab.children, key)}

@@ -27,7 +27,7 @@ export const routes = [
                 errorElement: <ErrorPage />
             },
             {
-                path: "user-permissions",
+                path: "administration/user-permissions",
                 element: <UserPermissions />,
                 errorElement: <ErrorPage />
             }

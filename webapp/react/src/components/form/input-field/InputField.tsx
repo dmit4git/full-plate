@@ -189,7 +189,7 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
 
     // makes single password requirement bullet point
     function makePasswordBulletPoint(check: boolean, text: string, key: number | string) {
-        return <span className="flex" key={key}>
+        return <span className="flex align-items-center" key={key}>
                 <i className={'pi ' + (check ? 'pi-check-circle' : 'pi-circle') + ' mr-2'}
                    style={check ? { color: 'var(--primary-color)' } : undefined}></i>
                 &nbsp;

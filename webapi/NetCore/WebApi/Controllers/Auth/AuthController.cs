@@ -164,6 +164,9 @@ public class AuthController : Controller
         // Update refresh token.
         await _userManager.UpdateRefreshToken(user, HttpContext, _refreshTokenProtector);
         
+        // Add cookie with user's access permissions
+        await _userManager.AddAccessCookie(user, HttpContext);
+        
         return Ok(new { username = user.UserName });
     }
     
