@@ -17,7 +17,7 @@ To run it on Linux, you need to clone the repository, go to docker compose direc
 ```
 git clone https://github.com/dmit4git/full-plate.git
 cd full-plate/compose
-docker compose --profile frontend --profile backend --build --detach
+docker compose --profile frontend --profile backend up --build --detach
 ```
 This will:
  * start PostgreSQL database container
@@ -30,7 +30,7 @@ Stop containers to shut it down: `docker compose --profile frontend --profile ba
 
 ### develop on Linux
 For development, use `dev` profile with `docker compose`:  
-`docker compose --profile dev --build --detach`
+`docker compose --profile dev up --build --detach`
 This will:
 * start container with PostgreSQL database listening on default port 5432
   * start container with PostgreSQL test database listening on port 5433
