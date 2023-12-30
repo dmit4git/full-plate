@@ -5,7 +5,7 @@ It is currently in prototype stage, only authentication and themes features work
 
 ## Tech Stack
  * **React** frontend, because it is most used ([stateofjs.com](https://2022.stateofjs.com/en-US/libraries/front-end-frameworks/)) and has the largest community 
- * **.Net Core 7.0** backend, because its performance is top tier ([techempower.com](https://www.techempower.com/benchmarks/#section=data-r21)) and it has one of the largest communities
+ * **.Net Core 8.0** backend, because its performance is top tier ([techempower.com](https://www.techempower.com/benchmarks/#section=data-r21)) and it has one of the largest communities
  * **PostgreSQL** database 
  * **Nginx** web server / reverse proxy
 
@@ -29,6 +29,8 @@ Open it at [localhost](http://localhost).
 Stop containers to shut it down: `docker compose --profile frontend --profile backend down`
 
 ### develop on Linux
+[Install](https://learn.microsoft.com/en-us/dotnet/core/install/linux) .Net SDK locally to debug .Net code without dotnet container.
+
 For development, use `dev` profile with `docker compose`:  
 `docker compose --profile dev up --build --detach`
 This will:

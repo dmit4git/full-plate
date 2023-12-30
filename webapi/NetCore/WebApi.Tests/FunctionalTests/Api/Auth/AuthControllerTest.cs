@@ -47,6 +47,13 @@ public class AuthControllerTest
         await ClearDatabase();
     }
 
+    [OneTimeTearDown]
+    public async Task OneTimeTeardown()
+    {
+        _userManager.Dispose();
+        await _dataContext.DisposeAsync();
+    } 
+
     [TearDown]
     public async Task Teardown()
     {
@@ -92,10 +99,10 @@ public class AuthControllerTest
         var htmlDoc = await new AngleSharpParser().Parse(emailBody);
         using var anchorsEnumerator = htmlDoc.All.Where(element => 
             element.GetType().Name == "HtmlAnchorElement" && element.TextContent == "Verify Email").GetEnumerator();
-        Assert.True(anchorsEnumerator.MoveNext());
+        Assert.That(anchorsEnumerator.MoveNext(), Is.True);
         var anchor = anchorsEnumerator.Current;
         Assert.That(anchor, Is.Not.Null);
-        Assert.False(anchorsEnumerator.MoveNext());
+        Assert.That(anchorsEnumerator.MoveNext(), Is.False);
         var uri = anchor.BaseUri;
         Assert.That(uri, Is.Not.Null);
     }
@@ -202,7 +209,7 @@ public class AuthControllerTest
     {
         var user = new AppUser { UserName = account.Username, Email = account.Email };
         var result = await _userManager.CreateAsync(user, account.Password!);
-        Assert.IsTrue(result.Succeeded);
+        Assert.That(result.Succeeded, Is.True);
         return user;
     }
 
@@ -216,10 +223,10 @@ public class AuthControllerTest
     public async Task ConfirmUserEmail(AccountData account)
     {
         var user = await _userManager.FindByNameAsync(account.Username!);
-        Assert.NotNull(user);
+        Assert.That(user, Is.Not.Null);
         var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user!);
         var result = await _userManager.ConfirmEmailAsync(user!, confirmationToken);
-        Assert.IsTrue(result.Succeeded);
+        Assert.That(result.Succeeded, Is.True);
     }
 
     // Calls sign-in endpoint to log user in. Returns session token obtained from response cookie. 
@@ -229,7 +236,7 @@ public class AuthControllerTest
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         using var cookies = response.Headers.SingleOrDefault(
             header => header.Key == "Set-Cookie").Value.GetEnumerator();
-        Assert.True(cookies.MoveNext());
+        Assert.That(cookies.MoveNext(), Is.True);
         Assert.That(cookies.Current, Is.Not.Null);
         Assert.That(cookies.Current, Does.StartWith(OpaqueSelfContainedTokenCookieName + "="));
         Assert.That(cookies.Current, Has.Length.GreaterThan(OpaqueSelfContainedTokenCookieName.Length + 1));

@@ -1,6 +1,6 @@
 ﻿
 # SDK stage. Build solution.
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 ## install Entity Framework
 #RUN dotnet tool install --global dotnet-ef
@@ -19,7 +19,7 @@ RUN dotnet publish --configuration release --output build
 
 
 # Runtime stage.
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS run
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS run
 
 # copy built app from previous stage
 WORKDIR /WebApi
