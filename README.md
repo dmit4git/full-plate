@@ -8,6 +8,7 @@ It is currently in prototype stage, only authentication and themes features work
  * **.Net Core 8.0** backend, because its performance is top tier ([techempower.com](https://www.techempower.com/benchmarks/#section=data-r21)) and it has one of the largest communities
  * **PostgreSQL** database 
  * **Nginx** web server / reverse proxy
+ * **Graylog** centralized log management system
 
 Documentation with details is coming soon.
 
@@ -42,8 +43,35 @@ This will:
 
 Run/debug .Net Core app in `webapi/NetCore/WebApi` with your IDE, it listens on port 10090 which Nginx forwards to.  
 Start React development with `npm run start` in `webapp/react`, dev server listens on port 3000 which Nginx forwards to.  
+
 Open it at [localhost](http://localhost).  
+Or add `fullplate.local` domain to `/etc/hosts` for convenience:
+ * `127.0.0.1       fullplate.local` - to access the app at [fullplate.local](http://fullplate.local)
+ * `127.0.0.1       logs.fullplate.local` - to access Graylog at [logs.fullplate.local](http://logs.fullplate.local)
+
 Stop containers to shut it down: `docker compose --profile dev down`
+
+### Run Graylog on Linux
+Docker services are configured to send logs to Graylog ([graylog.org](https://go2docs.graylog.org/5-0/what_is_graylog/what_is_graylog.htm)) instead of writing to local log file.  
+You can run containerized Graylog stack with `docker compose`. Start in `full-plate` directory.
+ * Only once, before starting Graylog for the first time, run setup script to prepare directories for persistent Graylog data:
+   * go to graylog directory: `cd graylog`
+   * add execution permission to the script: `chmod +x setup.sh`
+   * run the script: `./setup.sh`
+   * go back to full-plate directory: `cd ..`
+ * run Graylog
+   * go to compose directory: `cd compose`
+   * start graylog services stack: `docker compose --profile graylog up --detach`
+     * stop it when you want with: `docker compose --profile graylog down`
+ * Only once, configure Graylog input to receive logs from docker compose services:
+   * go to `localhost:9900/system/inputs`
+     * or use `logs.fullplate.local/system/inputs` if you added the record to `/etc/hosts`
+     * default credentials are user: `admin`, password: `admin`
+   * add new `GELF UDP` input
+     * select `GELF UDP` input, and click "Launch new input" button
+     * give the new input a title, for example "GELF-UDP-input", scroll down, click "Launch input"
+
+Graylog stack is independent of other services and can be started/stopped at any time.  
 
 ## Features
  * **authentication**: user can create new account. sign-in and sign-out
@@ -52,5 +80,4 @@ Stop containers to shut it down: `docker compose --profile dev down`
  * **themes**: user can choose from variety of themes
    * todo: wiki page with detailed feature description, dev docs, tests
  * todo: **multi-language support**
- * todo: **logs monitor**
  * todo: **health monitor**

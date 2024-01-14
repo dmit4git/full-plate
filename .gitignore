@@ -21,3 +21,6 @@
 /webapi/NetCore/WebApi.Tests/bin/
 /webapi/NetCore/WebApi.Tests/obj/
 /webapi/NetCore/NetCore.sln.DotSettings.user
+/graylog/mongo
+/graylog/opensearch
+/graylog/graylog
