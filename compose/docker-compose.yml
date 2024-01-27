@@ -7,7 +7,7 @@ x-logging:
   &graylog-logging
   driver: gelf
   options:
-    gelf-address: udp://127.0.0.1:12201
+    gelf-address: ${FP_GRAYLOG_GELF_INPUT:-udp://127.0.0.1:12201}
 
 ########## Services ##########
 services:
@@ -31,9 +31,9 @@ services:
       - dev
     image: postgres:15.0
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:-}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-}
-      - POSTGRES_DB=backend_db
+      - POSTGRES_USER=${FP_POSTGRES_USER:-backend_db_user}
+      - POSTGRES_PASSWORD=${FP_POSTGRES_PASSWORD:-changeme}
+      - POSTGRES_DB=${FP_POSTGRES_DB:-backend_db}
     volumes:
       - ../postgres/data/webapi:/var/lib/postgresql/data
     network_mode: "host"
@@ -47,9 +47,9 @@ services:
     image: postgres:15.0
     command: -p 5433
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:-}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-}
-      - POSTGRES_DB=backend_test_db
+      - POSTGRES_USER=${FP_POSTGRES_USER:-backend_db_user}
+      - POSTGRES_PASSWORD=${FP_POSTGRES_PASSWORD:-changeme}
+      - POSTGRES_DB=${FP_POSTGRES_TEST_DB:-backend_test_db}
     network_mode: "host"
     logging: *graylog-logging
 
@@ -126,8 +126,8 @@ services:
       - graylog
     image: graylog/graylog:5.2
     environment:
-      - GRAYLOG_PASSWORD_SECRET=${GRAYLOG_PASSWORD_SECRET:-}
-      - GRAYLOG_ROOT_PASSWORD_SHA2=${GRAYLOG_ROOT_PASSWORD_SHA2:-}
+      - GRAYLOG_PASSWORD_SECRET=${FP_GRAYLOG_PASSWORD_SECRET:-changeme_minimum_16_characters}
+      - GRAYLOG_ROOT_PASSWORD_SHA2=${FP_GRAYLOG_ROOT_PASSWORD_SHA2:-8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918} # default value is hash of "admin" password
       - GRAYLOG_HTTP_BIND_ADDRESS=0.0.0.0:9900
       - GRAYLOG_HTTP_PUBLISH_URI=http://127.0.0.1:9900/ # https://community.graylog.org/t/accessing-gui-using-internal-and-external-ip/11342/3
       - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9900/
