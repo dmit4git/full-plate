@@ -24,3 +24,5 @@
 /graylog/mongo
 /graylog/opensearch
 /graylog/graylog
+/nginx/certbot/www
+/nginx/certbot/letsencrypt

@@ -12,9 +12,8 @@ RUN npm install
 #RUN chmod +x node_modules/.bin/react-scripts
 RUN npm run build
 
-#ENTRYPOINT ["sleep", "3600"]
-
 
 FROM nginx:1.22.0
-
 COPY --from=react-build /webapp/build /usr/share/nginx/webapp
+## copy prebuilt app
+#COPY react/build /usr/share/nginx/webapp

@@ -7,7 +7,7 @@ x-logging:
   &graylog-logging
   driver: gelf
   options:
-    gelf-address: ${FP_GRAYLOG_GELF_INPUT:-udp://127.0.0.1:12201}
+    gelf-address: ${FP_GRAYLOG_GELF_INPUT:-udp://localhost:12201}
 
 ########## Services ##########
 services:
@@ -58,11 +58,15 @@ services:
     container_name: nginx
     profiles:
       - frontend
-    image: nginx:1.22.0
     build:
       context: ../webapp
+    environment:
+      - NGINX_DOMAIN_NAME=${FP_DOMAIN_NAME:-fullplate.local}
+      - NGINX_PROXY_WEBAPI=${FP_PROXY_WEBAPI:-localhost}
+      - NGINX_PROXY_GRAYLOG=${FP_PROXY_GRAYLOG:-localhost}
     volumes:
       - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro,z
+      - ../nginx/templates:/etc/nginx/templates
       - ../nginx/certbot/www/:/var/www/certbot/:ro
       - ../nginx/certbot/letsencrypt/:/etc/letsencrypt/:ro
       - ../nginx/ssl_certificates:/ssl_certificates:ro
@@ -75,6 +79,8 @@ services:
       context: ../nginx/certbot
     profiles:
       - certbot
+    environment:
+      - CERTBOT_DOMAIN_NAME=${FP_DOMAIN_NAME:-fullplate.local}
     volumes:
       - ../nginx/certbot/www/:/var/www/certbot/:rw
       - ../nginx/certbot/letsencrypt/:/etc/letsencrypt/:rw
