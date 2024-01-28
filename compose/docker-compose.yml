@@ -69,7 +69,7 @@ services:
       - ../nginx/templates:/etc/nginx/templates
       - ../nginx/certbot/www/:/var/www/certbot/:ro
       - ../nginx/certbot/letsencrypt/:/etc/letsencrypt/:ro
-      - ../nginx/ssl_certificates:/ssl_certificates:ro
+      - ../nginx/certbot/selfsigned_certs:/selfsigned_certs:ro
     network_mode: "host"
     logging: *graylog-logging
 

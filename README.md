@@ -29,6 +29,28 @@ This will:
 Open it at [localhost](http://localhost).  
 Stop containers to shut it down: `docker compose --profile frontend --profile backend down`
 
+#### SSL
+Letsencrypt [certbot](https://certbot.eff.org/) can be used to make new SSL certificate and periodically renew it.
+  * run "frontend" service with nginx configured without ssl 
+    * leave only one uncommented include directive `include /etc/nginx/conf.d/nginx.fullplate.nossl.conf.template;` in `nginx.conf`
+    * run "frontend" docker service: `docker compose --profile frontend up --build --detach`
+  * run "certbot" service that will make new certificate if it's not there yet and will be renewing it every 12 hours
+    * `docker compose --profile certbot up --build --detach`
+  * restart "frontend" service with nginx configured with ssl
+    * run "frontend" docker service: `docker compose --profile frontend down`
+    * leave only one uncommented include directive `include /etc/nginx/conf.d/nginx.fullplate.conf.template;` in `nginx.conf`
+    * run "frontend" docker service: `docker compose --profile frontend up --build --detach` 
+
+Alternatively, self-signed certificates can be used
+  * run `nginx/certbot/selfsigned.sh` to generate following files in `nginx/certbot/selfsigned_certs`
+    * personal certificate authority root certificate (`ca_root_cert.pem`)
+    * certificate and key (`fullplate.local.crt, fullplate.local.key`) signed with your new root certificate for fullplate.local, www.fullplate.local and logs.fullplate.local
+  * run "frontend" service with nginx configured with self-signed ssl
+    * leave only one uncommented include directive `include /etc/nginx/conf.d/nginx.local.ssl.conf.template;` in `nginx.conf`
+    * run "frontend" docker service: `docker compose --profile frontend up --build --detach`
+  * add your root certificate to your browser as certificate authority
+    * go to "Privacy and security" [settings](chrome://settings/certificates) in Chrome, select "Authorities" tab, click import, select generated ca_root_cert.pem, check all options on the form
+
 ### develop on Linux
 [Install](https://learn.microsoft.com/en-us/dotnet/core/install/linux) .Net SDK locally to debug .Net code without dotnet container.
 
