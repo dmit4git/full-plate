@@ -81,9 +81,9 @@ You can run containerized Graylog stack with `docker compose`. Start in `full-pl
    * add execution permission to the script: `chmod +x setup.sh`
    * run the script: `./setup.sh`
    * go back to full-plate directory: `cd ..`
- * run Graylog
+ * run Graylog stack
    * go to compose directory: `cd compose`
-   * start graylog services stack: `docker compose --profile graylog up --detach`
+   * start Graylog services stack: `docker compose --profile graylog up --detach`
      * stop it when you want with: `docker compose --profile graylog down`
  * Only once, configure Graylog input to receive logs from docker compose services:
    * go to `localhost:9900/system/inputs`
@@ -95,11 +95,38 @@ You can run containerized Graylog stack with `docker compose`. Start in `full-pl
 
 Graylog stack is independent of other services and can be started/stopped at any time.  
 
+### Run Prometheus + Grafana on Linux
+Containerized Prometheus stack can be used for storing, querying and visualising performance related metrics.
+Starting in `full-plate` directory:
+ * go to prometheus directory: `cd prometheus`
+ * add execution permission to the script: `chmod +x setup.sh`
+ * run preparation script: `./setup.sh`
+ * go back to full-plate directory: `cd ..`
+ * run Prometheus stack
+   * go to compose directory: `cd compose`
+   * start Prometheus services stack: `docker compose --profile prometheus up --detach`
+       * stop it when you want with: `docker compose --profile prometheus down`
+ * Only once, configure Grafana:
+   * Connect Grafana to Prometheus data source:
+     * open [data sources configuration](http://localhost:23000/connections/datasources), and click "Add data source"
+     * select "prometheus" option, and configure it
+       * Prometheus server URL -> http://localhost:9090
+       * Prometheus type -> Prometheus
+       * click "Save & test"
+   * Add visualisation dashboard
+     * open [dashboards configuration](http://localhost:23000/connections/datasources), and click "Create Dashboard"
+     * import a prebuild dashboard
+       * click "Import dashboard"
+       * input https://grafana.com/grafana/dashboards/14282-cadvisor-exporter/ for dashboard URL, and click "Load"
+       * select previously created Prometheus data source for "Prometheus" option, and click "Import" 
+
 ## Features
  * **authentication**: user can create new account. sign-in and sign-out
    * todo: wiki page with detailed feature description, dev docs, tests
-     * backend test coverage is complete, frontend test are coming soon
+     * backend test coverage is complete, frontend tests are coming soon
  * **themes**: user can choose from variety of themes
-   * todo: wiki page with detailed feature description, dev docs, tests
+ * **monitoring**: user can query logs and performance metrics, and configure alerts on their basis
+   * [Graylog](https://graylog.org/) is used for logs monitoring
+   * [Prometheus](https://prometheus.io/) + [Grafana](https://grafana.com/) are used for performance metrics monitoring 
+ * todo: wiki page with detailed feature description, dev docs, tests
  * todo: **multi-language support**
- * todo: **health monitor**

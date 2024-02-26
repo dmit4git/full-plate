@@ -64,6 +64,7 @@ services:
       - NGINX_DOMAIN_NAME=${FP_DOMAIN_NAME:-fullplate.local}
       - NGINX_PROXY_WEBAPI=${FP_PROXY_WEBAPI:-localhost}
       - NGINX_PROXY_GRAYLOG=${FP_PROXY_GRAYLOG:-localhost}
+      - NGINX_PROXY_GRAFANA=${FP_PROXY_GRAFANA:-localhost}
     volumes:
       - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro,z
       - ../nginx/templates:/etc/nginx/templates
@@ -172,5 +173,48 @@ services:
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m" # Set min and max JVM heap sizes to at least 50% of system RAM
     volumes:
       - ../graylog/opensearch/data:/usr/share/opensearch/data
+    network_mode: "host"
+    logging: *graylog-logging
+
+  ########## prometheus ##########
+  prometheus:
+    image: prom/prometheus:v2.50.0
+    container_name: prometheus
+    profiles:
+      - prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ../prometheus/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../prometheus/prometheus/data:/prometheus
+    depends_on:
+      - cadvisor
+    network_mode: "host"
+    logging: *graylog-logging
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.1
+    container_name: cadvisor
+    profiles:
+      - cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    command:
+      - '-port=28080'
+    network_mode: "host"
+    logging: *graylog-logging
+
+  grafana:
+    image: grafana/grafana-oss:10.2.4
+    container_name: grafana
+    profiles:
+      - prometheus
+    volumes:
+      - ../prometheus/grafana/data:/var/lib/grafana
+    environment:
+      - GF_SERVER_HTTP_PORT=23000
     network_mode: "host"
     logging: *graylog-logging
