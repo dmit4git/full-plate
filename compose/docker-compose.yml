@@ -196,7 +196,7 @@ services:
     image: gcr.io/cadvisor/cadvisor:v0.47.1
     container_name: cadvisor
     profiles:
-      - cadvisor
+      - exporters
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
@@ -204,6 +204,20 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
     command:
       - '-port=28080'
+    network_mode: "host"
+    logging: *graylog-logging
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v1.7.0
+    container_name: node_exporter
+    profiles:
+      - exporters
+    volumes:
+      - '/:/host:ro,rslave'
+    command:
+      - '--path.rootfs=/host'
+      - '--web.listen-address=:29100'
+    pid: host
     network_mode: "host"
     logging: *graylog-logging
 

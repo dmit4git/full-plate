@@ -115,10 +115,12 @@ Starting in `full-plate` directory:
        * click "Save & test"
    * Add visualisation dashboard
      * open [dashboards configuration](http://localhost:23000/connections/datasources), and click "Create Dashboard"
-     * import a prebuild dashboard
+     * import "Cadvisor exporter" dashboard
        * click "Import dashboard"
        * input https://grafana.com/grafana/dashboards/14282-cadvisor-exporter/ for dashboard URL, and click "Load"
-       * select previously created Prometheus data source for "Prometheus" option, and click "Import" 
+       * select previously created Prometheus data source for "Prometheus" option, and click "Import"
+     * import "Node Exporter Full" dashboard
+       * use https://grafana.com/grafana/dashboards/1860-node-exporter-full/ for dashboard URL
 
 ## Features
  * **authentication**: user can create new account. sign-in and sign-out
