@@ -9,6 +9,7 @@ It is currently in prototype stage, only authentication and themes features work
  * **PostgreSQL** database 
  * **Nginx** web server / reverse proxy
  * **Graylog** centralized log management system
+ * **Prometheus+Grafana** centralized health metrics management system
 
 Documentation with details is coming soon.
 
