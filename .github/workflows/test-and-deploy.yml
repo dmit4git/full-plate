@@ -13,7 +13,7 @@ jobs:
         working-directory: ./compose
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Start test database container
         run: docker compose --profile tests up --detach postgres-test
       - name: Run NetCore WebApi tests
@@ -43,4 +43,4 @@ jobs:
         run: ./deploy-react.sh
         working-directory: /home/dmitry/projects/full-plate/infra
       - name: Build and restart backend containers
-        run: sudo systemctl restart full-plate
+        run: sudo systemctl restart backend

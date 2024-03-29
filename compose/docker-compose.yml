@@ -71,7 +71,7 @@ services:
       - ../nginx/templates:/etc/nginx/templates
       - ../nginx/certbot/www/:/var/www/certbot/:ro
       - ../nginx/certbot/letsencrypt/:/etc/letsencrypt/:ro
-      - ../nginx/certbot/selfsigned_certs:/selfsigned_certs:ro
+      - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
     network_mode: "host"
     logging: *graylog-logging
 
@@ -94,8 +94,18 @@ services:
     profiles:
       - dev
     image: nginx:1.22.0
+    environment:
+      - NGINX_DOMAIN_NAME=${FP_DOMAIN_NAME:-fullplate.local}
+      - NGINX_PROXY_WEBAPI=${FP_PROXY_WEBAPI:-localhost}
+      - NGINX_PROXY_GRAYLOG=${FP_PROXY_GRAYLOG:-localhost}
+      - NGINX_PROXY_GRAFANA=${FP_PROXY_GRAFANA:-localhost}
+      - NGINX_MONITORING_ALLOW=${FP_MONITORING_ALLOW:-allow 127.0.0.1;}
     volumes:
       - ../nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro,z
+      - ../nginx/templates:/etc/nginx/templates
+      - ../nginx/certbot/www/:/var/www/certbot/:ro
+      - ../nginx/certbot/letsencrypt/:/etc/letsencrypt/:ro
+      - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
     network_mode: "host"
     logging: *graylog-logging
 
@@ -107,8 +117,12 @@ services:
     image: webapi
     build:
       context: ../webapi
+    environment:
+      - NGINX_DOMAIN_NAME=${FP_DOMAIN_NAME:-fullplate.local}
+      - BACKEND_PFX_PASSWORD=${FP_BACKEND_PFX_PASSWORD:-}
     volumes:
       - ../webapi/data/aspnet:/root/.aspnet
+      - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
     network_mode: "host"
     depends_on:
       - postgres

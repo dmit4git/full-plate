@@ -25,7 +25,7 @@ This will:
  * start PostgreSQL database container
  * build .Net Core WebApi backend container and start it
  * build React webapp and start Nginx container to serve it
-   * Nginx will also forward all `/webapi` calls to the WebApi backend (port 10090)
+   * Nginx will also forward all `/webapi` calls to the WebApi backend (port 10080)
  
 Open it at [localhost](http://localhost).  
 Stop containers to shut it down: `docker compose --profile frontend --profile backend down`
@@ -42,11 +42,11 @@ Letsencrypt [certbot](https://certbot.eff.org/) can be used to make new SSL cert
     * leave only one uncommented include directive `include /etc/nginx/conf.d/nginx.fullplate.conf.template;` in `nginx.conf`
     * run "frontend" docker service: `docker compose --profile frontend up --build --detach` 
 
-Alternatively, self-signed certificates can be used
-  * run `nginx/certbot/selfsigned.sh` to generate following files in `nginx/certbot/selfsigned_certs`
+Alternatively, you can create your own certificate authority and use it to make new certificates
+  * run `nginx/certbot/selfsigned.sh` to generate following files in `nginx/certbot/own_ca_certs`
     * personal certificate authority root certificate (`ca_root_cert.pem`)
-    * certificate and key (`fullplate.local.crt, fullplate.local.key`) signed with your new root certificate for fullplate.local, www.fullplate.local and logs.fullplate.local
-  * run "frontend" service with nginx configured with self-signed ssl
+    * certificate and key (`fullplate.local.crt, fullplate.local.key`) signed with your new root certificate for fullplate.local, www.fullplate.local, logs.fullplate.local and metrics.fullplate.local
+  * run "frontend" service with nginx configured with self-made ssl certificates
     * leave only one uncommented include directive `include /etc/nginx/conf.d/nginx.local.ssl.conf.template;` in `nginx.conf`
     * run "frontend" docker service: `docker compose --profile frontend up --build --detach`
   * add your root certificate to your browser as certificate authority
@@ -62,9 +62,9 @@ This will:
   * start container with PostgreSQL test database listening on port 5433
 * start Dozzle container to show containers logs at [localhost:8080](http://localhost:8080)
 * start Nginx container to forward port 80 calls to port 3000 (default React dev server port)  
-   * Nginx will also forward all `/webapi` calls to the WebApi backend (port 10090)
+   * Nginx will also forward all `/webapi` calls to the WebApi backend (port 10080)
 
-Run/debug .Net Core app in `webapi/NetCore/WebApi` with your IDE, it listens on port 10090 which Nginx forwards to.  
+Run/debug .Net Core app in `webapi/NetCore/WebApi` with your IDE, it listens on port 10080 which Nginx forwards to.  
 Start React development with `npm run start` in `webapp/react`, dev server listens on port 3000 which Nginx forwards to.  
 
 Open it at [localhost](http://localhost).  

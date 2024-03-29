@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
@@ -57,6 +58,30 @@ public static class AppBuilderSetup {
             // User settings.
             options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+ ";
             options.User.RequireUniqueEmail = true;
+        });
+    }
+    
+    public static void ConfigureKrestel(this WebApplicationBuilder builder)
+    {
+        builder.WebHost.ConfigureKestrel(krestelOptions =>
+        {
+            // listen for HTTP connection
+            var httpPort = 10080;
+            krestelOptions.Listen(IPAddress.Any, httpPort);
+            
+            // listen for HTTPS connection
+            var httpsPort = 10443;
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var isDevelopment = string.Equals(environment, "development", StringComparison.InvariantCultureIgnoreCase);
+            String domainName = Environment.GetEnvironmentVariable("NGINX_DOMAIN_NAME") ?? "fullplate.local";
+            String certificate = isDevelopment ? $"../../../nginx/certbot/own_ca_certs/{domainName}.pfx" 
+                : $"/own_ca_certs/{domainName}.pfx";
+            String password = Environment.GetEnvironmentVariable("BACKEND_PFX_PASSWORD") ?? String.Empty;
+            if (File.Exists(certificate) && password != String.Empty)
+            {
+                krestelOptions.Listen(IPAddress.Any, httpsPort,
+                    listenOptions => { listenOptions.UseHttps(certificate, password); });
+            }
         });
     }
 }

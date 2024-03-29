@@ -28,9 +28,8 @@ http {
         server_name ${NGINX_DOMAIN_NAME} www.${NGINX_DOMAIN_NAME};
 
         location / {
-            # webapp
-            root /usr/share/nginx/webapp;
-            try_files $uri $uri/ /index.html;
+            # react (npm run start)
+            proxy_pass http://localhost:3000;
         }
 
         location /webapi {
@@ -53,6 +52,8 @@ http {
     server {
         listen 80;
         server_name logs.${NGINX_DOMAIN_NAME};
+        # ${NGINX_MONITORING_ALLOW}
+        # deny all;
         location / {
             proxy_set_header Host $http_host;
             proxy_set_header X-Forwarded-Host $host;
@@ -67,6 +68,8 @@ http {
     server {
         listen 80;
         server_name metrics.${NGINX_DOMAIN_NAME};
+        # ${NGINX_MONITORING_ALLOW}
+        # deny all;
         location / {
             proxy_set_header Host $http_host;
             proxy_set_header X-Forwarded-Host $host;
