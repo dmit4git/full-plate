@@ -1,5 +1,5 @@
 ﻿
-version: '3.8'
+# version: '3.8'
 
 ########## Extension fields ##########
 
@@ -65,7 +65,7 @@ services:
       - NGINX_PROXY_WEBAPI=${FP_PROXY_WEBAPI:-localhost}
       - NGINX_PROXY_GRAYLOG=${FP_PROXY_GRAYLOG:-localhost}
       - NGINX_PROXY_GRAFANA=${FP_PROXY_GRAFANA:-localhost}
-      - NGINX_MONITORING_ALLOW=${FP_MONITORING_ALLOW:-"allow 127.0.0.1;"}
+      - NGINX_MONITORING_ALLOW=${FP_MONITORING_ALLOW:-allow 127.0.0.1;}
     volumes:
       - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro,z
       - ../nginx/templates:/etc/nginx/templates
@@ -157,6 +157,7 @@ services:
       - GRAYLOG_ELASTICSEARCH_HOSTS=http://127.0.0.1:9200 # fixes "No data nodes have been found"
     volumes:
       - ../graylog/graylog/data:/usr/share/graylog/data
+      - ../nginx/certbot/own_ca_certs_2:/own_ca_certs:ro
     network_mode: "host"
     depends_on:
       - mongo

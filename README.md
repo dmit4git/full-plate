@@ -86,13 +86,22 @@ You can run containerized Graylog stack with `docker compose`. Start in `full-pl
    * go to compose directory: `cd compose`
    * start Graylog services stack: `docker compose --profile graylog up --detach`
      * stop it when you want with: `docker compose --profile graylog down`
- * Only once, configure Graylog input to receive logs from docker compose services:
+ * Only once, configure Graylog input(s) to receive logs from docker compose services:
    * go to `localhost:9900/system/inputs`
      * or use `logs.fullplate.local/system/inputs` if you added the record to `/etc/hosts`
      * default credentials are user: `admin`, password: `admin`
    * add new `GELF UDP` input
      * select `GELF UDP` input, and click "Launch new input" button
-     * give the new input a title, for example "GELF-UDP-input", scroll down, click "Launch input"
+     * give the new input a title, for example "input-GELF-UDP", scroll down, click "Launch input"
+   * remote services should send logs over TLS, use `Syslog TCP` input for that purpose
+     * select `Syslog TCP` input, and click "Launch new input" button
+     * give the new input a title, for example "input-Syslog-TCP-TLS"
+     * set "Port" to `12514`, and fill-out TLS settings
+       * "TLS cert file" to `/own_ca_certs/fullplate.local.crt`
+       * "TLS private key file" to `/own_ca_certs/fullplate.local.key`
+       * check "Enable TLS" box
+       * set "TLS key password" to whatever password you used making your own certificates with make_own_ca_certs.sh
+     * scroll down, click "Launch input"
 
 Graylog stack is independent of other services and can be started/stopped at any time.  
 

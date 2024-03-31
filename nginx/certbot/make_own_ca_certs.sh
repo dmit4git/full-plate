@@ -60,8 +60,10 @@ DNS.1 = "$DOMAIN" # Be sure to include the domain name here because Common Name 
 DNS.2 = www."$DOMAIN" # additional domain
 DNS.3 = logs."$DOMAIN" # graylog subdomain
 DNS.4 = metrics."$DOMAIN" # prometheus + grafana subdomain
+DNS.5 = localhost
 IP.1 = 192.168.2.26 # internal IP address
-IP.2 = 142.250.64.78 # external IP address
+IP.2 = 123.456.789.0 # external IP address
+IP.3 = 127.0.0.1
 EOF
 #
 echo "Creating the signed certificate"
