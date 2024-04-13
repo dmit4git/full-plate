@@ -18,8 +18,8 @@ public class AwsSesService : IEmailService
     public AwsSesService(IConfiguration config, IEmbeddedResourceReader resourceReader)
     {
         // _config = config;
-        _awsAccessKey = config.GetValue<string>("AWS:AwsAccessKey")!;
-        _awsSecretKey = config.GetValue<string>("AWS:AwsSecretKey")!;
+        _awsAccessKey = Environment.GetEnvironmentVariable("BACKEND_AWS_SES_ACCESS_KEY") ?? "";
+        _awsSecretKey = Environment.GetEnvironmentVariable("BACKEND_AWS_SES_SECRET_KEY") ?? "";
         _contents = resourceReader.GetString("Services.Email.EmailVerificationMessage.html");
         var svg = resourceReader.GetString("WebApi.Services.Email.at.svg");
         // _contents = File.ReadAllText("resources/email/EmailVerificationMessage.html");

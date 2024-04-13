@@ -120,6 +120,8 @@ services:
     environment:
       - NGINX_DOMAIN_NAME=${FP_DOMAIN_NAME:-fullplate.local}
       - BACKEND_PFX_PASSWORD=${FP_BACKEND_PFX_PASSWORD:-}
+      - BACKEND_AWS_SES_ACCESS_KEY=${FP_AWS_SES_ACCESS_KEY:-changeme}
+      - BACKEND_AWS_SES_SECRET_KEY=${FP_AWS_SES_SECRET_KEY:-changeme}
     volumes:
       - ../webapi/data/aspnet:/root/.aspnet
       - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
