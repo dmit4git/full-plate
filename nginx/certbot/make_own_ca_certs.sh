@@ -72,3 +72,11 @@ openssl x509 -req -in cert_sign_request.csr -CA ca_root_cert.pem -CAkey ca_priva
 #
 echo "Creating pfx (certificate and key in single file)"
 openssl pkcs12 -export -out "$DOMAIN".pfx -inkey "$DOMAIN".key -in "$DOMAIN".crt -password pass:"$PFX_PASSWORD"
+#
+echo "Creating PKCS#8 pem certificate and key (for graylog GUI)"
+openssl pkcs12 -in "$DOMAIN".pfx -passin pass:"$CA_PASS_PHRASE" -nokeys -out "$DOMAIN".crt.pem
+openssl pkcs12 -in "$DOMAIN".pfx -passin pass:"$CA_PASS_PHRASE" -nocerts -out "$DOMAIN".key.pkcs5.pem -passout pass:"$CA_PASS_PHRASE"
+openssl pkcs8 -in "$DOMAIN".key.pkcs5.pem -passin pass:pass4_FP -topk8 -out "$DOMAIN".key.pkcs8.pem -passout pass:pass4_FP
+#
+echo "changing permissions on own_ca_certs and its content"
+chmod o+r+w -R own_ca_certs
