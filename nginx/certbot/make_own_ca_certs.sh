@@ -79,4 +79,5 @@ openssl pkcs12 -in "$DOMAIN".pfx -passin pass:"$CA_PASS_PHRASE" -nocerts -out "$
 openssl pkcs8 -in "$DOMAIN".key.pkcs5.pem -passin pass:pass4_FP -topk8 -out "$DOMAIN".key.pkcs8.pem -passout pass:pass4_FP
 #
 echo "changing permissions on own_ca_certs and its content"
+cd ..
 chmod o+r+w -R own_ca_certs
