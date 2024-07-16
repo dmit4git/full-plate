@@ -76,7 +76,7 @@ openssl pkcs12 -export -out "$DOMAIN".pfx -inkey "$DOMAIN".key -in "$DOMAIN".crt
 echo "Creating PKCS#8 pem certificate and key (for graylog GUI)"
 openssl pkcs12 -in "$DOMAIN".pfx -passin pass:"$CA_PASS_PHRASE" -nokeys -out "$DOMAIN".crt.pem
 openssl pkcs12 -in "$DOMAIN".pfx -passin pass:"$CA_PASS_PHRASE" -nocerts -out "$DOMAIN".key.pkcs5.pem -passout pass:"$CA_PASS_PHRASE"
-openssl pkcs8 -in "$DOMAIN".key.pkcs5.pem -passin pass:pass4_FP -topk8 -out "$DOMAIN".key.pkcs8.pem -passout pass:pass4_FP
+openssl pkcs8 -in "$DOMAIN".key.pkcs5.pem -passin pass:"$CA_PASS_PHRASE" -topk8 -out "$DOMAIN".key.pkcs8.pem -passout pass:"$CA_PASS_PHRASE"
 #
 echo "changing permissions on own_ca_certs and its content"
 cd ..

@@ -210,8 +210,6 @@ services:
     volumes:
       - ../prometheus/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ../prometheus/prometheus/data:/prometheus
-    depends_on:
-      - cadvisor
     network_mode: "host"
     logging: *graylog-logging
 
@@ -251,7 +249,12 @@ services:
       - prometheus
     volumes:
       - ../prometheus/grafana/data:/var/lib/grafana
+      - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
     environment:
-      - GF_SERVER_HTTP_PORT=23000
+      - GF_SERVER_HTTP_PORT=23443
+      # GUI TLS settings
+      - GF_SERVER_PROTOCOL=https
+      - GF_SERVER_CERT_KEY=/own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.key
+      - GF_SERVER_CERT_FILE=/own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.crt
     network_mode: "host"
     logging: *graylog-logging
