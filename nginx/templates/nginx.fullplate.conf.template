@@ -108,6 +108,40 @@ http {
         ssl_certificate_key /etc/letsencrypt/live/${NGINX_DOMAIN_NAME}/privkey.pem;
     }
 
+    # cAdvisor
+    server {
+        server_name metrics.${NGINX_DOMAIN_NAME};
+        ${NGINX_MONITORING_ALLOW}
+        deny all;
+        location / {
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Server $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_pass http://localhost:28080;
+        }
+        listen 28084 ssl;
+        ssl_certificate /etc/letsencrypt/live/${NGINX_DOMAIN_NAME}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/${NGINX_DOMAIN_NAME}/privkey.pem;
+    }
+
+    # node explorer
+    server {
+        server_name metrics.${NGINX_DOMAIN_NAME};
+        ${NGINX_MONITORING_ALLOW}
+        deny all;
+        location / {
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Server $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_pass http://localhost:29100;
+        }
+        listen 29104 ssl;
+        ssl_certificate /etc/letsencrypt/live/${NGINX_DOMAIN_NAME}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/${NGINX_DOMAIN_NAME}/privkey.pem;
+    }
+
     # redirect to ${NGINX_DOMAIN_NAME}
     server {
         listen 443 ssl;

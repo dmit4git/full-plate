@@ -1,11 +1,23 @@
 scrape_configs:
-  - job_name: cadvisor
+
+  - job_name: cadvisor_localhost
     scrape_interval: 15s
     static_configs:
-      - targets:
-          - localhost:28080
-  - job_name: node_exporter
+      - targets: [localhost:28080]
+
+  - job_name: cadvisor_aws
+    scrape_interval: 15s
+    scheme: https
+    static_configs:
+      - targets: [metrics.fullplate.dev:28084]
+
+  - job_name: node_explorer_localhost
     scrape_interval: 15s
     static_configs:
-      - targets:
-          - localhost:29100
+      - targets: [localhost:29100]
+
+  - job_name: node_explorer_aws
+    scrape_interval: 15s
+    scheme: https
+    static_configs:
+      - targets: [metrics.fullplate.dev:29104]
