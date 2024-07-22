@@ -17,7 +17,7 @@ jobs:
       - name: Start test database container
         run: docker compose --profile tests up --detach postgres-test
       - name: Run NetCore WebApi tests
-        run: docker compose --profile tests up --no-log-prefix webapi-test
+        run: docker compose --profile tests up --build --no-log-prefix webapi-test
       - name: Stop test database container
         run: docker compose --profile tests down
 
