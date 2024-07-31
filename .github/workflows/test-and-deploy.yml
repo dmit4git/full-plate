@@ -14,23 +14,22 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-      - name: Run functional tests profile
+      - name: Run functional tests
         run: docker compose --profile api-tests up --build --abort-on-container-exit
 
   e2e-test-job:
-    runs-on: fx-6300
+    runs-on: self-hosted
     defaults:
       run:
         working-directory: ./compose
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-      - name: Set environment variables
-        run: |
-          export ASPNETCORE_ENVIRONMENT=E2ETests
-          export FP_PROXY_HTTP_PORT=11080
-      - name: Start end-to-end tests profile
+      - name: Run end-to-end tests
         run: docker compose --profile e2e-tests up --build --abort-on-container-exit
+        env:
+          ASPNETCORE_ENVIRONMENT: E2ETests
+          FP_PROXY_HTTP_PORT: 11080
 
   deploy-job:
     runs-on: fx-6300
