@@ -7,15 +7,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using WebApi.Models.Data;
 using WebApi.Services.Email;
-using WebApi.Tests.Mocks;
 
 namespace WebApi.Tests.FunctionalTests;
 
 public class WebApiTestFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
 {
+    protected virtual string TestDbName => "backend_test_db";
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Tests.json").Build();
+        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
         
         builder.ConfigureServices(services =>
         {
@@ -46,7 +47,7 @@ public class WebApiTestFactory<TProgram> : WebApplicationFactory<TProgram> where
         
         services.AddSingleton<DbConnection>(container =>
         {
-            var connectionString = configuration.GetConnectionString("backend_test_db");
+            var connectionString = configuration.GetConnectionString(TestDbName);
             var connection = new NpgsqlConnection(connectionString);
             return connection;
         });
@@ -61,11 +62,11 @@ public class WebApiTestFactory<TProgram> : WebApplicationFactory<TProgram> where
     // replace AwsSesService with FakeAwsSesService to test verification url
     private void ReplaceEmailService(IServiceCollection services)
     {
-        var dbConnectionDescriptor = services.SingleOrDefault(
+        var emailServiceDescriptor = services.SingleOrDefault(
             d => d.ServiceType == typeof(IEmailService));
-        if (dbConnectionDescriptor is not null)
+        if (emailServiceDescriptor is not null)
         {
-            services.Remove(dbConnectionDescriptor);
+            services.Remove(emailServiceDescriptor);
         }
         services.AddSingleton<IEmailService, FakeAwsSesService>();
     }

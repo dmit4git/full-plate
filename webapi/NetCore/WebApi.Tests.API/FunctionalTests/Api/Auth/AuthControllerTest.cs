@@ -12,7 +12,6 @@ using WebApi.Models.Auth;
 using WebApi.Models.Data;
 using WebApi.Services.Email;
 using WebApi.Services.Parsers;
-using WebApi.Tests.Mocks;
 using static WebApi.Helpers.Waiter;
 using static WebApi.Helpers.Constants.AppConstants;
 

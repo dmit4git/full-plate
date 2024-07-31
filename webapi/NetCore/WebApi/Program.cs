@@ -15,7 +15,7 @@ var services = builder.Services;
 // Add services.
 builder.AddAppLogging();
 // Configure Krestel web server
-builder.ConfigureKrestel();
+builder.ConfigureKestrel();
 
 services.AddAppDatabaseContext(builder);
 services.AddAppIdentity(builder);

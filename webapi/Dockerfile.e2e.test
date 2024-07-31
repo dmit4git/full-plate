@@ -1,0 +1,16 @@
+﻿FROM mcr.microsoft.com/playwright/dotnet:v1.45.0-jammy
+
+RUN mkdir -p /NetCore
+# copy end-to-end project source
+COPY NetCore/WebApi.Tests.E2E /NetCore/WebApi.Tests.E2E
+COPY NetCore/WebApi /NetCore/WebApi
+COPY NetCore/WebApi.Tests.API /NetCore/WebApi.Tests.API
+WORKDIR /NetCore/WebApi.Tests.E2E
+
+# install playwright browsers
+RUN dotnet build
+RUN pwsh bin/Debug/net8.0/playwright.ps1 install --with-deps
+
+# run tests
+ENTRYPOINT ["dotnet", "test"]
+

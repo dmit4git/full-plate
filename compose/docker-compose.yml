@@ -39,11 +39,11 @@ services:
     network_mode: "host"
     logging: *graylog-logging
 
-  postgres-test:
-    container_name: postgres-test
+  postgres-api-test:
+    container_name: postgres-api-test
     profiles:
       - dev
-      - tests
+      - api-tests
     image: postgres:15.0
     command: -p 5433
     environment:
@@ -53,16 +53,31 @@ services:
     network_mode: "host"
     logging: *graylog-logging
 
+  postgres-e2e-test:
+    container_name: postgres-e2e-test
+    profiles:
+      - e2e-tests
+    image: postgres:15.0
+    command: -p 5434
+    environment:
+      - POSTGRES_USER=${FP_POSTGRES_USER:-backend_db_user}
+      - POSTGRES_PASSWORD=${FP_POSTGRES_PASSWORD:-changeme}
+      - POSTGRES_DB=${FP_POSTGRES_TEST_DB:-e2e_test_db}
+    network_mode: "host"
+    logging: *graylog-logging
+
   ########## frontend ##########
   nginx:
     container_name: nginx
     profiles:
       - frontend
+      - e2e-tests
     build:
       context: ../webapp
     environment:
       - NGINX_DOMAIN_NAME=${FP_DOMAIN_NAME:-fullplate.local}
       - NGINX_PROXY_WEBAPI=${FP_PROXY_WEBAPI:-localhost}
+      - NGINX_PROXY_HTTP_PORT=${FP_PROXY_HTTP_PORT:-10080}
       - NGINX_PROXY_GRAYLOG=${FP_PROXY_GRAYLOG:-localhost}
       - NGINX_PROXY_GRAFANA=${FP_PROXY_GRAFANA:-localhost}
       - NGINX_MONITORING_ALLOW=${FP_MONITORING_ALLOW:-allow 127.0.0.1;}
@@ -122,25 +137,56 @@ services:
       - BACKEND_PFX_PASSWORD=${FP_BACKEND_PFX_PASSWORD:-}
       - BACKEND_AWS_SES_ACCESS_KEY=${FP_AWS_SES_ACCESS_KEY:-changeme}
       - BACKEND_AWS_SES_SECRET_KEY=${FP_AWS_SES_SECRET_KEY:-changeme}
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-}
     volumes:
       - ../webapi/data/aspnet:/root/.aspnet
       - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
     network_mode: "host"
-    depends_on:
-      - postgres
     logging: *graylog-logging
 
-  webapi-test: # runs tests
-    container_name: webapi-test
+  webapi-api-test: # runs functional tests
+    container_name: webapi-api-test
     profiles:
-      - tests
-    image: webapi-test
+      - api-tests
+    image: webapi-api-test
     build:
       context: ../webapi
-      dockerfile: Dockerfile.test
+      dockerfile: Dockerfile.api.test
     network_mode: "host"
     depends_on:
-      - postgres-test
+      - postgres-api-test
+    logging: *graylog-logging
+
+  webapi-e2e-test-server: # server for end-to-end tests
+    container_name: webapi-e2e-test-server
+    profiles:
+      - e2e-tests
+    image: webapi-e2e-test-server
+    build:
+      context: ../webapi
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-}
+    network_mode: "host"
+    depends_on:
+      - postgres-e2e-test
+      - nginx
+    logging: *graylog-logging
+
+  webapi-e2e-test: # runs end-to-end tests
+    container_name: webapi-e2e-test
+    profiles:
+      - e2e-tests
+    image: webapi-e2e-test
+    build:
+      context: ../webapi
+      dockerfile: Dockerfile.e2e.test
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-}
+    network_mode: "host"
+    depends_on:
+      - postgres-e2e-test
+      - nginx
+      - webapi-e2e-test-server
     logging: *graylog-logging
 
   ########## graylog ##########

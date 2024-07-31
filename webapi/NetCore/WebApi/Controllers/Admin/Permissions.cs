@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Controllers.Admin.Dto;
-using WebApi.Controllers.Auth;
-using WebApi.Controllers.Auth.Dto;
 using WebApi.Helpers.Exceptions;
 using WebApi.Models.Auth;
 

@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="8.0.0-preview.6.23329.11" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="8.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
@@ -33,11 +34,11 @@
     <EmbeddedResource Include="Services\Email\EmailVerificationMessage.html" />
     <None Remove="Services\Email\at.svg" />
     <EmbeddedResource Include="Services\Email\at.svg" />
-    <None Include="appsettings.Tests.json" />
   </ItemGroup>
-
+  
   <ItemGroup>
-       <InternalsVisibleTo Include="WebApi.Tests" />
+    <InternalsVisibleTo Include="WebApi.Tests.API" />
+    <InternalsVisibleTo Include="WebApi.Tests.E2E" />
   </ItemGroup>
 
 </Project>

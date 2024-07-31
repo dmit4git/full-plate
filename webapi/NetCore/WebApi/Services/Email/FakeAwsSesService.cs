@@ -2,7 +2,7 @@ using Microsoft.Extensions.Configuration;
 using WebApi.Helpers.Readers;
 using WebApi.Services.Email;
 
-namespace WebApi.Tests.Mocks;
+namespace WebApi.Services.Email;
 
 public class FakeAwsSesService: AwsSesService
 {

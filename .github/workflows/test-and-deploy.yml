@@ -14,17 +14,29 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-      - name: Start test database container
-        run: docker compose --profile tests up --detach postgres-test
-      - name: Run NetCore WebApi tests
-        run: docker compose --profile tests up --build --no-log-prefix webapi-test
-      - name: Stop test database container
-        run: docker compose --profile tests down
+      - name: Run functional tests profile
+        run: docker compose --profile api-tests up --build --abort-on-container-exit
+
+  e2e-test-job:
+    runs-on: fx-6300
+    defaults:
+      run:
+        working-directory: ./compose
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set environment variables
+        run: |
+          export ASPNETCORE_ENVIRONMENT=E2ETests
+          export FP_PROXY_HTTP_PORT=11080
+      - name: Start end-to-end tests profile
+        run: docker compose --profile e2e-tests up --build --abort-on-container-exit
 
   deploy-job:
     runs-on: fx-6300
     needs:
       - webapi-test-job
+      - e2e-test-job
     steps:
       - run: git stash push --include-untracked
         working-directory: /home/dmitry/projects/full-plate

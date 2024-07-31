@@ -4,13 +4,13 @@ namespace WebApi.Helpers;
 
 public static class Waiter
 {
-    private static async Task Wait<T>(T obj, Predicate<T> predicate, double delay, double timeout)
+    public static async Task Wait<T>(T obj, Func<T, Task<bool>> predicate, double timeout = 5, double delay = 0.1)
     {
         int passed = 0;
         int delayMs = (int)Math.Round(delay * 1000);
         int timeoutMs = (int)Math.Round(timeout * 1000);
         
-        while (!predicate(obj))
+        while (! await predicate(obj))
         {
             await Task.Delay(delayMs);
             passed += delayMs;
@@ -26,13 +26,13 @@ public static class Waiter
         }
     }
 
-    private static bool DatabasePredicate(DatabaseFacade database)
+    private static async Task<bool> DatabasePredicate(DatabaseFacade database)
     {
-        return database.CanConnect();
+        return await database.CanConnectAsync();
     }
     
     public static async Task WaitForDatabase(DatabaseFacade database)
     {
-        await Wait(database, DatabasePredicate, 0.5, 300);
+        await Wait(database, DatabasePredicate, 30);
     }
 }

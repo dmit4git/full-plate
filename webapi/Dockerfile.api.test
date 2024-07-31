@@ -1,0 +1,10 @@
+﻿FROM mcr.microsoft.com/dotnet/sdk:8.0
+
+# copy source
+WORKDIR /NetCore
+COPY NetCore/WebApi ./WebApi
+COPY NetCore/WebApi.Tests.API ./WebApi.Tests.API
+
+# run tests
+WORKDIR /NetCore/WebApi.Tests.API
+ENTRYPOINT ["dotnet", "test"]

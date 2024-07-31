@@ -1,5 +1,3 @@
-using WebApi.Controllers.Auth.Dto;
-
 namespace WebApi.Services.Email;
 
 public interface IEmailService

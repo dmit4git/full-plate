@@ -19,6 +19,7 @@ using WebApi.Models.Data;
 using WebApi.Services.Email;
 using WebApi.Services.Readers;
 using static WebApi.Helpers.Constants.AppConstants;
+using static WebApi.Helpers.Environment.EnvironmentHelper;
 
 namespace WebApi;
 
@@ -61,19 +62,24 @@ public static class AppBuilderSetup {
         });
     }
     
-    public static void ConfigureKrestel(this WebApplicationBuilder builder)
+    public static void ConfigureKestrel(this WebApplicationBuilder builder)
     {
         builder.WebHost.ConfigureKestrel(krestelOptions =>
         {
-            // listen for HTTP connection
             var httpPort = 10080;
+            var httpsPort = 10443;
+            if (IsE2ETestEnvironment())
+            {
+                httpPort = 11080;
+                httpsPort = 11443;
+            }
+            
+            // listen for HTTP connection
             krestelOptions.Listen(IPAddress.Any, httpPort);
             
             // listen for HTTPS connection
-            var httpsPort = 10443;
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var isDevelopment = string.Equals(environment, "development", StringComparison.InvariantCultureIgnoreCase);
-            String domainName = Environment.GetEnvironmentVariable("NGINX_DOMAIN_NAME") ?? "fullplate.local";
+            var isDevelopment = IsDevelopmentEnvironment();
+            String domainName = GetDomainName() ?? "fullplate.local";
             String certificate = isDevelopment ? $"../../../nginx/certbot/own_ca_certs/{domainName}.pfx" 
                 : $"/own_ca_certs/{domainName}.pfx";
             String password = Environment.GetEnvironmentVariable("BACKEND_PFX_PASSWORD") ?? String.Empty;
@@ -90,8 +96,13 @@ public static class AppServicesSetup
 {
     public static void AddAppDatabaseContext(this IServiceCollection services, WebApplicationBuilder builder)
     {
+        string connectionString = "backend_db";
+        if (IsE2ETestEnvironment())
+        {
+            connectionString = "e2e_test_db";
+        }
         services.AddDbContext<EntityContext> (options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("backend_db"))
+            options.UseNpgsql(builder.Configuration.GetConnectionString(connectionString))
         );
     }
 
@@ -123,7 +134,14 @@ public static class AppServicesSetup
         authenticationBuilder.AddScheme<CookieAuthenticationOptions, OpaqueTokenCookieAuthenticationHandler>(OpaqueTokenCookieScheme, cookieAuthenticationOptions);
         
         // Helper services.
-        services.AddSingleton<IEmailService, AwsSesService>();
+        if (IsE2ETestEnvironment())
+        {
+            services.AddSingleton<IEmailService, FakeAwsSesService>();
+        }
+        else
+        {
+            services.AddSingleton<IEmailService, AwsSesService>();
+        }
         services.AddSingleton<IEmbeddedResourceReader, EmbeddedResourceReader>();
         services.AddSingleton<IDataSerializer<RefreshToken>, JsonDataSerializer<RefreshToken>>();
         services.AddSingleton<IDataProtector, AppDataProtector>();
