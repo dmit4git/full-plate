@@ -66,13 +66,8 @@ public static class AppBuilderSetup {
     {
         builder.WebHost.ConfigureKestrel(krestelOptions =>
         {
-            var httpPort = 10080;
+            var httpPort = GetHttpPort() ?? 10080;
             var httpsPort = 10443;
-            if (IsE2ETestEnvironment())
-            {
-                httpPort = 11080;
-                httpsPort = 11443;
-            }
             
             // listen for HTTP connection
             krestelOptions.Listen(IPAddress.Any, httpPort);
@@ -96,11 +91,7 @@ public static class AppServicesSetup
 {
     public static void AddAppDatabaseContext(this IServiceCollection services, WebApplicationBuilder builder)
     {
-        string connectionString = "backend_db";
-        if (IsE2ETestEnvironment())
-        {
-            connectionString = "e2e_test_db";
-        }
+        string connectionString = GetDbConnectionStringName() ?? "backend_db";
         services.AddDbContext<EntityContext> (options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString(connectionString))
         );
@@ -134,7 +125,7 @@ public static class AppServicesSetup
         authenticationBuilder.AddScheme<CookieAuthenticationOptions, OpaqueTokenCookieAuthenticationHandler>(OpaqueTokenCookieScheme, cookieAuthenticationOptions);
         
         // Helper services.
-        if (IsE2ETestEnvironment())
+        if (GetEmailServiceName() == "FakeAwsSesService")
         {
             services.AddSingleton<IEmailService, FakeAwsSesService>();
         }

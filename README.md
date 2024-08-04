@@ -134,11 +134,9 @@ Starting in `full-plate` directory:
 
 ## Features
  * **authentication**: user can create new account. sign-in and sign-out
-   * todo: wiki page with detailed feature description, dev docs, tests
-     * backend test coverage is complete, frontend tests are coming soon
  * **themes**: user can choose from variety of themes
  * **monitoring**: user can query logs and performance metrics, and configure alerts on their basis
    * [Graylog](https://graylog.org/) is used for logs monitoring
    * [Prometheus](https://prometheus.io/) + [Grafana](https://grafana.com/) are used for performance metrics monitoring 
- * todo: wiki page with detailed feature description, dev docs, tests
+ * todo: wiki page with detailed feature description, dev docs
  * todo: **multi-language support**

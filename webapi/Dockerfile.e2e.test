@@ -9,8 +9,8 @@ WORKDIR /NetCore/WebApi.Tests.E2E
 
 # install playwright browsers
 RUN dotnet build
-RUN pwsh bin/Debug/net8.0/playwright.ps1 install --with-deps
+RUN pwsh bin/Debug/net8.0/playwright.ps1 install --with-deps chromium
 
 # run tests
-ENTRYPOINT ["dotnet", "test"]
+ENTRYPOINT ["dotnet", "test", "-v=normal"]
 

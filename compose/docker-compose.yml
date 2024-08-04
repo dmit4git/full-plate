@@ -138,6 +138,9 @@ services:
       - BACKEND_AWS_SES_ACCESS_KEY=${FP_AWS_SES_ACCESS_KEY:-changeme}
       - BACKEND_AWS_SES_SECRET_KEY=${FP_AWS_SES_SECRET_KEY:-changeme}
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-}
+      - BACKEND_DATABASE_CONNECTION_STRING_NAME=${FP_DATABASE_CONNECTION_STRING_NAME}
+      - NGINX_PROXY_HTTP_PORT=${FP_PROXY_HTTP_PORT:-10080}
+      - BACKEND_EMAIL_SERVICE=${FP_EMAIL_SERVICE:-}
     volumes:
       - ../webapi/data/aspnet:/root/.aspnet
       - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
@@ -166,6 +169,9 @@ services:
       context: ../webapi
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-}
+      - BACKEND_DATABASE_CONNECTION_STRING_NAME=${FP_DATABASE_CONNECTION_STRING_NAME}
+      - NGINX_PROXY_HTTP_PORT=${FP_PROXY_HTTP_PORT:-10080}
+      - BACKEND_EMAIL_SERVICE=${FP_EMAIL_SERVICE:-}
     network_mode: "host"
     depends_on:
       - postgres-e2e-test
@@ -182,6 +188,9 @@ services:
       dockerfile: Dockerfile.e2e.test
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-}
+      - BACKEND_DATABASE_CONNECTION_STRING_NAME=${FP_DATABASE_CONNECTION_STRING_NAME}
+      - NGINX_PROXY_HTTP_PORT=${FP_PROXY_HTTP_PORT:-10080}
+      - BACKEND_EMAIL_SERVICE=${FP_EMAIL_SERVICE:-}
     network_mode: "host"
     depends_on:
       - postgres-e2e-test

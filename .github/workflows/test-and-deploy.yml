@@ -28,8 +28,9 @@ jobs:
       - name: Run end-to-end tests
         run: docker compose --profile e2e-tests up --build --abort-on-container-exit
         env:
-          ASPNETCORE_ENVIRONMENT: E2ETests
+          FP_DATABASE_CONNECTION_STRING_NAME: e2e_test_db
           FP_PROXY_HTTP_PORT: 11080
+          FP_EMAIL_SERVICE: FakeAwsSesService
 
   deploy-job:
     runs-on: fx-6300

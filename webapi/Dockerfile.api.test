@@ -7,4 +7,4 @@ COPY NetCore/WebApi.Tests.API ./WebApi.Tests.API
 
 # run tests
 WORKDIR /NetCore/WebApi.Tests.API
-ENTRYPOINT ["dotnet", "test"]
+ENTRYPOINT ["dotnet", "test", "-v=normal"]
