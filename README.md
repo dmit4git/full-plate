@@ -134,6 +134,7 @@ Starting in `full-plate` directory:
 
 ## Features
  * **authentication**: user can create new account. sign-in and sign-out
+   * Single sign on solution with Keycloak is a work in progress 
  * **themes**: user can choose from variety of themes
  * **monitoring**: user can query logs and performance metrics, and configure alerts on their basis
    * [Graylog](https://graylog.org/) is used for logs monitoring

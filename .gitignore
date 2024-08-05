@@ -27,4 +27,5 @@
 /nginx/certbot/own_ca_certs/
 /prometheus/grafana/data/
 /prometheus/prometheus/data/
+/keycloak/data
 /webapi/NetCore/WebApi.Tests.E2E/Traces/
