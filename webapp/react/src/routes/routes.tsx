@@ -5,6 +5,7 @@ import {MainLayout} from "../layout/MainLayout";
 import React from "react";
 import {ErrorPage} from "./error-page/ErrorPage";
 import {UserPermissions} from "../layout/main-section/user-permissions/UserPermissions";
+import {NotAllowedPage} from "./not-allowed-page/NotAllowedPage";
 
 export const routes = [
     {
@@ -19,6 +20,11 @@ export const routes = [
             {
                 path: "",
                 element: rootPlaceholder,
+                errorElement: <ErrorPage />
+            },
+            {
+                path: "not-allowed",
+                element: <NotAllowedPage />,
                 errorElement: <ErrorPage />
             },
             {

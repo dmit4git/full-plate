@@ -35,6 +35,11 @@ http {
     # for more information.
     # include /etc/nginx/conf.d/*.conf;
 
+    geo $ip_is_not_admin {
+        default        1;
+        ${NGINX_ADMIN_IP}/32 0;
+    }
+
     server {
         listen [::]:443 ssl ipv6only=on;
         listen 443 ssl default;
@@ -74,9 +79,12 @@ http {
     # graylog
     server {
         server_name logs.${NGINX_DOMAIN_NAME};
-        ${NGINX_MONITORING_ALLOW}
+        allow ${NGINX_ADMIN_IP};
         deny all;
         location / {
+            if ($ip_is_not_admin) {
+                rewrite ^ https://${NGINX_DOMAIN_NAME}/not-allowed break;
+            }
             proxy_set_header Host $http_host;
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Server $host;
@@ -93,9 +101,12 @@ http {
     # grafana
     server {
         server_name metrics.${NGINX_DOMAIN_NAME};
-        ${NGINX_MONITORING_ALLOW}
+        allow ${NGINX_ADMIN_IP};
         deny all;
         location / {
+            if ($ip_is_not_admin) {
+                rewrite ^ https://${NGINX_DOMAIN_NAME}/not-allowed break;
+            }
             proxy_set_header Host $http_host;
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Server $host;
@@ -111,7 +122,7 @@ http {
     # cAdvisor
     server {
         server_name metrics.${NGINX_DOMAIN_NAME};
-        ${NGINX_MONITORING_ALLOW}
+        allow ${NGINX_ADMIN_IP};
         deny all;
         location / {
             proxy_set_header Host $http_host;
@@ -128,7 +139,7 @@ http {
     # node explorer
     server {
         server_name metrics.${NGINX_DOMAIN_NAME};
-        ${NGINX_MONITORING_ALLOW}
+        allow ${NGINX_ADMIN_IP};
         deny all;
         location / {
             proxy_set_header Host $http_host;
@@ -145,9 +156,12 @@ http {
     # keycloak
     server {
         server_name users.${NGINX_DOMAIN_NAME};
-        ${NGINX_MONITORING_ALLOW}
+        allow ${NGINX_ADMIN_IP};
         deny all;
         location / {
+            if ($ip_is_not_admin) {
+                rewrite ^ https://${NGINX_DOMAIN_NAME}/not-allowed break;
+            }
             proxy_pass https://${NGINX_PROXY_KEYCLOAK}:12443;
             proxy_redirect off;
             proxy_set_header Host $host;
