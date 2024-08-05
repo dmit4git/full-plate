@@ -142,6 +142,26 @@ http {
         ssl_certificate_key /etc/letsencrypt/live/${NGINX_DOMAIN_NAME}/privkey.pem;
     }
 
+    # keycloak
+    server {
+        server_name users.${NGINX_DOMAIN_NAME};
+        ${NGINX_MONITORING_ALLOW}
+        deny all;
+        location / {
+            proxy_pass http://${NGINX_PROXY_KEYCLOAK}:12080;
+            proxy_redirect off;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Port 443;
+            # proxy_ssl_trusted_certificate /own_ca_certs/ca_root_cert.pem;
+        }
+        listen 443 ssl;
+        ssl_certificate /etc/letsencrypt/live/${NGINX_DOMAIN_NAME}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/${NGINX_DOMAIN_NAME}/privkey.pem;
+    }
+
     # redirect to ${NGINX_DOMAIN_NAME}
     server {
         listen 443 ssl;
