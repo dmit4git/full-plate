@@ -3,6 +3,16 @@ A fullstack project template.
 Demo available at [fullplate.dev](https://fullplate.dev).  
 It is currently in prototype stage, only authentication and themes features work, there is no documentation very small test coverage.
 
+## Features
+* **authentication** is currently implemented with [.NET Core](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-8.0)  
+    * Single-sign on solution with [Keycloak](https://www.keycloak.org/) is a work in progress
+* **themes**: user can choose from variety of themes
+* **monitoring**: user can query logs and performance metrics, and configure alerts on their basis
+    * [Graylog](https://graylog.org/) is used for logs monitoring
+    * [Prometheus](https://prometheus.io/) + [Grafana](https://grafana.com/) are used for performance metrics monitoring
+* todo: wiki page with detailed feature description, dev docs
+* todo: **multi-language support**
+
 ## Tech Stack
  * **React** frontend, because it is most used ([stateofjs.com](https://2022.stateofjs.com/en-US/libraries/front-end-frameworks/)) and has the largest community 
  * **.Net Core 8.0** backend, because its performance is top tier ([techempower.com](https://www.techempower.com/benchmarks/#section=data-r21)) and it has one of the largest communities
@@ -131,13 +141,3 @@ Starting in `full-plate` directory:
        * select previously created Prometheus data source for "Prometheus" option, and click "Import"
      * import "Node Exporter Full" dashboard
        * use https://grafana.com/grafana/dashboards/1860-node-exporter-full/ for dashboard URL
-
-## Features
- * **authentication**: user can create new account. sign-in and sign-out
-   * Single sign on solution with Keycloak is a work in progress 
- * **themes**: user can choose from variety of themes
- * **monitoring**: user can query logs and performance metrics, and configure alerts on their basis
-   * [Graylog](https://graylog.org/) is used for logs monitoring
-   * [Prometheus](https://prometheus.io/) + [Grafana](https://grafana.com/) are used for performance metrics monitoring 
- * todo: wiki page with detailed feature description, dev docs
- * todo: **multi-language support**
