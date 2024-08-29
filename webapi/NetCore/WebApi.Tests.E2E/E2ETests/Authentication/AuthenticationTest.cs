@@ -7,6 +7,7 @@ namespace WebApi.E2ETests.E2ETests.Authentication;
 
 [Parallelizable(ParallelScope.Self)]
 [TestFixture, Order(1)]
+[Ignore("Native auth has been replaced with SSO (Keycloak)")]
 public class AuthenticationTest : PlaywrightE2ETest
 {
     private readonly AccountData _accountData = new ()

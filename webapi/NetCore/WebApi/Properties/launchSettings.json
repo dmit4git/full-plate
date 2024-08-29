@@ -16,7 +16,9 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:9011;http://localhost:9012",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "BACKEND_KEYCLOAK_WEBAPP_CLIENT_NAME": "fullplate-webapp",
+        "BACKEND_KEYCLOAK_HOSTNAME": "users.fullplate.local"
       }
     },
     "IIS Express": {

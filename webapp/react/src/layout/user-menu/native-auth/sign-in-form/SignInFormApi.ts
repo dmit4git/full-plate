@@ -1,4 +1,4 @@
-import { webApi } from "../../../store/webApi";
+import { webApi } from "../../../../store/webApi";
 import { UserCredentials } from "./SignInFormSlice";
 
 export const signInQuery = webApi.injectEndpoints({

@@ -29,7 +29,7 @@ import {AppPaginator} from "../../../components/app-paginator/AppPaginator";
 import {classNames} from "primereact/utils";
 import {Messages} from "primereact/messages";
 import {getErrorCodes} from "../../../helpers/accessors";
-import {setError} from "../../../helpers/errorHnadlers";
+import {setError} from "../../../helpers/errorHandlers";
 
 function UserPermissionsComponent(): ReactElement {
 

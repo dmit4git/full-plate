@@ -1,18 +1,20 @@
 using System.Net;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Events;
 using WebApi.Configurations;
 using WebApi.Controllers.Auth;
 using WebApi.Helpers.DataProtection;
-using WebApi.Helpers.Readers;
 using WebApi.Helpers.Serializers;
 using WebApi.Models.Auth;
 using WebApi.Models.Data;
@@ -108,8 +110,18 @@ public static class AppServicesSetup
         services.TryAddScoped<AppSignInManager>();
         builder.ConfigureAppIdentity();
     }
+    
+    public static void AddAppControllers(this IServiceCollection services)
+    {
+        services.AddControllers(
+            options => { options.Conventions.Add(
+                    new RouteTokenTransformerConvention(new SlugifyParameterTransformer())
+                ); 
+            }
+        );
+    }
 
-    public static void AddAppAuthentication(this IServiceCollection services)
+    public static void AddAppNativeAuthentication(this IServiceCollection services)
     {
         // Authentication.
         var authenticationBuilder = services.AddAuthentication();
@@ -138,17 +150,37 @@ public static class AppServicesSetup
         services.AddSingleton<IDataProtector, AppDataProtector>();
         services.AddSingleton<ISecureDataFormat<RefreshToken>, RefreshTokenProtector>();
     }
-    
-    public static void AddAppControllers(this IServiceCollection services)
+
+    public static void AddAppOidcAuthentication(this IServiceCollection services)
     {
-        services.AddControllers(
-            options => { options.Conventions.Add(
-                    new RouteTokenTransformerConvention(new SlugifyParameterTransformer())
-                ); 
-            }
-        );
+        // OpenIDConnect authentication.
+        string schemeName = JwtBearerDefaults.AuthenticationScheme;
+        services.AddAuthentication(options =>
+        {
+            options.DefaultScheme = schemeName;
+            options.DefaultAuthenticateScheme = schemeName;
+            options.DefaultChallengeScheme = schemeName;
+        })
+        .AddJwtBearer(options =>
+        {
+            string realmName = "fullplate";
+            string realmRoot = $"https://{keycloakHostName}/realms/{realmName}";
+            options.Authority = realmRoot;
+            options.MetadataAddress = realmRoot + "/.well-known/openid-configuration";
+            options.RequireHttpsMetadata = false;
+            options.TokenValidationParameters = new TokenValidationParameters        
+            {            
+                NameClaimType = ClaimTypes.Name,
+                RoleClaimType = ClaimTypes.Role,
+                ValidateLifetime = true,
+                ValidateIssuer = true,           
+                ValidIssuers = new[] { realmRoot },
+                ValidateAudience = true,
+                ValidAudiences = new[] { keycloakWebAppClientName }
+            };
+        });
     }
-    
+
     public static void AddAppAuthorization(this IServiceCollection services)
     {
         services.AddAuthorization(options =>

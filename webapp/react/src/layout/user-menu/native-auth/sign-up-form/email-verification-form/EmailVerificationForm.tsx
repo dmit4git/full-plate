@@ -2,10 +2,9 @@ import React, { ReactElement, useEffect, useRef } from "react";
 import { Divider } from "primereact/divider";
 import { useLazyVerifyEmailQuery } from "./EmailVerificationFormApi";
 import { Messages, MessagesMessage } from "primereact/messages";
-import { ApiResponse } from "../../../../store/webApi";
-import { getErrorCodes } from "../../../../helpers/accessors";
-import { makeErrorMessage, makeWarningMessage } from "../../../../helpers/makers";
-import { signInFormTab } from "../../UserMenu";
+import { ApiResponse } from "../../../../../store/webApi";
+import { getErrorCodes } from "../../../../../helpers/accessors";
+import { makeErrorMessage, makeWarningMessage } from "../../../../../helpers/makers";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "primereact/button";
 
@@ -72,7 +71,7 @@ function EmailConfirmFormComponent(props: EmailConfirmFormProps): ReactElement  
 
     function onSignInClick() {
         // open sign in menu branch
-        signInFormTab.expand();
+        // signInFormTab.expand();
         // callback
         if (props.onSignInCallback) {
             props.onSignInCallback();

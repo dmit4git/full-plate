@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using Amazon;
 using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
-using WebApi.Helpers.Readers;
+using WebApi.Services.Readers;
 
 namespace WebApi.Services.Email;
 

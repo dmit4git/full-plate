@@ -2,9 +2,9 @@ import "./SignOutForm.scss";
 import React, { ReactElement } from "react";
 import { Button } from "primereact/button";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
+import { RootState } from "../../../../store/store";
 import { useLazySignOutQuery } from "./SignOutFormApi";
-import { userSignOut } from "../../UserSlice";
+import { userSignOut } from "../../../UserSlice";
 import { InputText } from "primereact/inputtext";
 
 function SignOutFormComponent(): ReactElement {
@@ -23,7 +23,7 @@ function SignOutFormComponent(): ReactElement {
         <div className="sign-out-form flex gap-4">
             <div className="sign-out-username p-float-label flex-grow-1 w-full">
                 <InputText className="w-full text-overflow-ellipsis" id="sign-out-username" name="username"
-                           value={userSlice.username || ''} disabled={true}/>
+                           value={'userSlice.username' || ''} disabled={true}/>
                 <label htmlFor="sign-out-username">username</label>
             </div>
             <Button className="w-full flex-grow-1" label="Sign Out"

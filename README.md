@@ -1,17 +1,21 @@
-# Full-Plate
-A fullstack project template. 
+# full-plate
+A self-hosted **full**stack project boiler**plate**. 
 Demo available at [fullplate.dev](https://fullplate.dev).  
-It is currently in prototype stage, only authentication and themes features work, there is no documentation very small test coverage.
+It is currently in prototype stage, development is in progress.
 
 ## Features
 * **authentication** is currently implemented with [.NET Core](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-8.0)  
-    * Single-sign on solution with [Keycloak](https://www.keycloak.org/) is a work in progress
+  * Single-sign on solution with [Keycloak](https://www.keycloak.org/) is a work in progress
 * **themes**: user can choose from variety of themes
-* **monitoring**: user can query logs and performance metrics, and configure alerts on their basis
-    * [Graylog](https://graylog.org/) is used for logs monitoring
-    * [Prometheus](https://prometheus.io/) + [Grafana](https://grafana.com/) are used for performance metrics monitoring
-* todo: wiki page with detailed feature description, dev docs
-* todo: **multi-language support**
+* **monitoring**: admin can query logs and performance metrics, and configure alerts on their basis
+  * [Graylog](https://graylog.org/) is used for logs monitoring
+  * [Prometheus](https://prometheus.io/) + [Grafana](https://grafana.com/) are used for performance metrics monitoring
+* **users management**: admin comprehensive control over authentication/authorization subsystem
+  * [Keycloak](https://www.keycloak.org/) is used for identity and access management
+* **todo**:
+  * app data management system
+  * todo: multi-language support
+  * todo: wiki page with detailed feature description, dev docs
 
 ## Tech Stack
  * **React** frontend, because it is most used ([stateofjs.com](https://2022.stateofjs.com/en-US/libraries/front-end-frameworks/)) and has the largest community 
@@ -75,7 +79,7 @@ This will:
    * Nginx will also forward all `/webapi` calls to the WebApi backend (port 10080)
 
 Run/debug .Net Core app in `webapi/NetCore/WebApi` with your IDE, it listens on port 10080 which Nginx forwards to.  
-Start React development with `npm run start` in `webapp/react`, dev server listens on port 3000 which Nginx forwards to.  
+Start React development with `npm run dev` in `webapp/react`, dev server listens on port 3000 which Nginx forwards to.  
 
 Open it at [localhost](http://localhost).  
 Or add `fullplate.local` domain to `/etc/hosts` for convenience:
@@ -83,6 +87,35 @@ Or add `fullplate.local` domain to `/etc/hosts` for convenience:
  * `127.0.0.1       logs.fullplate.local` - to access Graylog at [logs.fullplate.local](http://logs.fullplate.local)
 
 Stop containers to shut it down: `docker compose --profile dev down`
+
+### Keycloak
+Users management is done with [Keycloak](https://www.keycloak.org/).
+Frontend app uses [authorization code grant with PKCE](https://github.com/authts/oidc-client-ts/blob/main/docs/protocols/authorization-code-grant-with-pkce.md) for authentication with Keycloak.  
+Following Keycloak configuration is required in order to support the front-end app:
+ * [create new realm](https://www.keycloak.org/docs/latest/server_admin/index.html#proc-creating-a-realm_server_administration_guide) 
+   * name it <ins>fullplate</ins>
+   * <ins>Login</ins> tab configuration
+     * Toggle on <ins>User registration</ins>, <ins>Forgot password</ins> and <ins>Remember me</ins>
+   * <ins>Email</ins> tab configuration
+     * [setup](https://www.keycloak.org/docs/latest/server_admin/index.html#_email) realm email using your email provider
+       * in case you're using AWS SES, [create](https://docs.aws.amazon.com/ses/latest/dg/smtp-credentials.html) IAM user to obtain username/password credentials for SMTP authentication
+         * _Optionally_, to require user's email verification, go to <ins>Authentication</ins> -> <ins>Required actions</ins> tab, and toggle on <ins>Set as default action</ins> of <ins>Verify Email</ins>
+  * switch to the newly created <ins>fullplate</ins> realm and configure it
+   * [create new client](https://www.keycloak.org/docs/latest/server_admin/index.html#proc-creating-oidc-client_server_administration_guide)
+     * use <ins>fullplate-webapp</ins> for id
+     * <ins>Capability config</ins> step (<ins>Settings</ins> tab after client creation) configuration
+       * keep <ins>Client authentication</ins> off because front-end app can't securely store client secret
+       * disable <ins>Direct access grants</ins>
+     * <ins>Login settings</ins> step (<ins>Settings</ins> tab after client creation) configuration
+       * set <ins>Home URL</ins> and <ins>Web origins</ins> with your domain (e.g., https://fullplate.dev)
+       * set <ins>Valid redirect URIs</ins> and <ins>Valid post logout redirect URIs</ins> according to your domain (e.g., https://fullplate.dev/*)
+     * <ins>Advanced</ins> tab configuration
+       * set <ins>Proof Key for Code Exchange Code Challenge Method</ins> to <ins>S256</ins>
+         * this setting is _optional_ because it is default in case of authorization code grant with PKCE
+
+WebApi will be calling Keycloak over https as an OIDC authority.  
+In development setup, certificate authority of Keycloak's TLS certificate needs to be trusted
+ * [add](https://ubuntu.com/server/docs/install-a-root-ca-certificate-in-the-trust-store) <ins>ca_root_cert.crt</ins> made with <ins>make_own_ca_certs.sh</ins> to your OS trust store
 
 ### Run Graylog on Linux
 Docker services are configured to send logs to Graylog ([graylog.org](https://go2docs.graylog.org/5-0/what_is_graylog/what_is_graylog.htm)) instead of writing to local log file.  

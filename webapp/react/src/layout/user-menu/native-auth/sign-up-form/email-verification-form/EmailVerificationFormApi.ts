@@ -1,4 +1,4 @@
-import {webApi} from "../../../../store/webApi";
+import {webApi} from "../../../../../store/webApi";
 import {EmailConfirmation} from "./EmailVerificationForm";
 
 export const verifyEmailQuery = webApi.injectEndpoints({

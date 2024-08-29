@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
-using WebApi.Helpers.Readers;
 using WebApi.Services.Email;
+using WebApi.Services.Readers;
 
 namespace WebApi.Services.Email;
 

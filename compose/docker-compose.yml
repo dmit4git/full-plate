@@ -145,6 +145,8 @@ services:
       - BACKEND_DATABASE_CONNECTION_STRING_NAME=${FP_DATABASE_CONNECTION_STRING_NAME}
       - NGINX_PROXY_HTTP_PORT=${FP_PROXY_HTTP_PORT:-10080}
       - BACKEND_EMAIL_SERVICE=${FP_EMAIL_SERVICE:-}
+      - BACKEND_KEYCLOAK_WEBAPP_CLIENT_NAME=${FP_KC_WEBAPP_CLIENT_NAME:-}
+      - BACKEND_KEYCLOAK_HOSTNAME=${FP_KEYCLOAK_HOSTNAME:-users.fullplate.local}
     volumes:
       - ../webapi/data/aspnet:/root/.aspnet
       - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
@@ -209,7 +211,6 @@ services:
     profiles:
       - keycloak
       - backend
-      - dev
     build:
       context: ../keycloak
       dockerfile: Dockerfile
@@ -229,7 +230,6 @@ services:
     profiles:
       - keycloak
       - backend
-      - dev
     image: postgres:15.0
     command: -p 12432
     environment:
@@ -238,6 +238,40 @@ services:
       - POSTGRES_DB=${FP_POSTGRES_DB:-keycloak_db}
     volumes:
       - ../keycloak/data:/var/lib/postgresql/data
+    network_mode: "host"
+    logging: *graylog-logging
+
+  keycloak-dev:
+    container_name: keycloak-dev
+    profiles:
+      - dev
+    build:
+      context: ../keycloak
+      dockerfile: Dockerfile.dev
+      args:
+        - FP_KEYCLOAK_DATABASE_PASSWORD=${FP_KEYCLOAK_DATABASE_PASSWORD:-changeme}
+        - FP_KEYCLOAK_HOSTNAME=${FP_KEYCLOAK_HOSTNAME:-users.fullplate.local}
+        - FP_KEYCLOAK_ADMIN_PASSWORD=${FP_KEYCLOAK_ADMIN_PASSWORD:-admin}
+    volumes:
+      - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
+    command: start-dev
+    network_mode: "host"
+    depends_on:
+      - postgres-keycloak-dev
+    logging: *graylog-logging
+
+  postgres-keycloak-dev:
+    container_name: postgres-keycloak-dev
+    profiles:
+      - dev
+    image: postgres:15.0
+    command: -p 12432
+    environment:
+      - POSTGRES_USER=${FP_POSTGRES_KEYCLOAK_USER:-keycloak_db_user}
+      - POSTGRES_PASSWORD=${FP_POSTGRES_PASSWORD:-changeme}
+      - POSTGRES_DB=${FP_POSTGRES_DB:-keycloak_dev_db}
+    volumes:
+      - ../keycloak/dev_data:/var/lib/postgresql/data
     network_mode: "host"
     logging: *graylog-logging
 

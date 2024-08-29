@@ -14,13 +14,13 @@ var services = builder.Services;
 
 // Add services.
 builder.AddAppLogging();
-// Configure Krestel web server
+// Configure Kestrel web server
 builder.ConfigureKestrel();
 
 services.AddAppDatabaseContext(builder);
 services.AddAppIdentity(builder);
 services.AddAppControllers();
-services.AddAppAuthentication();
+services.AddAppOidcAuthentication();
 services.AddAppAuthorization();
 
 // Build the app

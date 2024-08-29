@@ -6,14 +6,12 @@ import React, {ReactElement, useState} from 'react';
 import { Button } from 'primereact/button';
 // misc
 import { mainLayoutControls } from "../MainLayoutControls";
-import { useSelector } from "react-redux";
-import { RootState } from '../../store/store';
+import {useAuth} from "react-oidc-context";
 
 function HeaderComponent(): ReactElement {
 
     const [, setLeftSliderVisible] = useState<boolean>(false); // hides menu button
-
-    const userSlice = useSelector((store: RootState) => store.user);
+    const auth = useAuth();
 
     mainLayoutControls.leftSlideBar.hide = () => setLeftSliderVisible(false);
     mainLayoutControls.leftSlideBar.hide = () => setLeftSliderVisible(false);
@@ -29,9 +27,10 @@ function HeaderComponent(): ReactElement {
 
     let sliderClasses = "sliding flex align-items-center header-group m-2";
 
+    const signedIn = auth.isAuthenticated;
     const usernameAnimation = "animation-ease-in-out animation-duration-500 " +
-        (userSlice.signedIn ? "fadeinright" : "fadeoutright animation-fill-forwards");
-    const usernameWidth = userSlice.signedIn ? 'max-w-13rem' : 'max-w-0';
+        (signedIn ? "fadeinright" : "fadeoutright animation-fill-forwards");
+    const usernameWidth = signedIn ? 'max-w-13rem' : 'max-w-0';
     return (
         <div className="header-wrapper">
             <div className="header flex justify-content-between align-items-center">
@@ -44,7 +43,7 @@ function HeaderComponent(): ReactElement {
                 <div className="flex align-items-center header-group m-2">
                     <div className={"overflow-hidden max-w-t " + usernameWidth}>
                         <div className={"white-space-nowrap text-overflow-ellipsis overflow-hidden " + usernameAnimation}>
-                            {userSlice.username}
+                            {auth.user?.profile?.preferred_username}
                         </div>
                     </div>
                     <Button className="p-button-rounded p-button-text no-focus"

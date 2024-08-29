@@ -3,29 +3,47 @@ import React, {ReactElement} from 'react'; // react
 import { SlideBar } from "../../components/slide-bar/SlideBar";
 // helpers
 import { Position } from "../../helpers/enums";
-import { SignUpForm } from "./sign-up-form/SignUpForm";
 import { ThemeSettings } from "./theme-settings/ThemeSettings";
-import { Provider, useSelector} from 'react-redux';
-import { RootState, store } from '../../store/store';
-import { SignInForm } from './sign-in-form/SignInForm';
-import { SignOutForm } from './sign-out-form/SignOutForm';
 import {MenuTreeTab, PanelTree} from "../../components/panel-tree/PanelTree";
-
-export const accountMenuTab = new MenuTreeTab('Account', 'user', undefined, []);
-export const signUpFormTab = new MenuTreeTab('Create New Account', 'user', <SignUpForm />);
-export const signInFormTab = new MenuTreeTab('Sign In', 'user', <SignInForm />);
-export const signOutFormTab = new MenuTreeTab('Sign Out', 'user', <SignOutForm />);
-export const themeMenuTab = new MenuTreeTab('Theme', 'user', <ThemeSettings />);
+import {useAuth} from "react-oidc-context";
+import {Button} from "primereact/button";
+import {getCurrentUrl, openInNewTab} from "../../helpers/browser";
+import {oidcConfig} from "../../helpers/authSettings";
 
 function UserMenuComponent(): ReactElement {
 
-    const userSlice = useSelector((store: RootState) => store.user);
+    const auth = useAuth();
 
-    accountMenuTab.children = [];
-    if (!userSlice.signedIn) {
-        accountMenuTab.children!.push(signUpFormTab, signInFormTab)
+    const accountMenuTab = new MenuTreeTab('Account', 'user', undefined, []);
+    const themeMenuTab = new MenuTreeTab('Theme', 'user', <ThemeSettings />);
+
+    function makeSignInButton() {
+        return <Button className="w-full" label="Sign In With Account Console"
+                    onClick={() => auth.signinRedirect({redirect_uri: getCurrentUrl()})}
+                    loading={auth.isLoading} />;
+    }
+
+    function makeSignOutButton() {
+        return <Button className="w-full" label="Sign Out From Account Console"
+                    onClick={() => {
+                        accountMenuTab.collapse();
+                        auth.signoutRedirect({post_logout_redirect_uri: getCurrentUrl()}).then();
+                    }}
+                    loading={auth.isLoading} />;
+    }
+
+    function makeAccountSettingsButton() {
+        return <Button className="w-full" outlined label="Open Settings In Account Console"
+                    onClick={() => openInNewTab(oidcConfig.authority + '/account')} />;
+    }
+
+    if (auth.isAuthenticated || auth.activeNavigator === 'signoutRedirect') {
+        accountMenuTab.content = <div className="flex flex-column gap-3 align-items-center">
+            {makeSignOutButton()}
+            {makeAccountSettingsButton()}
+        </div>;
     } else {
-        accountMenuTab.children!.push(signOutFormTab);
+        accountMenuTab.content = makeSignInButton();
     }
 
     const menuTabs: MenuTreeTab[] = [
@@ -34,9 +52,7 @@ function UserMenuComponent(): ReactElement {
     ];
 
     return <SlideBar position={Position.right}>
-        <Provider store={store}>
-            <PanelTree tabs={menuTabs} />
-        </Provider>
+        <PanelTree tabs={menuTabs} />
     </SlideBar>;
 
 }

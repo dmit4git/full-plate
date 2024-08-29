@@ -2,7 +2,7 @@ import {Panel, PanelHeaderTemplateOptions} from "primereact/panel";
 import {Ripple} from "primereact/ripple";
 import React, {PropsWithChildren, ReactElement, useEffect, useMemo} from "react";
 import {MenuTreeTab} from "../PanelTree";
-import {UserAccount} from "../../../layout/user-menu/sign-up-form/new-account-form/NewAccountFormSlice";
+import {UserAccount} from "../../../layout/user-menu/native-auth/sign-up-form/new-account-form/NewAccountFormSlice";
 
 interface PanelBranchProps extends PropsWithChildren {
     tab?: MenuTreeTab,

@@ -1,15 +1,15 @@
 import "./SignUpForm.scss";
 import React, {ReactElement, useState} from "react";
-import {IPanelBranchContent} from "../../../components/panel-tree/panel-branch/PanelBranch";
+import {IPanelBranchContent} from "../../../../components/panel-tree/panel-branch/PanelBranch";
 import {NewAccountForm} from "./new-account-form/NewAccountForm";
 import {Steps, StepsSelectEvent} from "primereact/steps";
 import {Divider} from "primereact/divider";
-import {ShiftPane} from "../../../components/shift-pane/ShiftPane";
+import {ShiftPane} from "../../../../components/shift-pane/ShiftPane";
 import {EmailConfirmation, EmailVerificationForm} from "./email-verification-form/EmailVerificationForm";
 import {UserAccount} from "./new-account-form/NewAccountFormSlice";
 import {MenuItem} from "primereact/menuitem";
-import {queryParams} from "../../MainLayout";
-import {signUpFormTab} from "../UserMenu";
+import {queryParams} from "../../../MainLayout";
+// import {signUpFormTab} from "../../UserMenu";
 
 function SignUpFormComponent(props: IPanelBranchContent): ReactElement {
 
@@ -39,7 +39,7 @@ function SignUpFormComponent(props: IPanelBranchContent): ReactElement {
     function onEmailVerificationComplete() {
         setActiveStep(0);
         setEmailToConfirm('');
-        signUpFormTab.collapse();
+        // signUpFormTab.collapse();
     }
 
     return <div className="sign-up-form">

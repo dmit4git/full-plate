@@ -1,4 +1,4 @@
-import { webApi } from "../../../../store/webApi";
+import { webApi } from "../../../../../store/webApi";
 import { UserAccount } from "./NewAccountFormSlice";
 import {EmailVerificationStyles} from "./NewAccountForm";
 

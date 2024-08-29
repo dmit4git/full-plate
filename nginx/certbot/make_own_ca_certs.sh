@@ -34,9 +34,10 @@ done
 echo "Generating CA private key"
 openssl genrsa -des3 -passout pass:"$CA_PASS_PHRASE" -out ca_private_key.key 2048
 #
-echo "Generating CA certificate"
+echo "Generating CA certificates (pem and crt)"
 openssl req -x509 -new -nodes -key ca_private_key.key -sha256 -days 825 -out ca_root_cert.pem \
   -subj "/C=FP/ST=FP-State/L=FP-City/O=FP-Org/OU=FP-OrgUnit/CN=CA_root_cert" -passin pass:"$CA_PASS_PHRASE"
+openssl x509 -in ca_root_cert.pem -inform PEM -out ca_root_cert.crt
 
 #################################
 # Create CA-signed certs

@@ -2,26 +2,26 @@ import "./SignInForm.scss";
 import React, {ReactElement, useRef, useState} from "react";
 import { useLazySignInQuery } from "./SignInFormApi";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
+import { RootState } from "../../../../store/store";
 import {UserCredentials, signInUsernameChange} from "./SignInFormSlice";
-import { userSignIn } from "../../UserSlice";
-import {getErrorCode, isConnectionError} from "../../../helpers/accessors";
-import {FieldType, InputField} from "../../../components/form/input-field/InputField";
+import { userSignIn } from "../../../UserSlice";
+import {getErrorCode, isConnectionError} from "../../../../helpers/accessors";
+import {FieldType, InputField} from "../../../../components/form/input-field/InputField";
 import {useForm} from "react-hook-form";
-import {serverCommunicationError, unknownErrorMessage} from "../../../helpers/constants";
+import {serverCommunicationError, unknownErrorMessage} from "../../../../helpers/constants";
 import {Button, ButtonProps} from "primereact/button";
 import {Messages, MessagesMessage} from "primereact/messages";
 
 function SignInFormComponent(): ReactElement {
     
     // global state
-    const signInSlice = useSelector((store: RootState) => store.signInForm);
+    // const signInSlice = useSelector((store: RootState) => store.signInForm);
     const dispatch = useDispatch();
 
     // form
-    const defaultValues = {username: signInSlice.username, password: signInSlice.password};
+    // const defaultValues = {username: signInSlice.username, password: signInSlice.password};
     const { control, handleSubmit } =
-        useForm<UserCredentials>({defaultValues: defaultValues, mode: "all"});
+        useForm<UserCredentials>({defaultValues: {}, mode: "all"}); // {defaultValues: defaultValues, mode: "all"}
     const messagesRef = useRef<Messages>(null);
     const [buttonSeverity, setButtonSeverity] = useState<ButtonProps["severity"]>(undefined);
 
@@ -49,7 +49,7 @@ function SignInFormComponent(): ReactElement {
             }
             setError(errorMessage); // show error under the button
         } else {
-            dispatch(userSignIn(signInResult.data!.username)); // set global state for user
+            // dispatch(userSignIn(signInResult.data!.username)); // set global state for user
         }
     }
 

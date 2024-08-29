@@ -1,27 +1,19 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {User} from "oidc-client-ts";
+import {oidcStorageKey} from "../helpers/authSettings";
 
-interface UserState {
-    username: string | null,
-    signedIn: boolean
+const storedUser = User.fromStorageString(sessionStorage.getItem(oidcStorageKey) || '{}');
+const {profile, id_token} = storedUser;
+const initialState = {profile: profile, id_token: id_token};
+    function signInReducer(state: Partial<User>, action: PayloadAction<User>) {
+    const user: User | void = action.payload;
+    state.profile = user.profile;
+    state.id_token = user.id_token;
 }
 
-const defaultState: UserState = {
-    username: null,
-    signedIn: false
-}
-const storedAccount = localStorage.getItem('account');
-const initialState = storedAccount ? JSON.parse(storedAccount) as UserState : defaultState;
-
-function signInReducer(state: UserState, action: PayloadAction<string | null>) {
-    state.username = action.payload;
-    state.signedIn = true;
-    localStorage.setItem('account', JSON.stringify(state));
-}
-
-function signOutReducer(state: UserState) {
-    state.signedIn = false;
-    localStorage.removeItem('account');
-    localStorage.removeItem('accessTree');
+function signOutReducer(state: Partial<User>) {
+    state.profile = undefined;
+    state.id_token = undefined;
 }
 
 export const userSlice = createSlice({

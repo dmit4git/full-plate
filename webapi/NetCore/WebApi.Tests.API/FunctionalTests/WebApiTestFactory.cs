@@ -8,7 +8,7 @@ using Npgsql;
 using WebApi.Models.Data;
 using WebApi.Services.Email;
 
-namespace WebApi.Tests.FunctionalTests;
+namespace WebApi.Tests.API.FunctionalTests;
 
 public class WebApiTestFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
 {

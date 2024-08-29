@@ -80,4 +80,28 @@ http {
         }
     }
 
+    # keycloak
+    server {
+        listen 80;
+        server_name users.${NGINX_DOMAIN_NAME};
+        # allow ${NGINX_ADMIN_IP};
+        # deny all;
+        location / {
+            # if ($ip_is_not_admin) {
+            #     rewrite ^ http://${NGINX_DOMAIN_NAME}/not-allowed break;
+            # }
+            proxy_pass http://${NGINX_PROXY_KEYCLOAK}:12080;
+            proxy_redirect off;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Port 80;
+            # proxy_ssl_trusted_certificate /own_ca_certs/ca_root_cert.pem;
+        }
+        # listen 443 ssl;
+        # ssl_certificate /etc/letsencrypt/live/${NGINX_DOMAIN_NAME}/fullchain.pem;
+        # ssl_certificate_key /etc/letsencrypt/live/${NGINX_DOMAIN_NAME}/privkey.pem;
+    }
+
 }

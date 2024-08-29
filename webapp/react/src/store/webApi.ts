@@ -7,12 +7,20 @@ import {BaseQueryFn} from "@reduxjs/toolkit/dist/query/baseQueryTypes";
 import {FetchBaseQueryMeta} from "@reduxjs/toolkit/dist/query/fetchBaseQuery";
 import Cookies from 'js-cookie';
 import {isEmpty} from "lodash-es";
+import {RootState} from "./store";
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: '/webapi/'
+    baseUrl: '/webapi/',
+    prepareHeaders: (headers: Headers,  { getState }) => {
+    const token = (getState() as RootState).user.id_token;
+    if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+    }
+    return headers;
+}
 });
 async function baseQueryWrapper(args: string | FetchArgs, api: BaseQueryApi, extraOptions: BaseQueryExtraOptions<BaseQueryFn>) {
-    let result = await baseQuery(args, api, extraOptions)
+    const result = await baseQuery(args, api, extraOptions)
     const accessTree: any = Cookies.get('accessTree');
     if (accessTree && !isEmpty(accessTree)) {
         localStorage.setItem('accessTree', accessTree);
@@ -33,6 +41,7 @@ export const webApi = createApi({
         })
     })
 });
+export const { useLazyHelloWorldQuery } = webApi; // protected tryout query
 
 export function makeFormBody(body: Record<string, string | number>): string {
     const bodyArray: string[] = [];
@@ -54,5 +63,3 @@ export interface ApiResponse {
     startedTimeStamp?: number,
     fulfilledTimeStamp?: number
 }
-
-export const { useLazyHelloWorldQuery } = webApi;

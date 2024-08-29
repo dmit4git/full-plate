@@ -15,9 +15,10 @@ using WebApi.Services.Parsers;
 using static WebApi.Helpers.Waiter;
 using static WebApi.Helpers.Constants.AppConstants;
 
-namespace WebApi.Tests.FunctionalTests.Api.Auth;
+namespace WebApi.Tests.API.FunctionalTests.Api.Auth;
 
 [TestFixture]
+[Ignore("Native auth has been replaced with SSO (Keycloak)")]
 public class AuthControllerTest
 {
     private readonly WebApiTestFactory<Program> _appTestFactory;

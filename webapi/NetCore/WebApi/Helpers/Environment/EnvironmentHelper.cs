@@ -2,6 +2,15 @@ namespace WebApi.Helpers.Environment;
 
 public static class EnvironmentHelper
 {
+
+    private static string? _keycloakWebAppClientName = null;
+    public static string keycloakWebAppClientName =>
+        _keycloakWebAppClientName ??= System.Environment.GetEnvironmentVariable("BACKEND_KEYCLOAK_WEBAPP_CLIENT_NAME") ?? "";
+    
+    private static string? _keycloakHostName = null;
+    public static string keycloakHostName =>
+        _keycloakHostName ??= System.Environment.GetEnvironmentVariable("BACKEND_KEYCLOAK_HOSTNAME") ?? "";
+
     public static bool IsDevelopmentEnvironment()
     {
         var aspNetCoreEnvironment = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "";

@@ -1,4 +1,4 @@
-namespace WebApi.Helpers.Readers;
+namespace WebApi.Services.Readers;
 
 public interface IEmbeddedResourceReader
 {

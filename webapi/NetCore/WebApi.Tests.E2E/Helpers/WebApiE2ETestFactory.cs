@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using WebApi.Tests.FunctionalTests;
+using WebApi.Tests.API.FunctionalTests;
 
 namespace WebApi.E2ETests.Helpers;
 
