@@ -24,7 +24,7 @@ function UserMenuComponent(): ReactElement {
     }
 
     function makeSignOutButton() {
-        return <Button className="w-full" label="Sign Out From Account Console"
+        return <Button className="w-full" label="Sign Out From Account Console" severity="warning"
                     onClick={() => {
                         accountMenuTab.collapse();
                         auth.signoutRedirect({post_logout_redirect_uri: getCurrentUrl()}).then();

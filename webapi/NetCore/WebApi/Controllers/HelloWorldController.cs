@@ -9,10 +9,10 @@ public class HelloWorldController : ControllerBase
 {
     
     [HttpGet]
-    [Authorize]
-    public IActionResult HelloWorld() // HelloWorldRequest request
+    [Authorize(Roles = "hello-world-role")]
+    public IActionResult HelloWorld() // /hello-world request
     {
-        var response = new HelloWorldResponse{Value = $"response"};
+        var response = new HelloWorldResponse{Value = "response"};
         return Ok(response);
     }
 }

@@ -176,7 +176,7 @@ public static class AppServicesSetup
                 ValidateIssuer = true,           
                 ValidIssuers = new[] { realmRoot },
                 ValidateAudience = true,
-                ValidAudiences = new[] { keycloakWebAppClientName }
+                ValidAudiences = new[] { "account", keycloakWebAppClientName }
             };
         });
     }

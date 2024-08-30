@@ -112,9 +112,22 @@ Following Keycloak configuration is required in order to support the front-end a
        * set <ins>Proof Key for Code Exchange Code Challenge Method</ins> to <ins>S256</ins>
          * this setting is _optional_ because it is default in case of authorization code grant with PKCE
 
+Additional configuration is required for .Net Core backend to work properly with Keycloak.
 WebApi will be calling Keycloak over https as an OIDC authority.  
 In development setup, certificate authority of Keycloak's TLS certificate needs to be trusted
  * [add](https://ubuntu.com/server/docs/install-a-root-ca-certificate-in-the-trust-store) <ins>ca_root_cert.crt</ins> made with <ins>make_own_ca_certs.sh</ins> to your OS trust store
+
+[Role-based authorization](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/roles?view=aspnetcore-8.0#add-role-services-to-identity) in .Net Core expects role claims to be in format different from Keycloak's default.  
+Client roles mapper need to be created to format roles part of access_token provided by Keycloak
+* In Keycloak admin console, with <ins>fullplate</ins> realm selected, go to <ins>Client scopes</ins>, click <ins>roles</ins>, open <ins>Mappers</ins> tab, click <ins>Add mapper</ins> and select <ins>By configuration</ins> 
+  * in the <ins>Configure a new mapper</ins> popup pick <ins>User Client Role</ins>
+  * finish mapper configuration in given <ins>Add mapper</ins> form
+    * give the new mapper a <ins>Name</ins> 
+    * select <ins>fullplate-webapp</ins> for <ins>Client ID</ins>
+    * keep <ins>Multivalued</ins> toggle on
+    * set all <ins>Add to ...</ins> toggles off
+      * except for <ins>Add to access token</ins>, keep that one on
+    * click <ins>Save</ins>
 
 ### Run Graylog on Linux
 Docker services are configured to send logs to Graylog ([graylog.org](https://go2docs.graylog.org/5-0/what_is_graylog/what_is_graylog.htm)) instead of writing to local log file.  

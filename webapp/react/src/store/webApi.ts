@@ -12,7 +12,7 @@ import {RootState} from "./store";
 const baseQuery = fetchBaseQuery({
     baseUrl: '/webapi/',
     prepareHeaders: (headers: Headers,  { getState }) => {
-    const token = (getState() as RootState).user.id_token;
+    const token = (getState() as RootState).user.access_token;
     if (token) {
         headers.set('Authorization', `Bearer ${token}`);
     }

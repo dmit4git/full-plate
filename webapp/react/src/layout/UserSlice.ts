@@ -4,11 +4,11 @@ import {oidcStorageKey} from "../helpers/authSettings";
 
 const storedUser = User.fromStorageString(sessionStorage.getItem(oidcStorageKey) || '{}');
 const {profile, id_token} = storedUser;
-const initialState = {profile: profile, id_token: id_token};
-    function signInReducer(state: Partial<User>, action: PayloadAction<User>) {
+const initialState = {profile: profile, access_token: id_token};
+function signInReducer(state: Partial<User>, action: PayloadAction<User>) {
     const user: User | void = action.payload;
     state.profile = user.profile;
-    state.id_token = user.id_token;
+    state.access_token = user.access_token;
 }
 
 function signOutReducer(state: Partial<User>) {
