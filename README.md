@@ -4,18 +4,16 @@ Demo available at [fullplate.dev](https://fullplate.dev).
 It is currently in prototype stage, development is in progress.
 
 ## Features
-* **authentication** is currently implemented with [.NET Core](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-8.0)  
-  * Single-sign on solution with [Keycloak](https://www.keycloak.org/) is a work in progress
-* **themes**: user can choose from variety of themes
+* **users management**: [Keycloak](https://www.keycloak.org/) is used as a centralized identity and access management system   
+  * Single-sign on solution with Keycloak has replaced [native authentication](https://youtu.be/IzhHI-dZCsg) previously implemented with [.NET Core](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-8.0)
 * **monitoring**: admin can query logs and performance metrics, and configure alerts on their basis
   * [Graylog](https://graylog.org/) is used for logs monitoring
   * [Prometheus](https://prometheus.io/) + [Grafana](https://grafana.com/) are used for performance metrics monitoring
-* **users management**: admin comprehensive control over authentication/authorization subsystem
-  * [Keycloak](https://www.keycloak.org/) is used for identity and access management
+* **themes**: user can choose from variety of themes
 * **todo**:
   * app data management system
-  * todo: multi-language support
-  * todo: wiki page with detailed feature description, dev docs
+  * multi-language support
+  * wiki page with detailed feature description, dev docs
 
 ## Tech Stack
  * **React** frontend, because it is most used ([stateofjs.com](https://2022.stateofjs.com/en-US/libraries/front-end-frameworks/)) and has the largest community 
@@ -24,6 +22,7 @@ It is currently in prototype stage, development is in progress.
  * **Nginx** web server / reverse proxy
  * **Graylog** centralized log management system
  * **Prometheus+Grafana** centralized health metrics management system
+ * **Keycloak** identity and access management system
 
 Documentation with details is coming soon.
 
