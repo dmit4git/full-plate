@@ -13,7 +13,8 @@ function HomeComponent(): ReactElement {
         <div className="home h-full flex flex-column justify-content-center align-items-center">
             <i className="pi pi-home text-primary" style={{fontSize: '30rem'}}></i>
             <Button className="w-2" label="hello-world"
-                    onClick={onClick} loading={helloWorldQueryResult.isLoading}/>
+                    onClick={onClick}
+                    loading={helloWorldQueryResult.isLoading || helloWorldQueryResult.status === 'pending'}/>
         </div>
     );
 }

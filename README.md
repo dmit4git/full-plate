@@ -158,6 +158,12 @@ You can run containerized Graylog stack with `docker compose`. Start in `full-pl
        * set "TLS key password" to whatever password you used making your own certificates with make_own_ca_certs.sh
      * scroll down, click "Launch input"
 
+In case you're using certificates signed by your private CA for TLS of Graylog,  
+you need to [add](https://graylog.org/post/how-to-guide-securing-graylog-with-tls/) the CA certificate to Graylog's Java Key Store (JKS)
+ * copy default JKS of Graylog (/opt/java/openjdk/lib/security/cacerts inside the container to graylog/graylog/cacerts.jks)
+ * add your CA to the copied keystore
+   * `sudo keytool -importcert -keystore graylog/graylog/cacerts.jks -storepass changeit -alias cachain -file nginx/certbot/own_ca_certs/ca_root_cert.pem`
+
 Graylog stack is independent of other services and can be started/stopped at any time.  
 
 ### Run Prometheus + Grafana on Linux
