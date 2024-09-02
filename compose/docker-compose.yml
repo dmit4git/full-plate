@@ -374,18 +374,37 @@ services:
     logging: *graylog-logging
 
   grafana:
-    image: grafana/grafana-oss:10.2.4
+    image: grafana/grafana-oss:11.2.0
     container_name: grafana
     profiles:
       - prometheus
     volumes:
       - ../prometheus/grafana/data:/var/lib/grafana
       - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
+      - ../prometheus/grafana/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
     environment:
       - GF_SERVER_HTTP_PORT=23443
+      - GF_SERVER_DOMAIN=${FP_GRAFANA_HOSTNAME:-metrics.fullplate.local}
+      - GF_SERVER_ROOT_URL=https://${FP_GRAFANA_HOSTNAME:-metrics.fullplate.local}
       # GUI TLS settings
       - GF_SERVER_PROTOCOL=https
       - GF_SERVER_CERT_KEY=/own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.key
       - GF_SERVER_CERT_FILE=/own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.crt
+      # SSO with Keycloak
+      - GF_AUTH_GENERIC_OAUTH_ENABLED=true
+      - GF_AUTH_GENERIC_OAUTH_NAME=accounts console
+      - GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP=true
+      - GF_AUTH_GENERIC_OAUTH_USE_REFRESH_TOKEN=true
+      - GF_AUTH_GENERIC_OAUTH_CLIENT_ID=${FP_GRAFANA_CLIENT_ID:-grafana}
+      - GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET=${FP_GRAFANA_CLIENT_SECRET:-}
+      - GF_AUTH_GENERIC_OAUTH_SCOPES=openid email profile offline_access roles
+      - GF_AUTH_GENERIC_OAUTH_EMAIL_ATTRIBUTE_PATH=email
+      - GF_AUTH_GENERIC_OAUTH_LOGIN_ATTRIBUTE_PATH=preferred_username
+      - GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH=full_name
+      - GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://${FP_KEYCLOAK_HOSTNAME:-users.fullplate.local}/realms/fullplate/protocol/openid-connect/auth
+      - GF_AUTH_GENERIC_OAUTH_TOKEN_URL=https://${FP_KEYCLOAK_HOSTNAME:-users.fullplate.local}/realms/fullplate/protocol/openid-connect/token
+      - GF_AUTH_GENERIC_OAUTH_API_URL=https://${FP_KEYCLOAK_HOSTNAME:-users.fullplate.local}/realms/fullplate/protocol/openid-connect/userinfo
+      - GF_AUTH_GENERIC_OAUTH_SIGNOUT_REDIRECT_URL=https://${FP_KEYCLOAK_HOSTNAME:-users.fullplate.local}/realms/fullplate/protocol/openid-connect/logout?post_logout_redirect_uri=https%3A%2F%2F${FP_GRAFANA_HOSTNAME:-metrics.fullplate.local}%2Flogin
+      - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(resource_access.grafana.roles[*], 'GrafanaAdmin') && 'GrafanaAdmin' || contains(resource_access.grafana.roles[*], 'Admin') && 'Admin' || contains(resource_access.grafana.roles[*], 'Editor') && 'Editor' || 'Viewer'
     network_mode: "host"
     logging: *graylog-logging

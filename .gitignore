@@ -29,3 +29,4 @@
 /prometheus/prometheus/data/
 /keycloak/data
 /webapi/NetCore/WebApi.Tests.E2E/Traces/
+/prometheus/grafana/ca-certificates.crt

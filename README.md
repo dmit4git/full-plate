@@ -119,7 +119,8 @@ In development setup, certificate authority of Keycloak's TLS certificate needs 
 
 [Role-based authorization](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/roles?view=aspnetcore-8.0#add-role-services-to-identity) in .Net Core expects role claims to be in format different from Keycloak's default.  
 Client roles mapper need to be created to format roles part of access_token provided by Keycloak
-* In Keycloak admin console, with <ins>fullplate</ins> realm selected, go to <ins>Client scopes</ins>, click <ins>roles</ins>, open <ins>Mappers</ins> tab, click <ins>Add mapper</ins> and select <ins>By configuration</ins> 
+* In Keycloak admin console, with <ins>fullplate</ins> realm selected, go to <ins>Clients</ins>, click <ins>fullplate-webapp</ins> client, open <ins>Client scopes</ins> tab
+* click on <ins>fullplate-webapp-dedicated</ins> scope, in the opened <ins>Mappers</ins> tab click <ins>Add mapper</ins>, and from popped up menu pick <ins>By configuration</ins>
   * in the <ins>Configure a new mapper</ins> popup pick <ins>User Client Role</ins>
   * finish mapper configuration in given <ins>Add mapper</ins> form
     * give the new mapper a <ins>Name</ins> 
@@ -192,3 +193,17 @@ Starting in `full-plate` directory:
        * select previously created Prometheus data source for "Prometheus" option, and click "Import"
      * import "Node Exporter Full" dashboard
        * use https://grafana.com/grafana/dashboards/1860-node-exporter-full/ for dashboard URL
+
+[Setup](https://grafana.com/docs/grafana/latest/setup-grafana/configure-security/configure-authentication/keycloak/) single-sign on of Grafana with Keycloak.
+
+In case you're using certificates signed by your private CA for TLS of Grafana,  
+you need to make Grafana container use ca-certificates.crt updated with your private CA:
+* [install](https://ubuntu.com/server/docs/install-a-root-ca-certificate-in-the-trust-store) your private CA certificates in the trust store of your host OS
+  * this installation will update /etc/ssl/certs/ca-certificates.crt on your host OS
+* copy the updated ca-certificates.crt to prometheus/grafana/ca-certificates.crt
+
+Apparently Grafana takes roles from id token and Keycloak doesn't set roles on it.  
+To make Keycloak set roles on id token, configure grafana client role mapper similar to how it's done for .Net Core in Keycloak section:
+ * set <ins>Token Claim Name</ins> to resource_access.grafana.roles
+ * keep <ins>Multivalued</ins> on
+ * among <ins>Add to ...</ins> toggles keep only <ins>Add to ID token</ins> on, set the rest off
