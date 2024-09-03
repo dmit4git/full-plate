@@ -6,6 +6,7 @@ import React from "react";
 import {ErrorPage} from "./error-page/ErrorPage";
 import {UserPermissions} from "../layout/main-section/user-permissions/UserPermissions";
 import {NotAllowedPage} from "./not-allowed-page/NotAllowedPage";
+import {CheckAuthSso} from "./checks/suth-sso/CheckAuthSso";
 
 export const routes = [
     {
@@ -35,6 +36,11 @@ export const routes = [
             {
                 path: "administration/user-permissions",
                 element: <UserPermissions />,
+                errorElement: <ErrorPage />
+            },
+            {
+                path: "checks/endpoints-protection",
+                element: <CheckAuthSso />,
                 errorElement: <ErrorPage />
             }
         ]

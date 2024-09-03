@@ -66,13 +66,13 @@ public static class AppBuilderSetup {
     
     public static void ConfigureKestrel(this WebApplicationBuilder builder)
     {
-        builder.WebHost.ConfigureKestrel(krestelOptions =>
+        builder.WebHost.ConfigureKestrel(kestrelOptions =>
         {
             var httpPort = GetHttpPort() ?? 10080;
             var httpsPort = 10443;
             
             // listen for HTTP connection
-            krestelOptions.Listen(IPAddress.Any, httpPort);
+            kestrelOptions.Listen(IPAddress.Any, httpPort);
             
             // listen for HTTPS connection
             var isDevelopment = IsDevelopmentEnvironment();
@@ -82,7 +82,7 @@ public static class AppBuilderSetup {
             String password = Environment.GetEnvironmentVariable("BACKEND_PFX_PASSWORD") ?? String.Empty;
             if (File.Exists(certificate) && password != String.Empty)
             {
-                krestelOptions.Listen(IPAddress.Any, httpsPort,
+                kestrelOptions.Listen(IPAddress.Any, httpsPort,
                     listenOptions => { listenOptions.UseHttps(certificate, password); });
             }
         });
@@ -164,7 +164,7 @@ public static class AppServicesSetup
         .AddJwtBearer(options =>
         {
             string realmName = "fullplate";
-            string realmRoot = $"https://{keycloakHostName}/realms/{realmName}";
+            string realmRoot = $"https://{KeycloakHostName}/realms/{realmName}";
             options.Authority = realmRoot;
             options.MetadataAddress = realmRoot + "/.well-known/openid-configuration";
             options.RequireHttpsMetadata = false;
@@ -176,7 +176,7 @@ public static class AppServicesSetup
                 ValidateIssuer = true,           
                 ValidIssuers = new[] { realmRoot },
                 ValidateAudience = true,
-                ValidAudiences = new[] { "account", keycloakWebAppClientName }
+                ValidAudiences = new[] { "account", KeycloakWebAppClientName }
             };
         });
     }

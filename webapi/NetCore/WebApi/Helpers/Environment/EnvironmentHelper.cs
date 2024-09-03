@@ -4,11 +4,11 @@ public static class EnvironmentHelper
 {
 
     private static string? _keycloakWebAppClientName = null;
-    public static string keycloakWebAppClientName =>
+    public static string KeycloakWebAppClientName =>
         _keycloakWebAppClientName ??= System.Environment.GetEnvironmentVariable("BACKEND_KEYCLOAK_WEBAPP_CLIENT_NAME") ?? "";
     
     private static string? _keycloakHostName = null;
-    public static string keycloakHostName =>
+    public static string KeycloakHostName =>
         _keycloakHostName ??= System.Environment.GetEnvironmentVariable("BACKEND_KEYCLOAK_HOSTNAME") ?? "";
 
     public static bool IsDevelopmentEnvironment()
