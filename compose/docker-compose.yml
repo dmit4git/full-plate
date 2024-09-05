@@ -204,7 +204,7 @@ services:
       - webapi-e2e-test-server
     logging: *graylog-logging
 
-  ############ SSO ############
+  ############ keycloak ############
   keycloak:
     container_name: keycloak
     image: keycloak
@@ -242,7 +242,7 @@ services:
   keycloak-dev:
     container_name: keycloak-dev
     profiles:
-      - dev
+      - keycloak-dev
     build:
       context: ../keycloak
       dockerfile: Dockerfile.dev
@@ -252,6 +252,7 @@ services:
         - FP_KEYCLOAK_ADMIN_PASSWORD=${FP_KEYCLOAK_ADMIN_PASSWORD:-admin}
     volumes:
       - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
+      - ../keycloak/providers/keycloak-restrict-client-auth.jar:/opt/keycloak/providers/keycloak-restrict-client-auth.jar:ro
     command: start-dev
     network_mode: "host"
     depends_on:
@@ -261,7 +262,7 @@ services:
   postgres-keycloak-dev:
     container_name: postgres-keycloak-dev
     profiles:
-      - dev
+      - keycloak-dev
     image: postgres:15.0
     command: -p 12432
     environment:
@@ -278,7 +279,7 @@ services:
     container_name: graylog
     profiles:
       - graylog
-    image: graylog/graylog:6.0
+    image: graylog/graylog-enterprise:6.0
     environment:
       - GRAYLOG_PASSWORD_SECRET=${FP_GRAYLOG_PASSWORD_SECRET:-changeme_minimum_16_characters}
       - GRAYLOG_ROOT_PASSWORD_SHA2=${FP_GRAYLOG_ROOT_PASSWORD_SHA2:-8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918} # default value is hash of "admin" password

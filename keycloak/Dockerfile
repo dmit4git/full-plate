@@ -8,6 +8,10 @@ ENV KC_HEALTH_ENABLED=true
 ENV KC_METRICS_ENABLED=true
 
 WORKDIR /opt/keycloak
+
+# https://github.com/sventorben/keycloak-restrict-client-auth
+ADD --chown=keycloak:keycloak --chmod=644 providers/keycloak-restrict-client-auth.jar /opt/keycloak/providers/myprovider.jar
+
 RUN /opt/keycloak/bin/kc.sh build
 
 

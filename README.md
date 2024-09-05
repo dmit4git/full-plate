@@ -165,6 +165,15 @@ you need to [add](https://graylog.org/post/how-to-guide-securing-graylog-with-tl
  * add your CA to the copied keystore
    * `sudo keytool -importcert -keystore graylog/graylog/cacerts.jks -storepass changeit -alias cachain -file nginx/certbot/own_ca_certs/ca_root_cert.pem`
 
+OIDC is supported only in [enterprise](https://graylog.org/products/enterprise/) version of Graylog,  
+there is a free version of enterprise license called [small business](https://graylog.org/products/small-business/) (SMB).  
+In order to use OIDC in Graylog, run graylog-enterprise docker image, [get](https://graylog.org/products/small-business/) SMB license key and [update](https://go2.graylog.org/share/hubspotvideo/63623147018) license on your cluster.  
+Follow [documentation](https://go2docs.graylog.org/current/setting_up_graylog/oidc.html?Highlight=OIDC) to configure OIDC. Use following settings for the OIDC Authentication Service in Graylog:
+* OIDC base URL: `https://users.fullplate.dev/realms/fullplate`
+* Callback URL: `https://logs.fullplate.dev/authorization-code/callback`
+* Graylog has a required default role setting, so any user authenticated with Keycloak will [have access](https://community.graylog.org/t/oidc-reject-users-without-any-roles/33412/3) to Graylog in default role
+  * use [keycloak-restrict-client-auth](https://github.com/sventorben/keycloak-restrict-client-auth) to deny users without `restricted-access` client role
+
 Graylog stack is independent of other services and can be started/stopped at any time.  
 
 ### Run Prometheus + Grafana on Linux
