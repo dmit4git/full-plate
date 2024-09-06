@@ -1,0 +1,39 @@
+.p-datatable-wrapper {
+
+  overflow-x: hidden;
+
+  .p-column-header-content {
+    justify-content: center;
+  }
+
+  .messages-row {
+
+    > div {
+      display: flex;
+      gap: 1rem;
+
+      > .p-message {
+        margin: 0;
+
+        > .p-message-wrapper {
+          display: flex;
+          gap: 0.5rem;
+          padding: 0.5rem;
+
+          > .p-message-icon {
+            margin: 0 0.5rem;
+          }
+
+          > .p-message-detail {
+            display: none;
+          }
+
+        }
+
+      }
+
+    }
+
+  }
+
+}
