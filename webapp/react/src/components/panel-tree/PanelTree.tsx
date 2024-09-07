@@ -1,46 +1,53 @@
 import "./PanelTree.scss";
-import React, {ReactElement, ReactNode} from "react";
-import {PanelHeaderTemplateOptions} from "primereact/panel";
+import React, {ReactElement, ReactNode, RefObject} from "react";
+import {Panel, PanelHeaderTemplateOptions} from "primereact/panel";
 import {PanelBranch} from "./panel-branch/PanelBranch";
 
-interface PromiseResolve {
-    promise: Promise<boolean>,
-    resolve: ((value: boolean | PromiseLike<boolean>) => void) | null
-}
 export class MenuTreeTab {
 
     key?: string;
     header?: string;
     icon?: string | ReactElement;
     expanded?: boolean;
+    expandOnMount?: boolean;
     content?: ReactNode | ReactNode[];
+    parent?: MenuTreeTab;
     children?: MenuTreeTab[];
     panelHeader?: PanelHeaderTemplateOptions;
-    expand = () => this.setCollapsedOfTab(false);
-    collapse = () => this.setCollapsedOfTab(true);
-    render: PromiseResolve;
+    panelRef?: RefObject<Panel>;
+    resolvePanelRef: (ref: RefObject<Panel>) => void;
+    panelRefPromise: Promise<RefObject<Panel>>;
+    expand: () => void;
+    collapse: () => void;
     fakeEvent = {preventDefault: () => {}};
 
     constructor(
-        header?: string, icon?: string | ReactElement, content?: ReactNode | ReactNode[], children?: MenuTreeTab[]
+        header?: string, icon?: string | ReactElement, content?: ReactNode | ReactNode[], children?: MenuTreeTab[],
+        expandOnMount?: boolean
     ) {
         if (header) { this.header = header; }
         if (icon) { this.icon = icon; }
-        if (children) { this.children = children; }
-        if (content) { this.content = content; }
-        this.render = this.makeRenderPromise();
-    }
-
-    makeRenderPromise(): PromiseResolve {
-        let renderResolve: PromiseResolve['resolve'] = null;
-        const renderPromise = new Promise<boolean>((resolve) => {renderResolve = resolve;});
-        return {promise: renderPromise, resolve: renderResolve};
-    }
-
-    setCollapsedOfTab(collapsed: boolean) {
-        if (this.panelHeader && this.panelHeader.collapsed !== collapsed) {
-            this.panelHeader.onTogglerClick(this.fakeEvent as React.MouseEvent<HTMLElement>);
+        if (children) {
+            this.children = children;
+            for (const child of this.children) {
+                child.parent = this;
+            }
         }
+        if (content) { this.content = content; }
+        this.expandOnMount = expandOnMount;
+        this.resolvePanelRef = (ref: RefObject<Panel>) => {};
+        this.panelRefPromise = new Promise((resolve, reject) => this.resolvePanelRef = resolve);
+        this.expand = () => this.panelRefPromise.then(
+            (panelRef: RefObject<Panel>) => panelRef.current?.expand(undefined)
+        );
+        this.collapse = () => this.panelRefPromise.then(
+            (panelRef: RefObject<Panel>) => panelRef.current?.collapse(undefined)
+        );
+    }
+
+    findChildByHeader(header: string) {
+        const children: MenuTreeTab[] = this.children || [];
+        return children.find(child => child.header === header);
     }
 }
 
@@ -50,6 +57,7 @@ interface PanelTreeProps {
 }
 
 function PanelTreeComponent(props: PanelTreeProps): ReactElement {
+
     function recursivePanelTree(tabs: MenuTreeTab[], keyPrefix: string = '|') {
         const panelTabs: ReactElement[] = [];
 
@@ -63,7 +71,7 @@ function PanelTreeComponent(props: PanelTreeProps): ReactElement {
             );
         }
 
-        return <div className="panel-tree-tab-children">{panelTabs}</div>;
+        return panelTabs.length ? <div className="panel-tree-tab-children">{panelTabs}</div> : null;
     }
 
     return <div className="panel-tree">

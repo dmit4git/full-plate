@@ -47,8 +47,8 @@ function SignUpFormComponent(props: IPanelBranchContent): ReactElement {
         <Divider className="mb-3" />
         <ShiftPane paneIndex={activeStep}>
             <NewAccountForm {...props} onSuccess={setConfirmEmailStep}/>
-            <EmailVerificationForm email={emailToConfirm} confirmation={emailConfirmation}
-                                   onSignInCallback={onEmailVerificationComplete} />
+            <EmailVerificationForm {...props} onSignInCallback={onEmailVerificationComplete}
+                                   email={emailToConfirm} confirmation={emailConfirmation} />
         </ShiftPane>
     </div>
 }

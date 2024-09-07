@@ -9,8 +9,9 @@ import { MainMenu } from "./main-menu/MainMenu";
 import {hasAuthParams, useAuth} from "react-oidc-context";
 import {getCurrentUrl} from "../helpers/browser";
 import {User} from "oidc-client-ts";
-import {userSignIn, userSignOut} from "./UserSlice";
-import {useDispatch} from "react-redux";
+import {ssoUserSignIn, ssoUserSignOut} from "./UserSlice";
+import {useDispatch, useSelector} from "react-redux";
+import {RootState} from "../store/store";
 
 export let queryParams: URLSearchParams = new URLSearchParams();
 
@@ -19,21 +20,23 @@ function MainLayoutComponent(): ReactElement {
     let [searchParams] = useSearchParams();
     queryParams = searchParams;
 
+    const userSlice = useSelector((store: RootState) => store.user);
+
     // try to automatically silently sign-in
     const auth = useAuth();
     const [hasTriedSignIn, setHasTriedSignIn] = React.useState<boolean>(false);
     const dispatch = useDispatch();
     React.useEffect(() => {
-        const shouldDoSilenSignIn = !hasAuthParams() &&
+        const shouldDoSilentSignIn = !hasAuthParams() &&
             !auth.isAuthenticated && !auth.activeNavigator && !auth.isLoading &&
             !hasTriedSignIn;
-        if (shouldDoSilenSignIn) {
+        if (shouldDoSilentSignIn) {
             auth.signinSilent({redirect_uri: getCurrentUrl()}).then();
             setHasTriedSignIn(true);
         }
-        auth.events.addUserLoaded(async (user: User) => { dispatch(userSignIn(user)); });
-        auth.events.addUserUnloaded(async () => { dispatch(userSignOut()); });
-    }, [auth, hasTriedSignIn, dispatch]);
+        auth.events.addUserLoaded( (user: User) => { dispatch(ssoUserSignIn(user)); });
+        auth.events.addUserUnloaded(() => { dispatch(ssoUserSignOut()); });
+    }, [auth, hasTriedSignIn, dispatch, userSlice.hasSignedOutOfSso]);
 
     return(
         <>

@@ -1,6 +1,6 @@
 using WebApi.Helpers.Exceptions;
 
-namespace WebApi.Tests.UnitTests.Helpers;
+namespace WebApi.Tests.API.Helpers;
 
 public class ActionExceptionSerializationTest
 {

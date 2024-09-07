@@ -7,6 +7,7 @@ import { getErrorCodes } from "../../../../../helpers/accessors";
 import { makeErrorMessage, makeWarningMessage } from "../../../../../helpers/makers";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "primereact/button";
+import {IPanelBranchContent} from "../../../../../components/panel-tree/panel-branch/PanelBranch";
 
 export interface EmailConfirmation {
     username?: string | null;
@@ -18,7 +19,7 @@ interface EmailConfirmFormProps {
     onSignInCallback?: () => void
 }
 
-function EmailConfirmFormComponent(props: EmailConfirmFormProps): ReactElement  {
+function EmailConfirmFormComponent(props: EmailConfirmFormProps & IPanelBranchContent): ReactElement  {
 
     // api
     const [verificationEmailTrigger, verificationEmailResult] = useLazyVerifyEmailQuery();
@@ -70,9 +71,11 @@ function EmailConfirmFormComponent(props: EmailConfirmFormProps): ReactElement  
     }
 
     function onSignInClick() {
-        // open sign in menu branch
-        // signInFormTab.expand();
-        // callback
+        const newAccountPanel = props.tab;
+        if (newAccountPanel) {
+            newAccountPanel.collapse();
+            newAccountPanel.parent?.findChildByHeader('Sign In')?.expand();
+        }
         if (props.onSignInCallback) {
             props.onSignInCallback();
         }
@@ -94,9 +97,9 @@ function EmailConfirmFormComponent(props: EmailConfirmFormProps): ReactElement  
             verification = <div>
                 <span className="text-center mr-3">Email verification is in progress </span>
                 <i className="pi pi-spin pi-spinner"></i>
-            </div>
+            </div>;
         } else {
-            if (verificationEmailResult.isSuccess) {
+            if (true || verificationEmailResult.isSuccess) {
                 verification = <>
                     <div>Email verification is complete.</div>
                     <div className="flex align-items-center">
@@ -109,7 +112,7 @@ function EmailConfirmFormComponent(props: EmailConfirmFormProps): ReactElement  
                 verification = <>
                     <div>Email verification has failed.</div>
                     <Divider />
-                </>
+                </>;
             }
         }
         body = <>

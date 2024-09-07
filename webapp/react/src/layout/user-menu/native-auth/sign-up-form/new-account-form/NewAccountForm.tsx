@@ -1,6 +1,6 @@
 import React, {CSSProperties, ReactElement, useEffect, useRef, useState} from "react";
-import {useDispatch} from "react-redux";
-import {signUpEmailChange, signUpUsernameChange, UserAccount } from "./NewAccountFormSlice";
+import {useDispatch, useSelector} from "react-redux";
+import {signUpEmailChange, signUpUsernameChange, UserAccount} from "./NewAccountFormSlice";
 import { useLazySignUpQuery } from "./NewAccountFormApi";
 import {FieldType, InputField } from "../../../../../components/form/input-field/InputField";
 import {useForm} from "react-hook-form";
@@ -11,6 +11,7 @@ import {IPanelBranchContent} from "../../../../../components/panel-tree/panel-br
 import {Button, ButtonProps} from "primereact/button";
 import {Messages} from "primereact/messages";
 import {queryParams} from "../../../../MainLayout";
+import {RootState} from "../../../../../store/store";
 
 export interface EmailVerificationStyles {
     '--surface-f'?: string;
@@ -22,7 +23,7 @@ export interface EmailVerificationStyles {
 function NewAccountFormComponent(props: IPanelBranchContent): ReactElement {
 
     // globally stored values to initiate rerendered inputs
-    // const signUpSlice = useSelector((store: RootState) => store.signUpForm);
+    const signUpSlice = useSelector((store: RootState) => store.signUpForm);
 
     const emailParam = queryParams.get('email');
     const usernameParam = queryParams.get('username');
@@ -37,14 +38,14 @@ function NewAccountFormComponent(props: IPanelBranchContent): ReactElement {
     useEffect(onMount, [dispatch, emailParam, usernameParam]);
 
     // form
-    // const defaultValues = {
-    //     email: emailParam || signUpSlice.email,
-    //     username: usernameParam || signUpSlice.username,
-    //     password: '',
-    //     'password repeat': ''
-    // };
+    const defaultValues = {
+        email: signUpSlice.email,
+        username: signUpSlice.username,
+        password: '',
+        'password repeat': ''
+    };
     const { control, getFieldState, trigger, handleSubmit } =
-        useForm<UserAccount>({defaultValues: {}, mode: "all"}); // {defaultValues: defaultValues, mode: "all"}
+        useForm<UserAccount>({defaultValues: defaultValues, mode: "all"});
     const messagesRef = useRef<Messages>(null);
     const [buttonSeverity, setButtonSeverity] = useState<ButtonProps["severity"]>(undefined);
 

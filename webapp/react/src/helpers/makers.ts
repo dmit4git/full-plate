@@ -1,10 +1,10 @@
 import {unknownErrorMessage} from "./constants";
 import {MessagesMessage} from "primereact/messages";
 
-export function makeErrorMessage(message?: string): MessagesMessage {
+export function makeErrorMessage(message?: string, summary?: string | null): MessagesMessage {
     return {
         severity: 'error',
-        summary: 'Error:',
+        summary: summary,
         detail: message || unknownErrorMessage,
         sticky: true,
         closable: true
@@ -14,7 +14,7 @@ export function makeErrorMessage(message?: string): MessagesMessage {
 export function makeWarningMessage(message?: string, summary?: string | null): MessagesMessage {
     return {
         severity: 'warn',
-        summary: summary || 'Warning:',
+        summary: summary,
         detail: message || unknownErrorMessage,
         sticky: true,
         closable: true

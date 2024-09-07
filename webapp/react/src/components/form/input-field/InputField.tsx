@@ -236,7 +236,7 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
             icon = props.isSearching ? <i className="pi pi-spin pi-spinner" /> :
                 <i className="pi pi-search" onClick={onSearchClick}/>;
         }
-        const inputTextAttributes = {...attributes, value: attributes.value.toString()};
+        const inputTextAttributes = {...attributes, value: attributes.value?.toString()};
         input = <InputText {...inputTextAttributes} />;
     }
 

@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -28,11 +29,13 @@ namespace WebApi;
 public static class AppBuilderSetup {
     public static void AddAppLogging(this WebApplicationBuilder builder)
     {
+        LogEventLevel logLevel = String.Equals(LogLevelVariable.ToLower(), "debug") 
+            ? LogEventLevel.Debug : LogEventLevel.Warning;
         // add logging
         Log.Logger = new LoggerConfiguration() // Serilog
             .WriteTo.Console()
-            .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
-            .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.AspNetCore", logLevel)
+            .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", logLevel)
             .CreateLogger();
         builder.Host.UseSerilog(); // redirect all log events through Serilog pipeline
     }
@@ -103,6 +106,7 @@ public static class AppServicesSetup
     {
         services.AddIdentityCore<AppUser>(options =>
                 options.SignIn.RequireConfirmedAccount = false)
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<EntityContext>()
             .AddDefaultTokenProviders()
             .AddTokenProvider<DataProtectorTokenProvider<AppUser>>(TokenProviderName);
@@ -121,10 +125,16 @@ public static class AppServicesSetup
         );
     }
 
-    public static void AddAppNativeAuthentication(this IServiceCollection services)
+    public static void AddAppAuthentication(this IServiceCollection services)
+    {
+        var authenticationBuilder = services.AddAuthentication();
+        AddAppNativeAuthentication(services, authenticationBuilder);
+        AddAppOidcAuthentication(authenticationBuilder);
+    }
+
+    public static void AddAppNativeAuthentication(IServiceCollection services, AuthenticationBuilder authenticationBuilder)
     {
         // Authentication.
-        var authenticationBuilder = services.AddAuthentication();
         authenticationBuilder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureCookieAuthenticationOptions>());
         authenticationBuilder.Services.AddOptions<CookieAuthenticationOptions>(OpaqueTokenCookieScheme).Validate((Func<CookieAuthenticationOptions, bool>) (o => !o.Cookie.Expiration.HasValue), "Cookie.Expiration is ignored, use ExpireTimeSpan instead.");
         var cookieAuthenticationOptions = (Action<CookieAuthenticationOptions>)(options =>
@@ -151,17 +161,10 @@ public static class AppServicesSetup
         services.AddSingleton<ISecureDataFormat<RefreshToken>, RefreshTokenProtector>();
     }
 
-    public static void AddAppOidcAuthentication(this IServiceCollection services)
+    public static void AddAppOidcAuthentication(AuthenticationBuilder authenticationBuilder)
     {
         // OpenIDConnect authentication.
-        string schemeName = JwtBearerDefaults.AuthenticationScheme;
-        services.AddAuthentication(options =>
-        {
-            options.DefaultScheme = schemeName;
-            options.DefaultAuthenticateScheme = schemeName;
-            options.DefaultChallengeScheme = schemeName;
-        })
-        .AddJwtBearer(options =>
+        authenticationBuilder.AddJwtBearer(options =>
         {
             string realmName = "fullplate";
             string realmRoot = $"https://{KeycloakHostName}/realms/{realmName}";
@@ -185,6 +188,13 @@ public static class AppServicesSetup
     {
         services.AddAuthorization(options =>
         {
+            // Authorization with multiple default schemes
+            var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(
+                OpaqueTokenCookieScheme, JwtBearerDefaults.AuthenticationScheme);
+            defaultAuthorizationPolicyBuilder = defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
+            options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
+            
+            // Native authorization policies
             options.AddPolicy("PermissionsView", 
                 policy => policy.RequireClaim("Administration -> User permissions -> view"));
             options.AddPolicy("PermissionsEdit", 

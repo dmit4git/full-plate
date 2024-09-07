@@ -7,7 +7,6 @@ namespace WebApi.E2ETests.E2ETests.Authentication;
 
 [Parallelizable(ParallelScope.Self)]
 [TestFixture, Order(1)]
-[Ignore("Native auth has been replaced with SSO (Keycloak)")]
 public class AuthenticationTest : PlaywrightE2ETest
 {
     private readonly AccountData _accountData = new ()
@@ -40,6 +39,7 @@ public class AuthenticationTest : PlaywrightE2ETest
         await Page.GotoAsync("");
         await Page.Locator("[aria-label=\"User\"]").ClickAsync();
         await Page.GetByText("Account").ClickAsync();
+        await Page.GetByText("Use App Native Account").ClickAsync();
         await Page.GetByText("Create New Account").ClickAsync();
         var emailInput = Page.GetByLabel("email");
         await emailInput.ClickAsync();
@@ -84,7 +84,6 @@ public class AuthenticationTest : PlaywrightE2ETest
 
     async Task SignOutTest()
     {
-        await Page.GetByText("Sign Out").ClickAsync();
         await GetButtonByName("Sign Out").ClickAsync();
         await Expect(Page.GetByText("Sign Out").First).Not.ToBeVisibleAsync();
         await Expect(Page.GetByText(_accountData.Username!)).Not.ToBeVisibleAsync();

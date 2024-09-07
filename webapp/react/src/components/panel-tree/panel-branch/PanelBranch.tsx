@@ -1,6 +1,6 @@
 import {Panel, PanelHeaderTemplateOptions} from "primereact/panel";
 import {Ripple} from "primereact/ripple";
-import React, {PropsWithChildren, ReactElement, useEffect, useMemo} from "react";
+import React, {PropsWithChildren, ReactElement, RefObject, useEffect, useMemo, useRef} from "react";
 import {MenuTreeTab} from "../PanelTree";
 import {UserAccount} from "../../../layout/user-menu/native-auth/sign-up-form/new-account-form/NewAccountFormSlice";
 
@@ -18,10 +18,15 @@ export interface IPanelBranchContent {
 function PanelBranchComponent(props: PanelBranchProps): ReactElement {
 
     const tab: MenuTreeTab = useMemo<MenuTreeTab>(() => props.tab || new MenuTreeTab(), [props.tab]);
-    function resolveRenderPromise() {
-        if (tab?.render?.resolve) { tab.render.resolve(true); }
-    }
-    useEffect(resolveRenderPromise, [tab]);
+
+    const panelRef: RefObject<Panel> = useRef<Panel>(null);
+
+    useEffect(() => {
+        props.tab?.resolvePanelRef(panelRef); // set panel reference on MenuTreeTab so it can call expand/collapse
+        if (props.tab?.expandOnMount) {
+            panelRef.current?.expand(undefined);
+        }
+    }, [props.tab]);
 
     function panelHeaderMaker(tab: MenuTreeTab) {
 
@@ -46,15 +51,20 @@ function PanelBranchComponent(props: PanelBranchProps): ReactElement {
         }
     }
 
+    function makeContent() {
+        if (!tab.content) {
+            return null;
+        }
+        return <div className="flex flex-column gap-2">
+            {tab.content}
+        </div>;
+    }
+
     return (
         <Panel toggleable headerTemplate={panelHeaderMaker(tab)}
-               collapsed={!tab.expanded}
-               onExpand={() => tab.expanded = true}
-               onCollapse={() => tab.expanded = false} >
+               ref={panelRef} collapsed={!tab.expanded}>
             <div className="flex flex-column gap-3">
-                <div className="flex flex-column gap-2">
-                    {tab.content}
-                </div>
+                {makeContent()}
                 {props.children}
             </div>
         </Panel>

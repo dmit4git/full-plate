@@ -1,5 +1,13 @@
 import { webApi } from "../../../../store/webApi";
 import { UserCredentials } from "./SignInFormSlice";
+import {
+    FetchBaseQueryError,
+    QueryDefinition,
+    QueryResultSelectorResult
+} from "@reduxjs/toolkit/query";
+import {BaseQueryFn} from "@reduxjs/toolkit/dist/query/baseQueryTypes";
+import {FetchArgs} from "@reduxjs/toolkit/dist/query/react";
+import {FetchBaseQueryMeta} from "@reduxjs/toolkit/dist/query/fetchBaseQuery";
 
 export const signInQuery = webApi.injectEndpoints({
     endpoints: builder => ({
@@ -22,3 +30,6 @@ export const signInQuery = webApi.injectEndpoints({
 })
 
 export const { useLazySignInQuery } = signInQuery;
+
+export type SignInQueryDefinition = QueryDefinition<UserCredentials, BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, {}, FetchBaseQueryMeta>, never, {}, "webApi">;
+export type SignInQueryResult = QueryResultSelectorResult<SignInQueryDefinition>;

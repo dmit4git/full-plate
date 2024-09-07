@@ -21,11 +21,15 @@ function App() {
 
     const router = createBrowserRouter(routes);
 
+    const isOidcAuthFrame = window.frameElement?.outerHTML ===
+        '<iframe width="0" height="0" style="visibility: hidden; position: fixed; left: -1000px; top: 0px;"></iframe>';
+    const routerProvider = !isOidcAuthFrame ? <RouterProvider router={router} /> : null;
+
     return (
         <div className="app-css-class">
             <Provider store={store}>
                 <AuthProvider {...oidcConfig}>
-                    <RouterProvider router={router} />
+                    { routerProvider }
                 </AuthProvider>
             </Provider>
         </div>

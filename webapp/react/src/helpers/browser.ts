@@ -6,3 +6,7 @@ export function getCurrentUrl() {
 export function openInNewTab(url: string) {
     window.open(url, '_blank')?.focus();
 }
+
+export function windowIsFrame() {
+    return window.self !== window.top;
+}

@@ -17,6 +17,7 @@ public class AuthController : Controller
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly AppSignInManager _signInManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IEmailService _emailService;
     private readonly ISecureDataFormat<RefreshToken> _refreshTokenProtector;
 
@@ -41,12 +42,14 @@ public class AuthController : Controller
     public AuthController(
         UserManager<AppUser> userManager,
         AppSignInManager signInManager,
+        RoleManager<IdentityRole> roleManager,
         IEmailService emailService,
         ISecureDataFormat<RefreshToken> refreshTokenProtector
         )
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _roleManager = roleManager;
         _emailService = emailService;
         _refreshTokenProtector = refreshTokenProtector;
     }

@@ -20,7 +20,7 @@ builder.ConfigureKestrel();
 services.AddAppDatabaseContext(builder);
 services.AddAppIdentity(builder);
 services.AddAppControllers();
-services.AddAppOidcAuthentication();
+services.AddAppAuthentication();
 services.AddAppAuthorization();
 
 // Build the app

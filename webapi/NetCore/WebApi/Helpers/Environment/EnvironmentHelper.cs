@@ -3,14 +3,30 @@ namespace WebApi.Helpers.Environment;
 public static class EnvironmentHelper
 {
 
-    private static string? _keycloakWebAppClientName = null;
-    public static string KeycloakWebAppClientName =>
-        _keycloakWebAppClientName ??= System.Environment.GetEnvironmentVariable("BACKEND_KEYCLOAK_WEBAPP_CLIENT_NAME") ?? "";
+    public static string GetEnvironmentVariableString(string variableName)
+    {
+        var value = System.Environment.GetEnvironmentVariable(variableName);
+        if (value is null)
+        {
+            Console.WriteLine($"EnvironmentHelper has failed to read environment variable '{variableName}'");
+            return String.Empty;
+        }
+        return value;
+    }
     
-    private static string? _keycloakHostName = null;
+    private static string? _keycloakWebAppClientName;
+    public static string KeycloakWebAppClientName =>
+        _keycloakWebAppClientName ??= GetEnvironmentVariableString("BACKEND_KEYCLOAK_WEBAPP_CLIENT_NAME");
+    
+    private static string? _keycloakHostName;
     public static string KeycloakHostName =>
-        _keycloakHostName ??= System.Environment.GetEnvironmentVariable("BACKEND_KEYCLOAK_HOSTNAME") ?? "";
+        _keycloakHostName ??= GetEnvironmentVariableString("BACKEND_KEYCLOAK_HOSTNAME");
+    
+    private static string? _logLevelVariable;
+    public static string LogLevelVariable =>
+        _logLevelVariable ??= GetEnvironmentVariableString("BACKEND_LOG_EVENT_LEVEL");
 
+    
     public static bool IsDevelopmentEnvironment()
     {
         var aspNetCoreEnvironment = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "";

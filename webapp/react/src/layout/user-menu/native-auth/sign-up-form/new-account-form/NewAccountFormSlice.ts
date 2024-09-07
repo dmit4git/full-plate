@@ -21,22 +21,16 @@ function signUpUsernameChangeReducer(state: UserAccount, action: PayloadAction<s
     state.username = action.payload;
 }
 
-function signUpPasswordChangeReducer(state: UserAccount, action: PayloadAction<string>) {
-    state.password = action.payload;
-}
-
 export const signUpFormSlice = createSlice({
     name: 'signUpForm',
     initialState,
     reducers: {
         signUpEmailChange: signUpEmailChangeReducer,
-        signUpUsernameChange: signUpUsernameChangeReducer,
-        signUpPasswordChange: signUpPasswordChangeReducer,
+        signUpUsernameChange: signUpUsernameChangeReducer
     }
 });
 
 export const {
     signUpEmailChange,
-    signUpUsernameChange,
-    signUpPasswordChange
+    signUpUsernameChange
 } = signUpFormSlice.actions;

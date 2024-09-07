@@ -6,12 +6,14 @@ import React, {ReactElement, useState} from 'react';
 import { Button } from 'primereact/button';
 // misc
 import { mainLayoutControls } from "../MainLayoutControls";
-import {useAuth} from "react-oidc-context";
+import {useSelector} from "react-redux";
+import {RootState} from "../../store/store";
 
 function HeaderComponent(): ReactElement {
 
+    const userSlice = useSelector((store: RootState) => store.user);
+
     const [, setLeftSliderVisible] = useState<boolean>(false); // hides menu button
-    const auth = useAuth();
 
     mainLayoutControls.leftSlideBar.hide = () => setLeftSliderVisible(false);
     mainLayoutControls.leftSlideBar.hide = () => setLeftSliderVisible(false);
@@ -27,7 +29,7 @@ function HeaderComponent(): ReactElement {
 
     let sliderClasses = "sliding flex align-items-center header-group m-2";
 
-    const signedIn = auth.isAuthenticated;
+    const signedIn = userSlice.signedIn;
     const usernameAnimation = "animation-ease-in-out animation-duration-500 " +
         (signedIn ? "fadeinright" : "fadeoutright animation-fill-forwards");
     const usernameWidth = signedIn ? 'max-w-13rem' : 'max-w-0';
@@ -43,7 +45,7 @@ function HeaderComponent(): ReactElement {
                 <div className="flex align-items-center header-group m-2">
                     <div className={"overflow-hidden max-w-t " + usernameWidth}>
                         <div className={"white-space-nowrap text-overflow-ellipsis overflow-hidden " + usernameAnimation}>
-                            {auth.user?.profile?.preferred_username}
+                            {(signedIn && userSlice.username) || null}
                         </div>
                     </div>
                     <Button className="p-button-rounded p-button-text no-focus"
