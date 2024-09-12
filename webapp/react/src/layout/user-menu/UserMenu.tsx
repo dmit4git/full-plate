@@ -67,8 +67,8 @@ function UserMenuComponent(): ReactElement {
 
     const menuTabs: MenuTreeTab[] = [accountMenuTab, themeMenuTab];
 
+    accountMenuTab.children = [];
     if (userSlice.signedIn || auth.activeNavigator === 'signoutRedirect') {
-        accountMenuTab.children = [];
         if (userSlice.scheme === 'SSO') {
             accountMenuTab.content = makeSsoSignOutForm();
         } else if (userSlice.scheme === 'native') {
@@ -76,18 +76,13 @@ function UserMenuComponent(): ReactElement {
         }
     } else {
         accountMenuTab.content = null;
-        if (!accountMenuTab.findChildByHeader('Use Account Console')) {
-            const accountConsoleTab = new MenuTreeTab('Use Account Console', 'user', makeSignInButton());
-            accountMenuTab.children!.push(accountConsoleTab);
-        }
-        if (!accountMenuTab.findChildByHeader('Use App Native Account')) {
-            const signInFormTab = new MenuTreeTab('Sign In', 'user', <SignInForm />);
-            const signUpFormTab = new MenuTreeTab('Create New Account', 'user');
-            signUpFormTab.content = <SignUpForm tab={signUpFormTab}/>;
-            const localAccountTab = new MenuTreeTab('Use App Native Account', 'user', undefined,
-                [signInFormTab, signUpFormTab]);
-            accountMenuTab.children!.push(localAccountTab);
-        }
+        const accountConsoleTab = new MenuTreeTab('Use Account Console', 'user', makeSignInButton());
+        const signInFormTab = new MenuTreeTab('Sign In', 'user', <SignInForm />);
+        const signUpFormTab = new MenuTreeTab('Create New Account', 'user');
+        signUpFormTab.content = <SignUpForm tab={signUpFormTab}/>;
+        const localAccountTab = new MenuTreeTab('Use App Native Account', 'user', undefined,
+            [signInFormTab, signUpFormTab]);
+        accountMenuTab.children.push(accountConsoleTab, localAccountTab);
 
     }
 
