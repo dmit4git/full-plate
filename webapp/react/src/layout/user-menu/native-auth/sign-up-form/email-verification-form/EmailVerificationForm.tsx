@@ -99,7 +99,7 @@ function EmailConfirmFormComponent(props: EmailConfirmFormProps & IPanelBranchCo
                 <i className="pi pi-spin pi-spinner"></i>
             </div>;
         } else {
-            if (true || verificationEmailResult.isSuccess) {
+            if (verificationEmailResult.isSuccess) {
                 verification = <>
                     <div>Email verification is complete.</div>
                     <div className="flex align-items-center">

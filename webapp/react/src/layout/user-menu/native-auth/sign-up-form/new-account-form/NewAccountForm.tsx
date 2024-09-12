@@ -6,12 +6,13 @@ import {FieldType, InputField } from "../../../../../components/form/input-field
 import {useForm} from "react-hook-form";
 import {getCurrentQuery, getErrorCodes, isConnectionError} from "../../../../../helpers/accessors";
 import {ApiResponse} from "../../../../../store/webApi";
-import {serverCommunicationError, unknownErrorMessage} from "../../../../../helpers/constants";
+import {serverCommunicationError} from "../../../../../helpers/constants";
 import {IPanelBranchContent} from "../../../../../components/panel-tree/panel-branch/PanelBranch";
 import {Button, ButtonProps} from "primereact/button";
 import {Messages} from "primereact/messages";
 import {queryParams} from "../../../../MainLayout";
 import {RootState} from "../../../../../store/store";
+import {makeErrorMessage} from "../../../../../helpers/makers";
 
 export interface EmailVerificationStyles {
     '--surface-f'?: string;
@@ -100,9 +101,7 @@ function NewAccountFormComponent(props: IPanelBranchContent): ReactElement {
 
     function setError(error?: string) {
         setButtonSeverity('danger');
-        messagesRef.current?.show([
-            { severity: 'error', summary: 'Error:', detail: error || unknownErrorMessage, sticky: true, closable: true }
-        ]);
+        messagesRef.current?.show(makeErrorMessage(error));
     }
 
     function clearError() {

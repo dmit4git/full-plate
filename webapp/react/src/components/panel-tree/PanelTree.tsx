@@ -49,6 +49,11 @@ export class MenuTreeTab {
         const children: MenuTreeTab[] = this.children || [];
         return children.find(child => child.header === header);
     }
+
+    findChildIndexByHeader(header: string) {
+        const children: MenuTreeTab[] = this.children || [];
+        return children.findIndex(child => child.header === header);
+    }
 }
 
 interface PanelTreeProps {

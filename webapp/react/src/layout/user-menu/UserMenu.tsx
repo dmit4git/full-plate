@@ -76,10 +76,9 @@ function UserMenuComponent(): ReactElement {
         }
     } else {
         accountMenuTab.content = null;
-        if (!accountMenuTab.findChildByHeader('Use Account Console')) {
-            const accountConsoleTab = new MenuTreeTab('Use Account Console', 'user', makeSignInButton());
-            accountMenuTab.children!.push(accountConsoleTab);
-        }
+        const index = accountMenuTab.findChildIndexByHeader('Use Account Console');
+        const accountConsoleTab = new MenuTreeTab('Use Account Console', 'user', makeSignInButton());
+        accountMenuTab.children!.splice(index >= 0 ? index : 0, 1, accountConsoleTab);
         if (!accountMenuTab.findChildByHeader('Use App Native Account')) {
             const signInFormTab = new MenuTreeTab('Sign In', 'user', <SignInForm />);
             const signUpFormTab = new MenuTreeTab('Create New Account', 'user');
