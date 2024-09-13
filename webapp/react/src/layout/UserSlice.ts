@@ -58,7 +58,6 @@ function ssoSignInReducer(state: AccountState, action: PayloadAction<User>) {
     } else {
         clearAccountState(state);
     }
-    console.log('ssoSignInReducer(): ', current(state));
 }
 
 function ssoSignOutReducer(state: AccountState) {
