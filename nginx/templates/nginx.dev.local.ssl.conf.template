@@ -119,7 +119,7 @@ http {
 
     # keycloak
     server {
-        server_name users.${NGINX_DOMAIN_NAME};
+        server_name accounts.${NGINX_DOMAIN_NAME};
         # allow ${NGINX_ADMIN_IP};
         # deny all;
         location / {
@@ -141,7 +141,7 @@ http {
     }
     # keycloak no TLS
     server {
-        server_name users.${NGINX_DOMAIN_NAME};
+        server_name accounts.${NGINX_DOMAIN_NAME};
         # allow ${NGINX_ADMIN_IP};
         # deny all;
         location / {

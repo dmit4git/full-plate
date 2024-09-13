@@ -6,7 +6,7 @@ function onSignInCallback(callbackUser: User | void) {
 }
 
 const {protocol, host} = window.location;
-const appRootUrl = `${protocol}//users.${host}`;
+const appRootUrl = `${protocol}//accounts.${host}`;
 const oidcStore = window.sessionStorage;
 
 export const oidcConfig: UserManagerSettings & AuthProviderProps = {

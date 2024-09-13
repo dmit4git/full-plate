@@ -18,7 +18,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "BACKEND_KEYCLOAK_WEBAPP_CLIENT_NAME": "fullplate-webapp",
-        "BACKEND_KEYCLOAK_HOSTNAME": "users.fullplate.local",
+        "BACKEND_KEYCLOAK_HOSTNAME": "accounts.fullplate.local",
         "BACKEND_LOG_EVENT_LEVEL": "debug"
       }
     },

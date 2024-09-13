@@ -83,7 +83,7 @@ http {
     # keycloak
     server {
         listen 80;
-        server_name users.${NGINX_DOMAIN_NAME};
+        server_name accounts.${NGINX_DOMAIN_NAME};
         # allow ${NGINX_ADMIN_IP};
         # deny all;
         location / {

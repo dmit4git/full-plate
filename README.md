@@ -5,12 +5,12 @@ It is currently in prototype stage, development is in progress.
 
 ## Features
 * **Authentication/authorization**: the app has two authentication/authorization systems, [role-based endpoint securing](https://github.com/dmit4git/full-plate/blob/c9b04133ac51f958e75d65aea8de336490bfa28f/webapi/NetCore/WebApi/Controllers/Auth/Checks/AuthChecksController.cs#L26) works with both:
-  * Single-sign on solution implemented with [Keycloak](https://www.keycloak.org/) used as a centralized identity and access management system
+  * Single-sign on solution ([accounts.fullplate.dev](https://accounts.fullplate.dev)) implemented with [Keycloak](https://www.keycloak.org/) used as a centralized identity and access management system
     * User can sign in into the App, Graylog and Grafana with Keycloak account  
   * [Native authentication/authorization](https://youtu.be/IzhHI-dZCsg) implemented with [.NET Core](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-8.0), built-in into the backend
 * **monitoring**: admin can query logs and performance metrics, and configure alerts on their basis
-  * [Graylog](https://graylog.org/) is used for logs monitoring
-  * [Prometheus](https://prometheus.io/) + [Grafana](https://grafana.com/) are used for performance metrics monitoring
+  * [Graylog](https://graylog.org/) ([logs.fullplate.dev](https://logs.fullplate.dev/)) is used for logs monitoring
+  * [Prometheus](https://prometheus.io/) + [Grafana](https://grafana.com/) ([metrics.fullplate.dev](https://metrics.fullplate.dev)) are used for performance metrics monitoring
 * **themes**: user can choose from variety of themes
 * **todo**:
   * app data management system
@@ -171,7 +171,7 @@ OIDC is supported only in [enterprise](https://graylog.org/products/enterprise/)
 there is a free version of enterprise license called [small business](https://graylog.org/products/small-business/) (SMB).  
 In order to use OIDC in Graylog, run graylog-enterprise docker image, [get](https://graylog.org/products/small-business/) SMB license key and [update](https://go2.graylog.org/share/hubspotvideo/63623147018) license on your cluster.  
 Follow [documentation](https://go2docs.graylog.org/current/setting_up_graylog/oidc.html?Highlight=OIDC) to configure OIDC. Use following settings for the OIDC Authentication Service in Graylog:
-* OIDC base URL: `https://users.fullplate.dev/realms/fullplate`
+* OIDC base URL: `https://accounts.fullplate.dev/realms/fullplate`
 * Callback URL: `https://logs.fullplate.dev/authorization-code/callback`
 * Graylog has a required default role setting, so any user authenticated with Keycloak will [have access](https://community.graylog.org/t/oidc-reject-users-without-any-roles/33412/3) to Graylog in default role
   * use [keycloak-restrict-client-auth](https://github.com/sventorben/keycloak-restrict-client-auth) to deny users without `restricted-access` client role
