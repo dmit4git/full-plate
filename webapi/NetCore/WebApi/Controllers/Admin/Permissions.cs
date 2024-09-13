@@ -10,6 +10,7 @@ using WebApi.Models.Auth;
 namespace WebApi.Controllers.Admin;
 
 [ApiController, Route("/webapi/admin/[action]")]
+[Authorize]
 public class PermissionsController : Controller
 {
     

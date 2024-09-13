@@ -1,11 +1,11 @@
-import "./CheckAuthSso.scss";
+import "./CheckEndpointsAuth.scss";
 import React, {ReactElement, RefObject, useRef} from "react";
 import {Button} from "primereact/button";
 import {
     useLazyAuthenticatedEndpointQuery,
     useLazyRoleProtectedEndpointQuery,
     useLazyUnprotectedEndpointQuery
-} from "./CheckAuthSsoApi";
+} from "./CheckEndpointsAuthApi";
 import {LazyQueryTrigger, UseLazyQuery, UseQueryStateResult} from "@reduxjs/toolkit/dist/query/react/buildHooks";
 import {QueryDefinition, QueryResultSelectorResult} from "@reduxjs/toolkit/query";
 import {DataTable} from "primereact/datatable";
@@ -30,20 +30,20 @@ class EndpointRow {
     }
 }
 
-function CheckAuthSsoComponent(): ReactElement {
+function CheckEndpointsAuthComponent(): ReactElement {
 
     function getTriggerAndResult(query: UseLazyQuery<EndpointQuery>) {
         const [queryTrigger, queryResult] = query();
         return {queryTrigger, queryResult};
     }
     const endpointRows: EndpointRow[] = [
-        new EndpointRow({description: "unprotected endpoint",
+        new EndpointRow({description: "unsecured endpoint",
             ...getTriggerAndResult(useLazyUnprotectedEndpointQuery),
             messagesRef: useRef<Messages>(null)} as EndpointRow),
-        new EndpointRow({description: "authenticated endpoint",
+        new EndpointRow({description: "requires authentication",
             ...getTriggerAndResult(useLazyAuthenticatedEndpointQuery),
             messagesRef: useRef<Messages>(null)} as EndpointRow),
-        new EndpointRow({description: "role-protected endpoint",
+        new EndpointRow({description: 'requires "hello-world-role" role',
             ...getTriggerAndResult(useLazyRoleProtectedEndpointQuery),
             messagesRef: useRef<Messages>(null)} as EndpointRow)
     ];
@@ -76,17 +76,18 @@ function CheckAuthSsoComponent(): ReactElement {
     }
 
     return(
-        <div className="home h-full flex flex-column gap-4 justify-content-center align-items-center">
-            <DataTable value={endpointRows} resizableColumns
-                       tableStyle={{ tableLayout: 'fixed', padding: '2rem' }}>
+        <div className="home w-full h-full flex flex-column gap-4 justify-content-center align-items-center">
+            <DataTable value={endpointRows} resizableColumns className="p-5 w-full">
                 <Column field="description" header="Endpoint description"
-                        style={{width: '20%'}} bodyStyle={{ textAlign: 'center' }}></Column>
+                        style={{width: '30%'}}
+                        bodyStyle={{ textAlign: 'center' }}></Column>
                 <Column header="Call button" body={callButton}
-                        bodyStyle={{ textAlign: 'center' }} style={{width: '20%'}}></Column>
+                        style={{width: '20%'}}
+                        bodyStyle={{ textAlign: 'center' }}></Column>
                 <Column header="Call result" body={(row) => row.messages}></Column>
             </DataTable>
         </div>
     );
 }
-export const CheckAuthSso = React.memo(CheckAuthSsoComponent);
+export const CheckEndpointsAuth = React.memo(CheckEndpointsAuthComponent);
 
