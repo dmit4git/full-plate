@@ -16,37 +16,15 @@
       top: calc(var(--input-vertical-padding) + 2px);
       margin-top: initial;
     }
-    &>.p-password-panel {
-      position: initial;
-      margin-top: 4px;
-      background-color: rgba(var(--primary-color-rgb), 0.025);
-      &.p-connected-overlay-enter {
-        transform: scaleY(0);
-      }
-      &.p-connected-overlay-enter-active, &.p-connected-overlay-enter-done {
-        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-      &.p-connected-overlay-exit {
-        transform: scaleY(0);
-        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 5s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-    }
-  }
-  &.password-input-meter {
-    .p-password.p-component.p-inputwrapper {
-      // height with password strength panel
-      height: calc( // password strength panel
-              var(--input-vertical-padding)*2 + var(--input-font-size) + 2px + // input
-              var(--p-password-panel-padding)*2 + // vertical padding
-              var(--input-font-size) + 2px + // Password Strength
-              var(--p-divider-horizontal-margin)*2 + // divider
-              (var(--input-font-size) + 2px)*5 + var(--input-font-size)*0.75 + // requirements list
-              14px // misc
-      );
-    }
   }
 
   .input-field-wrapper input {
     width: 100%;
   }
+}
+
+.password-meter-hidden {
+  transform: scaleY(0);
+  opacity: 0;
+  transition: transform .12s cubic-bezier(0, 0, 0.2, 1), opacity .12s cubic-bezier(0, 0, 0.2, 1);
 }

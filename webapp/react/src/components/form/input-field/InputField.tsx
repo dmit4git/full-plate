@@ -1,6 +1,6 @@
 import "./InputField.scss"
 import { InputText } from "primereact/inputtext";
-import React, {DOMAttributes, ReactElement} from "react";
+import React, {DOMAttributes, ReactElement, useRef} from "react";
 import { useDispatch } from "react-redux";
 import { useMemoState } from "../../../helpers/hooks";
 import {useController, UseControllerProps, Validate} from "react-hook-form";
@@ -98,7 +98,7 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
     // hooks
     const { field, fieldState } = useController({...props, rules});
     const [error, setError] = useMemoState<string>('\u00A0');
-    const [showPasswordMeter, setShowPasswordMeter] = useMemoState<boolean>(false);
+    const passwordRef = useRef<Password>(null);
     const dispatch = useDispatch();
     
     // value change handler
@@ -159,7 +159,7 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
             <ProgressBar className="h-1rem" style={{flexGrow: 1}}
                          value={checked * 20} displayValueTemplate={progressLabel}
             ></ProgressBar>
-        </div>
+        </div>;
     }
 
     // makes password requirements list
@@ -197,16 +197,6 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
             </span>;
     }
 
-    // expands height of the component to make room for the password meter panel
-    function setPasswordMeterExpanse(value: boolean) {
-        if (value) {
-            setShowPasswordMeter(true);
-        } else {
-            // 0.1s delay to wait for click to complete on 'Sign Up' button before the button slides up
-            setTimeout(() => setShowPasswordMeter(false), 100);
-        }
-    }
-
     // make input element
     let input, icon = null;
     if (props.type === FieldType.number) {
@@ -215,17 +205,26 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
         input = <InputNumber showButtons min={1} max={1000} {...inputNumberAttributes} />
     }
     else if (props.type === FieldType.password) {
-        const passwordChecks = makePasswordChecks(field.value);
-        const panelContent = makePasswordContent(passwordChecks);
-        const panelFooter = makePasswordPanelFooter(passwordChecks);
-        // rules.validate = {'password is too weak': (value) => props.passwordMeter &&
-        //         passwordChecks.every(check => check.check)};
+        let panelContent: ReactElement | null = null;
+        let panelFooter: ReactElement | null = null;
+        let showPanel = false;
+        if (props.passwordMeter) {
+            const passwordChecks = makePasswordChecks(field.value);
+            panelContent = makePasswordContent(passwordChecks);
+            panelFooter = makePasswordPanelFooter(passwordChecks);
+            showPanel = !passwordChecks.every(check => check.check);
+            const meterElement = passwordRef.current && passwordRef.current.getOverlay();
+            if (meterElement) {
+                if (showPanel) {
+                    meterElement.classList.remove('password-meter-hidden');
+                } else {
+                    meterElement.classList.add('password-meter-hidden');
+                }
+            }
+        }
         attributes.toggleMask = true;
-        attributes.appendTo = 'self';
-        attributes.feedback = props.passwordMeter;
-        attributes.onShow = () => setPasswordMeterExpanse(true);
-        attributes.onHide = () => setPasswordMeterExpanse(false);
-        input = <Password {...attributes} content={panelContent} footer={panelFooter}/>;
+        input = <Password {...attributes} content={panelContent} footer={panelFooter}
+                          feedback={showPanel} ref={passwordRef}/>;
     } else {
         if (props.type === FieldType.email) {
             attributes.keyfilter = 'email';
@@ -258,8 +257,7 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
     const label = !props.collapsed ? <label htmlFor={inputId}>{props.name}</label> : null;
     const bottomSpace = props.bottomSpace ? <div> <small className="flex">{'\u00A0'}</small> </div> : null;
 
-    const passwordClassName = props.passwordMeter && showPasswordMeter ? 'password-input-meter' : '';
-    const classes = ['input-field', props.className, passwordClassName].join(' ');
+    const classes = ['input-field', props.className].join(' ');
 
     return (
         <div className={classes}>
