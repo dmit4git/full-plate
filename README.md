@@ -4,8 +4,10 @@ Demo available at [fullplate.dev](https://fullplate.dev).
 It is currently in prototype stage, development is in progress.
 
 ## Features
-* **users management**: [Keycloak](https://www.keycloak.org/) is used as a centralized identity and access management system   
-  * Single-sign on solution with Keycloak has replaced [native authentication](https://youtu.be/IzhHI-dZCsg) previously implemented with [.NET Core](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-8.0)
+* **Authentication/authorization**: the app has two authentication/authorization systems, [role-based endpoint securing](https://github.com/dmit4git/full-plate/blob/c9b04133ac51f958e75d65aea8de336490bfa28f/webapi/NetCore/WebApi/Controllers/Auth/Checks/AuthChecksController.cs#L26) works with both:
+  * Single-sign on solution implemented with [Keycloak](https://www.keycloak.org/) used as a centralized identity and access management system
+    * User can sign in into the App, Graylog and Grafana with Keycloak account  
+  * [Native authentication/authorization](https://youtu.be/IzhHI-dZCsg) implemented with [.NET Core](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-8.0), built-in into the backend
 * **monitoring**: admin can query logs and performance metrics, and configure alerts on their basis
   * [Graylog](https://graylog.org/) is used for logs monitoring
   * [Prometheus](https://prometheus.io/) + [Grafana](https://grafana.com/) are used for performance metrics monitoring
