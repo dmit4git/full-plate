@@ -28,7 +28,7 @@ while getopts "d:c:p:" opt; do
 done
 
 ################################
-# Become a Certificate Authority
+# Make Certificate Authority
 ################################
 
 echo "Generating CA private key"
@@ -38,14 +38,14 @@ echo "Generating CA certificates (pem and crt)"
 openssl req -x509 -new -nodes -key ca_private_key.key -sha256 -days 825 -out ca_root_cert.pem \
   -subj "/C=FP/ST=FP-State/L=FP-City/O=FP-Org/OU=FP-OrgUnit/CN=CA_root_cert" -passin pass:"$CA_PASS_PHRASE"
 openssl x509 -in ca_root_cert.pem -inform PEM -out ca_root_cert.crt
+#
+echo "Generating a private key for CA-signed certificate"
+openssl genrsa -out "$DOMAIN".key 2048
 
 #################################
 # Create CA-signed certs
 #################################
 
-echo "Generating a private key for CA-signed certificate"
-openssl genrsa -out "$DOMAIN".key 2048
-#
 echo "Creating a certificate-signing request"
 openssl req -new -key "$DOMAIN".key -out cert_sign_request.csr \
   -subj "/C=FP/ST=FP-State/L=FP-City/O=FP-Org/OU=FP-OrgUnit/CN=$DOMAIN"
@@ -64,7 +64,7 @@ DNS.4 = metrics."$DOMAIN" # prometheus + grafana subdomain
 DNS.5 = accounts."$DOMAIN" # keycloak subdomain
 DNS.6 = localhost
 IP.1 = 192.168.2.30 # internal IP address
-IP.2 = 142.251.40.238 # external IP address
+IP.2 = 142.250.176.206 # external IP address (142.250.176.206 is google.com)
 IP.3 = 127.0.0.1 # localhost
 EOF
 #

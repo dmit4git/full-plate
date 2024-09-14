@@ -346,7 +346,7 @@ services:
     logging: *graylog-logging
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.47.1
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
     container_name: cadvisor
     profiles:
       - exporters
@@ -357,6 +357,16 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
     command:
       - '-port=28080'
+      - '-docker_only=true'
+      - '--disable_metrics=disk,percpu,sched,process'
+      - '--housekeeping_interval=30s'
+      - '--max_housekeeping_interval=30s'
+      - '--global_housekeeping_interval=30s'
+      - '--event_storage_event_limit=default=0'
+      - '--event_storage_age_limit=default=0'
+      - '--allow_dynamic_housekeeping=true'
+      - '--storage_duration=1m0s'
+      - '--store_container_labels=false'
     network_mode: "host"
     logging: *graylog-logging
 
