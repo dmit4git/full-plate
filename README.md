@@ -26,8 +26,6 @@ It is currently in prototype stage, development is in progress.
  * **Prometheus+Grafana** centralized health metrics management system
  * **Keycloak** identity and access management system
 
-Documentation with details is coming soon.
-
 ## HowTo
 ### run on Linux
 To run it on Linux, you need to clone the repository, go to docker compose directory and start its containers:
@@ -131,6 +129,20 @@ Client roles mapper need to be created to format roles part of access_token prov
     * set all <ins>Add to ...</ins> toggles off
       * except for <ins>Add to access token</ins>, keep that one on
     * click <ins>Save</ins>
+
+Keycloak can be [configured](https://console.developers.google.com/apis) to delegate authentication to a social media portal.
+You'll need to create client credentials for each social identity provider:
+- Google account:
+  - [Get your Google API client ID](https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid)
+- Microsoft account:
+  - create [azure](https://azure.microsoft.com/en-ca) account
+  - from [azure portal](https://portal.azure.com/#home) go to <ins>Microsoft Entra ID</ins> and click <ins>Add application registration</ins> on the bottom of the page
+    - select <ins>Accounts in any organizational directory (Any Microsoft Entra ID tenant - Multitenant) and personal Microsoft accounts (e.g. Skype, Xbox)</ins> so any user with MS account could log in
+    - pick <ins>WEB</ins> for platform
+    - use redirection URI provided by Keycloak
+  - to create client secret, got to configuration of newly created client
+    - go to <ins>Manage</ins> -> <ins>Certificates & secrets</ins>, click <ins>New client secret</ins>
+
 
 ### Run Graylog on Linux
 Docker services are configured to send logs to Graylog ([graylog.org](https://go2docs.graylog.org/5-0/what_is_graylog/what_is_graylog.htm)) instead of writing to local log file.  
