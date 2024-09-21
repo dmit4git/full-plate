@@ -81,3 +81,29 @@ services:
     pid: host
     network_mode: "host"
     logging: *graylog-logging
+
+  ########## portainer ###########
+  portainer-agent:
+    image: portainer/agent:2.21.1
+    container_name: portainer-agent
+    profiles:
+      - portainer-agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+      - /:/host
+      - ../portainer/agent/data:/data
+      - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
+    environment:
+      - EDGE=1
+      - EDGE_ID=${FP_PORTAINER_AGENT_EDGE_ID}
+      - EDGE_KEY=${FP_PORTAINER_AGENT_EDGE_KEY}
+      - EDGE_INSECURE_POLL=0
+      - SSL_CERT_FILE=/own_ca_certs/ca_root_cert.crt
+      - SSL_CERT_DIR=/own_ca_certs/
+    command:
+      --sslcert /own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.crt
+      --sslkey /own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.key
+      # --name portainer_edge_agent
+    network_mode: "host"
+    logging: *graylog-logging

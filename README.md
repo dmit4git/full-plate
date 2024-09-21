@@ -8,9 +8,10 @@ It is currently in prototype stage, development is in progress.
   * Single-sign on solution ([accounts.fullplate.dev](https://accounts.fullplate.dev)) implemented with [Keycloak](https://www.keycloak.org/) used as a centralized identity and access management system
     * User can sign in into the App, Graylog and Grafana with Keycloak account  
   * [Native authentication/authorization](https://youtu.be/IzhHI-dZCsg) implemented with [.NET Core](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-8.0), built-in into the backend
-* **monitoring**: admin can query logs and performance metrics, and configure alerts on their basis
+* **management**:
   * [Graylog](https://graylog.org/) ([logs.fullplate.dev](https://logs.fullplate.dev/)) is used for logs monitoring
   * [Prometheus](https://prometheus.io/) + [Grafana](https://grafana.com/) ([metrics.fullplate.dev](https://metrics.fullplate.dev)) are used for performance metrics monitoring
+  * [Portainer](https://www.portainer.io/) ([containers.fullplate.dev](https://containers.fullplate.dev/)) is used for management of docker containers
 * **themes**: user can choose from variety of themes
 * **todo**:
   * app data management system
@@ -18,13 +19,14 @@ It is currently in prototype stage, development is in progress.
   * wiki page with detailed feature description, dev docs
 
 ## Tech Stack
- * **React** frontend, because it is most used ([stateofjs.com](https://2022.stateofjs.com/en-US/libraries/front-end-frameworks/)) and has the largest community 
- * **.Net Core 8.0** backend, because its performance is top tier ([techempower.com](https://www.techempower.com/benchmarks/#section=data-r21)) and it has one of the largest communities
- * **PostgreSQL** database 
- * **Nginx** web server / reverse proxy
- * **Graylog** centralized log management system
- * **Prometheus+Grafana** centralized health metrics management system
- * **Keycloak** identity and access management system
+* **React** frontend, because it is most used ([stateofjs.com](https://2022.stateofjs.com/en-US/libraries/front-end-frameworks/)) and has the largest community 
+* **.Net Core 8.0** backend, because its performance is top tier ([techempower.com](https://www.techempower.com/benchmarks/#section=data-r21)) and it has one of the largest communities
+* **PostgreSQL** database 
+* **Nginx** web server / reverse proxy
+* **Keycloak** identity and access management system
+* **Graylog** centralized log management system
+* **Prometheus+Grafana** centralized health metrics management system
+* **Portainer** docker containers management
 
 ## HowTo
 ### run on Linux
@@ -144,7 +146,7 @@ You'll need to create client credentials for each social identity provider:
     - go to <ins>Manage</ins> -> <ins>Certificates & secrets</ins>, click <ins>New client secret</ins>
 
 
-### Run Graylog on Linux
+### Graylog
 Docker services are configured to send logs to Graylog ([graylog.org](https://go2docs.graylog.org/5-0/what_is_graylog/what_is_graylog.htm)) instead of writing to local log file.  
 You can run containerized Graylog stack with `docker compose`. Start in `full-plate` directory.
  * Only once, before starting Graylog for the first time, run setup script to prepare directories for persistent Graylog data:
@@ -190,7 +192,7 @@ Follow [documentation](https://go2docs.graylog.org/current/setting_up_graylog/oi
 
 Graylog stack is independent of other services and can be started/stopped at any time.  
 
-### Run Prometheus + Grafana on Linux
+### Prometheus + Grafana
 Containerized Prometheus stack can be used for storing, querying and visualising performance related metrics.
 Starting in `full-plate` directory:
  * go to prometheus directory: `cd prometheus`
@@ -230,3 +232,10 @@ To make Keycloak set roles on id token, configure grafana client role mapper sim
  * set <ins>Token Claim Name</ins> to resource_access.grafana.roles
  * keep <ins>Multivalued</ins> on
  * among <ins>Add to ...</ins> toggles keep only <ins>Add to ID token</ins> on, set the rest off
+
+
+### Portainer
+Portainer is used for docker containers management.  
+Setup [edge agent](https://docs.portainer.io/advanced/edge-agent) for remote docker environment, set environment variables for portainer-agent-service:
+* `FP_PORTAINER_AGENT_EDGE_ID` for `EDGE_ID`
+* `FP_PORTAINER_AGENT_EDGE_KEY` for `EDGE_KEY`

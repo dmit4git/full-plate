@@ -420,3 +420,19 @@ services:
       - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_STRICT=true
     network_mode: "host"
     logging: *graylog-logging
+
+  ########## portainer ###########
+  portainer:
+    image: portainer/portainer-ce:2.21.1
+    container_name: portainer
+    profiles:
+      - portainer
+    volumes:
+      - ../portainer/data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
+    command:
+      --sslcert /own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.crt
+      --sslkey /own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.key
+    network_mode: "host"
+    logging: *graylog-logging
