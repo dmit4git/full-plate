@@ -6,7 +6,7 @@ It is currently in prototype stage, development is in progress.
 ## Features
 * **Authentication/authorization**: the app has two authentication/authorization systems, [role-based endpoint securing](https://github.com/dmit4git/full-plate/blob/c9b04133ac51f958e75d65aea8de336490bfa28f/webapi/NetCore/WebApi/Controllers/Auth/Checks/AuthChecksController.cs#L26) works with both:
   * Single-sign on solution ([accounts.fullplate.dev](https://accounts.fullplate.dev)) implemented with [Keycloak](https://www.keycloak.org/) used as a centralized identity and access management system
-    * User can sign in into the App, Graylog and Grafana with Keycloak account  
+    * User can sign in into the App, Graylog, Grafana and Portainer with Keycloak account  
   * [Native authentication/authorization](https://youtu.be/IzhHI-dZCsg) implemented with [.NET Core](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-8.0), built-in into the backend
 * **management**:
   * [Graylog](https://graylog.org/) ([logs.fullplate.dev](https://logs.fullplate.dev/)) is used for logs monitoring
@@ -236,6 +236,16 @@ To make Keycloak set roles on id token, configure grafana client role mapper sim
 
 ### Portainer
 Portainer is used for docker containers management.  
-Setup [edge agent](https://docs.portainer.io/advanced/edge-agent) for remote docker environment, set environment variables for portainer-agent-service:
+Setup [edge agent](https://docs.portainer.io/advanced/edge-agent) for remote docker environment, set environment variables for [portainer-agent-service](https://github.com/dmit4git/full-plate/blob/8877aba317a3ea602b55111df49a6d1a53a78071/compose/aws-front-docker-compose.yml#L86):
 * `FP_PORTAINER_AGENT_EDGE_ID` for `EDGE_ID`
 * `FP_PORTAINER_AGENT_EDGE_KEY` for `EDGE_KEY`
+
+Portainer can use Keycloak for single-sign on. [Configure](https://docs.portainer.io/admin/settings/authentication/oauth) custom OAuth authentication provider to make it work:
+* Create new client in Keycloak for Portainer
+  * toggle <ins>Client authentication</ins> on
+  * add `restricted-access` client role (same as for Graylog)
+* Fill up <ins>[OAuth Configuration](https://docs.portainer.io/admin/settings/authentication/oauth#custom)</ins> fields
+  * use newly created client's ID and secret in portainer 
+  * see Keycloak [endpoints](https://www.keycloak.org/docs/latest/securing_apps/#endpoints) docs section to set URLS
+  * set <ins>User identifier</ins> to `preferred_username`
+  * set <ins>Scopes</ins> to `openid email profile`

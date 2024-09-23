@@ -104,4 +104,32 @@ http {
         # ssl_certificate_key /etc/letsencrypt/live/${NGINX_DOMAIN_NAME}/privkey.pem;
     }
 
+    # portainer
+    server {
+        listen 80;
+        server_name containers.${NGINX_DOMAIN_NAME};
+        # allow ${NGINX_ADMIN_IP};
+        # deny all;
+        location / {
+            # if ($ip_is_not_admin) {
+            #     rewrite ^ https://${NGINX_DOMAIN_NAME}/not-allowed break;
+            # }
+            proxy_pass https://${NGINX_PROXY_PORTAINER}:9000;
+            proxy_redirect off;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            # proxy_set_header X-Forwarded-Port 443;
+            # proxy_ssl_trusted_certificate /own_ca_certs/ca_root_cert.pem;
+            # WebSocket support
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+        }
+        # listen 443 ssl;
+        # ssl_certificate /etc/letsencrypt/live/${NGINX_DOMAIN_NAME}/fullchain.pem;
+        # ssl_certificate_key /etc/letsencrypt/live/${NGINX_DOMAIN_NAME}/privkey.pem;
+    }
+
 }

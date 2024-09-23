@@ -416,7 +416,7 @@ services:
       - GF_AUTH_GENERIC_OAUTH_TOKEN_URL=https://${FP_KEYCLOAK_HOSTNAME:-accounts.fullplate.local}/realms/fullplate/protocol/openid-connect/token
       - GF_AUTH_GENERIC_OAUTH_API_URL=https://${FP_KEYCLOAK_HOSTNAME:-accounts.fullplate.local}/realms/fullplate/protocol/openid-connect/userinfo
       - GF_AUTH_GENERIC_OAUTH_SIGNOUT_REDIRECT_URL=https://${FP_KEYCLOAK_HOSTNAME:-accounts.fullplate.local}/realms/fullplate/protocol/openid-connect/logout?post_logout_redirect_uri=https%3A%2F%2F${FP_GRAFANA_HOSTNAME:-metrics.fullplate.local}%2Flogin
-      - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(resource_access.grafana.roles[*], 'GrafanaAdmin') && 'GrafanaAdmin' || contains(resource_access.grafana.roles[*], 'Admin') && 'Admin' || contains(resource_access.grafana.roles[*], 'Editor') && 'Editor' || contains(resource_access.grafana.roles[*], 'Viewer') && 'Viewer'
+      - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(resource_access.grafana.roles[*], 'GrafanaAdmin') && 'GrafanaAdmin' || contains(resource_access.grafana.roles[*], 'Admin') && 'Admin' || contains(resource_access.grafana.roles[*], 'Editor') && 'Editor' || 'Viewer'
       - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_STRICT=true
     network_mode: "host"
     logging: *graylog-logging
@@ -435,4 +435,6 @@ services:
       --sslcert /own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.crt
       --sslkey /own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.key
     network_mode: "host"
+    # stdin_open: true
+    # tty: true
     logging: *graylog-logging
