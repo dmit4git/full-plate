@@ -145,6 +145,9 @@ You'll need to create client credentials for each social identity provider:
   - to create client secret, got to configuration of newly created client
     - go to <ins>Manage</ins> -> <ins>Certificates & secrets</ins>, click <ins>New client secret</ins>
 
+Apps that use Keycloak as IdP are likely to consider the user authenticated as long as user has logged in with Keycloak, even if the user has no assigned roles specific to the app. 
+In case of full-plate, all apps except for the native one (webapp) are meant to be used only by admins, so additional configuration is needed to restrict users from non-native apps unless specific role (`restricted-access`) is assigned to them.  
+Use [keycloak-restrict-client-auth](https://github.com/sventorben/keycloak-restrict-client-auth) to deny users without `restricted-access` client role. Make sure to [configure](https://github.com/sventorben/keycloak-restrict-client-auth?tab=readme-ov-file#protect-all-possible-flows) post IdP login flow if you allow login with 3rd party identity providers.
 
 ### Graylog
 Docker services are configured to send logs to Graylog ([graylog.org](https://go2docs.graylog.org/5-0/what_is_graylog/what_is_graylog.htm)) instead of writing to local log file.  
@@ -187,8 +190,6 @@ In order to use OIDC in Graylog, run graylog-enterprise docker image, [get](http
 Follow [documentation](https://go2docs.graylog.org/current/setting_up_graylog/oidc.html?Highlight=OIDC) to configure OIDC. Use following settings for the OIDC Authentication Service in Graylog:
 * OIDC base URL: `https://accounts.fullplate.dev/realms/fullplate`
 * Callback URL: `https://logs.fullplate.dev/authorization-code/callback`
-* Graylog has a required default role setting, so any user authenticated with Keycloak will [have access](https://community.graylog.org/t/oidc-reject-users-without-any-roles/33412/3) to Graylog in default role
-  * use [keycloak-restrict-client-auth](https://github.com/sventorben/keycloak-restrict-client-auth) to deny users without `restricted-access` client role
 
 Graylog stack is independent of other services and can be started/stopped at any time.  
 
@@ -243,7 +244,6 @@ Setup [edge agent](https://docs.portainer.io/advanced/edge-agent) for remote doc
 Portainer can use Keycloak for single-sign on. [Configure](https://docs.portainer.io/admin/settings/authentication/oauth) custom OAuth authentication provider to make it work:
 * Create new client in Keycloak for Portainer
   * toggle <ins>Client authentication</ins> on
-  * add `restricted-access` client role (same as for Graylog)
 * Fill up <ins>[OAuth Configuration](https://docs.portainer.io/admin/settings/authentication/oauth#custom)</ins> fields
   * use newly created client's ID and secret in portainer 
   * see Keycloak [endpoints](https://www.keycloak.org/docs/latest/securing_apps/#endpoints) docs section to set URLS
