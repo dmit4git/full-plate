@@ -147,7 +147,10 @@ You'll need to create client credentials for each social identity provider:
 
 Apps that use Keycloak as IdP are likely to consider the user authenticated as long as user has logged in with Keycloak, even if the user has no assigned roles specific to the app. 
 In case of full-plate, all apps except for the native one (webapp) are meant to be used only by admins, so additional configuration is needed to restrict users from non-native apps unless specific role (`restricted-access`) is assigned to them.  
-Use [keycloak-restrict-client-auth](https://github.com/sventorben/keycloak-restrict-client-auth) to deny users without `restricted-access` client role. Make sure to [configure](https://github.com/sventorben/keycloak-restrict-client-auth?tab=readme-ov-file#protect-all-possible-flows) post IdP login flow if you allow login with 3rd party identity providers.
+Use [keycloak-restrict-client-auth](https://github.com/sventorben/keycloak-restrict-client-auth) to deny users without `restricted-access` client role.  
+Make sure to [configure](https://github.com/sventorben/keycloak-restrict-client-auth?tab=readme-ov-file#protect-all-possible-flows) post IdP login flow if you allow login with 3rd party identity providers.
+* Create a separate authentication flow with single required step - <ins>Restrict user authentication on clients</ins>
+* Set <ins>Post login flow</ins> to the created flow on each identity provider
 
 ### Graylog
 Docker services are configured to send logs to Graylog ([graylog.org](https://go2docs.graylog.org/5-0/what_is_graylog/what_is_graylog.htm)) instead of writing to local log file.  

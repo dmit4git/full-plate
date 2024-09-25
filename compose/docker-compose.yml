@@ -401,6 +401,8 @@ services:
       - GF_SERVER_PROTOCOL=https
       - GF_SERVER_CERT_KEY=/own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.key
       - GF_SERVER_CERT_FILE=/own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.crt
+      # Logs
+      - GF_LOG_LEVEL=info
       # SSO with Keycloak
       - GF_AUTH_GENERIC_OAUTH_ENABLED=true
       - GF_AUTH_GENERIC_OAUTH_NAME=accounts console
