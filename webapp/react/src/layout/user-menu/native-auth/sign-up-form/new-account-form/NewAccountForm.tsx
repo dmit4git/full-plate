@@ -136,10 +136,16 @@ function NewAccountFormComponent(props: IPanelBranchContent): ReactElement {
         <>
             {stylesDiv}
             <div className="flex flex-column gap-3 mt-1">
-                <InputField name="email" idPrefix="sign-up" type={FieldType.email} control={control}
-                            required={true} valueAction={signUpEmailChange} valueCallback={onInputChange} />
-                <InputField name="username" idPrefix="sign-up" control={control}
-                            required={true} valueAction={signUpUsernameChange} valueCallback={onInputChange} />
+                <InputField name="email" idPrefix="sign-up" type={FieldType.email} control={control} required={true}
+                            valueCallback={v => {
+                                dispatch(signUpEmailChange(v));
+                                onInputChange(v);
+                            }} />
+                <InputField name="username" idPrefix="sign-up" control={control} required={true}
+                            valueCallback={v => {
+                                dispatch(signUpUsernameChange(v));
+                                onInputChange(v);
+                            }} />
                 <InputField name="password" idPrefix="sign-up" control={control} passwordMeter={true}
                             type={FieldType.password} required={true} valueCallback={onPasswordChange} />
                 <InputField name="password repeat" idPrefix="sign-up" control={control} match="password"

@@ -1,7 +1,6 @@
 import "./InputField.scss"
 import { InputText } from "primereact/inputtext";
 import React, {DOMAttributes, ReactElement, useRef} from "react";
-import { useDispatch } from "react-redux";
 import { useMemoState } from "../../../helpers/hooks";
 import {useController, UseControllerProps, Validate} from "react-hook-form";
 import { Password } from "primereact/password";
@@ -24,24 +23,26 @@ interface InputFieldProps extends UseControllerProps<any> {
     type?: FieldType,
     idPrefix?: string,
     value?: string | number,
-    valueAction?: Function,
-    valueCallback?: Function,
+    valueCallback?: (v: any) => void,
     required?: boolean,
     disabled?: boolean,
     passwordMeter?: boolean,
     error?: string,
     collapsed?: boolean
+    inputProps?: any,
     // password attributes
     match?: string,
     // search attributes
     bottomSpace?: boolean,
     onSearch?: (search: string) => any,
     isSearching?: boolean,
-    className?: string
+    className?: string,
+    onChange?: (event: any) => void,
+    onBlur?: () => void
 }
 
 interface InputDomAttributes extends Omit<DOMAttributes<HTMLInputElement>, 'onChange' | 'onBlur'> {}
-interface InputAttributes extends ControllerRenderProps, InputDomAttributes {
+interface InputAttributes extends Omit<ControllerRenderProps, 'onChange' | 'onBlur'>, InputDomAttributes {
     value: string | number,
     id?: string,
     className?: string,
@@ -52,7 +53,9 @@ interface InputAttributes extends ControllerRenderProps, InputDomAttributes {
     keyfilter?: KeyFilterType,
     onFocus?: () => void,
     onShow?: () => void,
-    onHide?: () => void
+    onHide?: () => void,
+    onChange?: (event: any) => void,
+    onBlur?: () => void
 }
 
 function InputFieldComponent(props: InputFieldProps): ReactElement {
@@ -91,31 +94,39 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
         return checks.every(check => check.check);
     }
     function valueMatches(value: string) {
-        const match = props.control!._fields[props.match!]?._f.value;
-        return value === match;
+        const field = props.control!._fields[props.match!]?._f as any;
+        return value === (field && field.value);
     }
     
     // hooks
     const { field, fieldState } = useController({...props, rules});
     const [error, setError] = useMemoState<string>('\u00A0');
     const passwordRef = useRef<Password>(null);
-    const dispatch = useDispatch();
     
     // value change handler
     function onChange(event: React.ChangeEvent<HTMLInputElement> | InputNumberValueChangeEvent) {
         let value = ('target' in event) ? event.target.value : (event as any).value;
-        if (props.valueAction) {
-            dispatch(props.valueAction(value));
-        }
         if (props.valueCallback) {
             props.valueCallback(value);
         }
         field.onChange(event);
+        if (props.onChange) {
+            props.onChange(event);
+        }
     }
 
-    // get provided error message or infer it from error type 
-    // and remember the message so component could fade it out when field is valid 
-    if (fieldState.error) {
+    function onBlur() {
+        field.onBlur();
+        if (props.onBlur) {
+            props.onBlur();
+        }
+    }
+
+    if (props.error) {
+        setError(props.error);
+    } else if (fieldState.error) {
+        // get provided error message or infer it from error type
+        // and remember the message so component could fade it out when field is valid
         const errorMessage = fieldState.error.message || makeErrorMessage(fieldState.error);
         setError(errorMessage);
     }
@@ -130,12 +141,13 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
     }
 
     // render variables
+    const showError = props.error || fieldState.invalid;
     const errorAnimation = "animation-ease-in-out animation-duration-500 "
-        + (fieldState.invalid ? "fadeindown" : "fadeoutdown animation-fill-forwards");
+        + (showError ? "fadeindown" : "fadeoutdown animation-fill-forwards");
     const inputId = props.idPrefix ? `${props.idPrefix}-${props.name}` : props.name;
-    const inputClassNames = {'w-full': true, 'p-invalid': fieldState.invalid};
+    const inputClassNames = {'w-full': true, 'p-invalid': showError};
     const attributes: InputAttributes = {
-        id: inputId, ...field, onChange: onChange, className: classNames(inputClassNames)
+        id: inputId, ...field, onChange, onBlur, className: classNames(inputClassNames)
     };
 
     if (props.disabled !== undefined) {
@@ -224,7 +236,7 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
         }
         attributes.toggleMask = true;
         input = <Password {...attributes} content={panelContent} footer={panelFooter}
-                          feedback={showPanel} ref={passwordRef}/>;
+                          feedback={showPanel} ref={passwordRef} {...props.inputProps} />;
     } else {
         if (props.type === FieldType.email) {
             attributes.keyfilter = 'email';
@@ -236,7 +248,7 @@ function InputFieldComponent(props: InputFieldProps): ReactElement {
                 <i className="pi pi-search" onClick={onSearchClick}/>;
         }
         const inputTextAttributes = {...attributes, value: attributes.value?.toString()};
-        input = <InputText {...inputTextAttributes} />;
+        input = <InputText {...inputTextAttributes} {...props.inputProps}/>;
     }
 
     function onSearchClick() {

@@ -87,7 +87,10 @@ function SignInFormComponent(): ReactElement {
     return (
         <div className="sign-in-form flex flex-column gap-3">
             <InputField name="username" idPrefix="sign-in" control={control} required={true}
-                        valueAction={signInUsernameChange} valueCallback={onInputChange} />
+                        valueCallback={v => {
+                            dispatch(signInUsernameChange(v));
+                            onInputChange(v);
+                        }} />
             <InputField name="password" idPrefix="sign-in" control={control} required={true}
                         type={FieldType.password} valueCallback={onInputChange} />
             <Button className="w-full mt-3" label="Sign In"

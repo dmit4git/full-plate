@@ -3,15 +3,23 @@ import {getCurrentUrl, openInNewTab} from "../../../helpers/browser";
 import {oidcConfig} from "../../../helpers/authSettings";
 import React, {ReactElement} from "react";
 import {AuthContextProps} from "react-oidc-context";
+import {useSelector} from "react-redux";
+import {RootState} from "../../../store/store";
 
 type SsoAuthProps = {
     auth: AuthContextProps
 };
 
 function SsoSignInButtonComponent(props: SsoAuthProps): ReactElement {
+    const themeState = useSelector((store: RootState) => store.theme);
+
     return <Button className="w-full" label="Sign In With Account Console"
-                   onClick={() => props.auth.signinRedirect({redirect_uri: getCurrentUrl()})}
-                   loading={props.auth.isLoading} />;
+                   onClick={() => props.auth.signinRedirect(
+                       {
+                           redirect_uri: getCurrentUrl(),
+                           extraQueryParams: themeState as unknown as Record<string, string>
+                       }
+                   )} />;
 }
 export const SsoSignInButton = React.memo(SsoSignInButtonComponent);
 

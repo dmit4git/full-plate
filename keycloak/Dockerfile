@@ -11,6 +11,7 @@ WORKDIR /opt/keycloak
 
 # https://github.com/sventorben/keycloak-restrict-client-auth
 ADD --chown=keycloak:keycloak --chmod=644 providers/keycloak-restrict-client-auth.jar /opt/keycloak/providers/myprovider.jar
+ADD --chown=keycloak:keycloak --chmod=644 keycloakify/dist_keycloak/keycloak-theme-for-kc-22-and-above.jar /opt/keycloak/providers/keycloak-theme-for-kc-22-and-above.jar
 
 RUN /opt/keycloak/bin/kc.sh build
 

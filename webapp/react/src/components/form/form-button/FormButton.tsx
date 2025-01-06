@@ -1,9 +1,9 @@
 import './FormButton.scss';
-import React, {FC, ReactElement} from "react";
-import {Button} from "primereact/button";
+import React, {ReactElement} from "react";
+import {Button, ButtonProps} from "primereact/button";
 import {ErrorDiv} from "../../error-div/ErrorDiv";
 
-interface FormButtonProps {
+interface FormButtonProps extends ButtonProps {
     label?: string,
     onClick?: React.MouseEventHandler<HTMLButtonElement>
     loading?: boolean,
@@ -17,8 +17,7 @@ function FormButtonComponent(props: FormButtonProps): ReactElement  {
     const severity = props.error || props.error === '' ? 'danger' : undefined;
 
     return <div className="form-button mt-3">
-        <Button className="w-full" label={buttonLabel} onClick={props.onClick}
-                loading={props.loading} disabled={props.disabled} severity={severity} />
+        <Button {...props} className="w-full" label={buttonLabel} severity={severity} />
         <ErrorDiv error={props.error} />
     </div>
 }
