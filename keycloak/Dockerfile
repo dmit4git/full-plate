@@ -1,4 +1,4 @@
-FROM quay.io/keycloak/keycloak:25.0.2 as build
+FROM quay.io/keycloak/keycloak:26.0.7 as build
 
 # Database
 ENV KC_DB=postgres
@@ -11,12 +11,12 @@ WORKDIR /opt/keycloak
 
 # https://github.com/sventorben/keycloak-restrict-client-auth
 ADD --chown=keycloak:keycloak --chmod=644 providers/keycloak-restrict-client-auth.jar /opt/keycloak/providers/myprovider.jar
-ADD --chown=keycloak:keycloak --chmod=644 keycloakify/dist_keycloak/keycloak-theme-for-kc-22-and-above.jar /opt/keycloak/providers/keycloak-theme-for-kc-22-and-above.jar
+ADD --chown=keycloak:keycloak --chmod=644 keycloakify-starter/dist_keycloak/keycloak-theme-for-kc-all-other-versions.jar /opt/keycloak/providers/keycloak-theme-for-kc-all-other-versions.jar
 
 RUN /opt/keycloak/bin/kc.sh build
 
 
-FROM quay.io/keycloak/keycloak:25.0.2
+FROM quay.io/keycloak/keycloak:26.0.7
 COPY --from=build /opt/keycloak/ /opt/keycloak/
 
 ARG FP_KEYCLOAK_DATABASE_PASSWORD
@@ -30,7 +30,7 @@ ENV KC_DB_USERNAME=keycloak_db_user
 ENV KC_DB_PASSWORD=${FP_KEYCLOAK_DATABASE_PASSWORD}
 
 # Host
-ENV KC_HOSTNAME=${FP_KEYCLOAK_HOSTNAME}
+ENV KC_HOSTNAME=https://${FP_KEYCLOAK_HOSTNAME}
 #ENV KC_HOSTNAME_STRICT=false
 
 # Admin console
