@@ -7,7 +7,7 @@ x-logging:
   &graylog-logging
   driver: gelf
   options:
-    gelf-address: ${FP_GRAYLOG_GELF_INPUT:-udp://127.0.0.1:12201}
+    gelf-address: ${FP_GRAYLOG_GELF_INPUT:-udp://localhost:12201}
 
 ########## Services ##########
 services:
@@ -77,12 +77,11 @@ services:
       context: ../webapp
     environment:
       - NGINX_DOMAIN_NAME=${FP_DOMAIN_NAME:-fullplate.local}
-      - NGINX_PROXY_WEBAPI=${FP_PROXY_WEBAPI:-127.0.0.1}
+      - NGINX_PROXY_WEBAPI=${FP_PROXY_WEBAPI:-localhost}
       - NGINX_PROXY_HTTP_PORT=${FP_PROXY_HTTP_PORT:-10080}
-      - NGINX_PROXY_GRAYLOG=${FP_PROXY_GRAYLOG:-127.0.0.1}
-      - NGINX_PROXY_GRAFANA=${FP_PROXY_GRAFANA:-127.0.0.1}
+      - NGINX_PROXY_GRAYLOG=${FP_PROXY_GRAYLOG:-localhost}
+      - NGINX_PROXY_GRAFANA=${FP_PROXY_GRAFANA:-localhost}
       - NGINX_PROXY_KEYCLOAK=${FP_PROXY_KEYCLOAK:-fullplate.local}
-      - NGINX_PROXY_PORTAINER=${FP_PROXY_PORTAINER:-fullplate.local}
       - NGINX_ADMIN_IP=${FP_ADMIN_IP:-127.0.0.1}
     volumes:
       - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro,z
@@ -115,9 +114,9 @@ services:
     image: nginx:1.22.0
     environment:
       - NGINX_DOMAIN_NAME=${FP_DOMAIN_NAME:-fullplate.local}
-      - NGINX_PROXY_WEBAPI=${FP_PROXY_WEBAPI:-127.0.0.1}
-      - NGINX_PROXY_GRAYLOG=${FP_PROXY_GRAYLOG:-127.0.0.1}
-      - NGINX_PROXY_GRAFANA=${FP_PROXY_GRAFANA:-127.0.0.1}
+      - NGINX_PROXY_WEBAPI=${FP_PROXY_WEBAPI:-localhost}
+      - NGINX_PROXY_GRAYLOG=${FP_PROXY_GRAYLOG:-localhost}
+      - NGINX_PROXY_GRAFANA=${FP_PROXY_GRAFANA:-localhost}
       - NGINX_PROXY_KEYCLOAK=${FP_PROXY_KEYCLOAK:-fullplate.local}
       - NGINX_MONITORING_ALLOW=${FP_MONITORING_ALLOW:-allow 127.0.0.1;}
     volumes:
@@ -219,8 +218,8 @@ services:
         - FP_KEYCLOAK_HOSTNAME=${FP_KEYCLOAK_HOSTNAME:-accounts.fullplate.local}
         - FP_KEYCLOAK_ADMIN_PASSWORD=${FP_KEYCLOAK_ADMIN_PASSWORD:-changeme}
     network_mode: "host"
-    # volumes:
-      # - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
+    volumes:
+      - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
     depends_on:
       - postgres-keycloak
     logging: *graylog-logging
@@ -289,15 +288,15 @@ services:
       - GRAYLOG_HTTP_EXTERNAL_URI=https://127.0.0.1:9900/
       - GRAYLOG_MONGODB_URI=mongodb://127.0.0.1/graylog
       - GRAYLOG_ELASTICSEARCH_HOSTS=http://127.0.0.1:9200 # fixes "No data nodes have been found"
-      # # GUI TLS settings
-      # - GRAYLOG_HTTP_ENABLE_TLS=true
-      # - GRAYLOG_HTTP_TLS_CERT_FILE=/own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.crt.pem
-      # - GRAYLOG_HTTP_TLS_KEY_FILE=/own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.key.pkcs8.pem
-      # - GRAYLOG_HTTP_TLS_KEY_PASSWORD=${FP_OWN_CA_PASSWORD:-}
+      # GUI TLS settings
+      - GRAYLOG_HTTP_ENABLE_TLS=true
+      - GRAYLOG_HTTP_TLS_CERT_FILE=/own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.crt.pem
+      - GRAYLOG_HTTP_TLS_KEY_FILE=/own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.key.pkcs8.pem
+      - GRAYLOG_HTTP_TLS_KEY_PASSWORD=${FP_OWN_CA_PASSWORD:-}
     volumes:
       - ../graylog/graylog/data:/usr/share/graylog/data
-      # - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
-      # - ../graylog/graylog/cacerts.jks:/opt/java/openjdk/lib/security/cacerts
+      - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
+      - ../graylog/graylog/cacerts.jks:/opt/java/openjdk/lib/security/cacerts
     network_mode: "host"
     depends_on:
       - mongo-graylog
@@ -392,20 +391,16 @@ services:
       - prometheus
     volumes:
       - ../prometheus/grafana/data:/var/lib/grafana
-      # - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
-      # - ../prometheus/grafana/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+      - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
+      - ../prometheus/grafana/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
     environment:
+      - GF_SERVER_HTTP_PORT=23443
       - GF_SERVER_DOMAIN=${FP_GRAFANA_HOSTNAME:-metrics.fullplate.local}
       - GF_SERVER_ROOT_URL=https://${FP_GRAFANA_HOSTNAME:-metrics.fullplate.local}
-      # HTTP GUI
-      - GF_SERVER_PROTOCOL=http
-      - GF_SERVER_HTTP_PORT=13000
-      # # HTTPS GUI
-      # - GF_SERVER_PROTOCOL=https
-      # - GF_SERVER_HTTP_PORT=23443
-      # - GF_SERVER_ROOT_URL=https://${FP_GRAFANA_HOSTNAME:-metrics.fullplate.local}
-      # - GF_SERVER_CERT_KEY=/own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.key
-      # - GF_SERVER_CERT_FILE=/own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.crt
+      # GUI TLS settings
+      - GF_SERVER_PROTOCOL=https
+      - GF_SERVER_CERT_KEY=/own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.key
+      - GF_SERVER_CERT_FILE=/own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.crt
       # Logs
       - GF_LOG_LEVEL=info
       # SSO with Keycloak
@@ -430,20 +425,17 @@ services:
 
   ########## portainer ###########
   portainer:
-    image: portainer/portainer-ce:2.27.3
+    image: portainer/portainer-ce:2.21.1
     container_name: portainer
     profiles:
       - portainer
     volumes:
       - ../portainer/data:/data
       - /var/run/docker.sock:/var/run/docker.sock
-      # - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
+      - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
     command:
-      --http-enabled
-      --bind 0.0.0.0:9080
-      #-p :9080
-      # --sslcert /own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.crt
-      # --sslkey /own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.key
+      --sslcert /own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.crt
+      --sslkey /own_ca_certs/${FP_OWN_CA_DOMAIN_NAME:-fullplate.local}.key
     network_mode: "host"
     # stdin_open: true
     # tty: true

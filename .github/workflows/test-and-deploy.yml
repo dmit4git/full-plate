@@ -51,8 +51,10 @@ jobs:
       - name: Build React app
         run: npm run build
         working-directory: /home/dmitry/projects/full-plate/webapp/react
-      - name: Deploy React app
-        run: ./deploy-react.sh
-        working-directory: /home/dmitry/projects/full-plate/infra
+      # - name: Deploy React app
+      #   run: ./deploy-react.sh
+      #   working-directory: /home/dmitry/projects/full-plate/infra
+      - name: Build and restart nginx
+        run: sudo systemctl restart frontend
       - name: Build and restart backend containers
         run: sudo systemctl restart backend

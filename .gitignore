@@ -32,4 +32,5 @@
 /keycloak/keycloakify/dist/
 /keycloak/keycloakify/public/keycloakify-dev-resources/
 /keycloak/keycloakify/dist_keycloak/*
-!/keycloak/keycloakify/dist_keycloak/keycloak-theme-for-kc-22-and-above.jar
+!/keycloak/keycloakify/dist_keycloak/keycloak-theme-for-kc-all-other-versions.jar
+/temp/
