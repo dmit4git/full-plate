@@ -75,7 +75,6 @@ services:
       - e2e-tests
     build:
       context: ../webapp
-      dockerfile: ${FP_NGINX_DOCKERFILE:-Dockerfile}
     environment:
       - NGINX_DOMAIN_NAME=${FP_DOMAIN_NAME:-fullplate.local}
       - NGINX_PROXY_WEBAPI=${FP_PROXY_WEBAPI:-127.0.0.1}
