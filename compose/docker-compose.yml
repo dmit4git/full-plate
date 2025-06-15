@@ -75,6 +75,7 @@ services:
       - e2e-tests
     build:
       context: ../webapp
+      dockerfile: ${FP_NGINX_DOCKERFILE:-Dockerfile}
     environment:
       - NGINX_DOMAIN_NAME=${FP_DOMAIN_NAME:-fullplate.local}
       - NGINX_PROXY_WEBAPI=${FP_PROXY_WEBAPI:-127.0.0.1}
@@ -85,7 +86,7 @@ services:
       - NGINX_PROXY_PORTAINER=${FP_PROXY_PORTAINER:-fullplate.local}
       - NGINX_ADMIN_IP=${FP_ADMIN_IP:-127.0.0.1}
     volumes:
-      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro,z
+      - ../nginx/${FP_NGINX_CONFIG:-nginx.conf}:/etc/nginx/nginx.conf:ro,z
       - ../nginx/templates:/etc/nginx/templates
       - ../nginx/certbot/www/:/var/www/certbot/:ro
       - ../nginx/certbot/letsencrypt/:/etc/letsencrypt/:ro

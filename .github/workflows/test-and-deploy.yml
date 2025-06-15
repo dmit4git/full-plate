@@ -28,6 +28,8 @@ jobs:
       - name: Run end-to-end tests
         run: docker compose --profile e2e-tests up --build --abort-on-container-exit
         env:
+          FP_NGINX_DOCKERFILE: Dockerfile.build-app
+          FP_NGINX_CONFIG: nginx.local.conf
           FP_DATABASE_CONNECTION_STRING_NAME: e2e_test_db
           FP_PROXY_HTTP_PORT: 11080
           FP_EMAIL_SERVICE: FakeAwsSesService
