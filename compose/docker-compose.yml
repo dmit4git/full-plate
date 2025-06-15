@@ -95,7 +95,6 @@ services:
 
   certbot:
     container_name: certbot
-    image: certbot
     build:
       context: ../nginx/certbot
     profiles:
