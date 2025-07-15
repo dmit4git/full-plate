@@ -63,9 +63,10 @@ DNS.3 = logs."$DOMAIN" # graylog subdomain
 DNS.4 = metrics."$DOMAIN" # prometheus + grafana subdomain
 DNS.5 = accounts."$DOMAIN" # keycloak subdomain
 DNS.6 = containers."$DOMAIN" # portainer subdomain
-DNS.7 = localhost
+DNS.7 = data."$DOMAIN" # pgadmin subdomain
+DNS.8 = localhost
 IP.1 = 192.168.2.30 # internal IP address
-IP.2 = 142.250.176.206 # external IP address (142.250.176.206 is google.com)
+IP.2 = 142.250.176.206 # external IP address
 IP.3 = 127.0.0.1 # localhost
 EOF
 #

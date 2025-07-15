@@ -34,3 +34,4 @@
 /keycloak/keycloakify/dist_keycloak/*
 !/keycloak/keycloakify/dist_keycloak/keycloak-theme-for-kc-all-other-versions.jar
 /temp/
+/pgadmin/data/
