@@ -3,6 +3,9 @@ ENHANCED_COOKIE_PROTECTION = False
 
 # authentication
 AUTHENTICATION_SOURCES = ['internal', 'oauth2']
+domain = 'fullplate.dev'
+realm_url = f'https://accounts.{domain}/realms/fullplate'
+oidc_url = f'{realm_url}/protocol/openid-connect'
 OAUTH2_CONFIG = [
     {
         # The name of the oauth provider, ex: github, google
@@ -10,24 +13,24 @@ OAUTH2_CONFIG = [
         # The display name, ex: Google
         'OAUTH2_DISPLAY_NAME': 'Account Console',
         # Oauth client id
-        'OAUTH2_CLIENT_ID': None,
+        'OAUTH2_CLIENT_ID': 'pgadmin',
         # Oauth secret
-        'OAUTH2_CLIENT_SECRET': None,
+        'OAUTH2_CLIENT_SECRET': 'qa2LieAT9Ltx7AcsCntUT4Ab0S64oTsX',
         # URL to generate a token,
         # Ex: https://github.com/login/oauth/access_token
-        'OAUTH2_TOKEN_URL': None,
+        'OAUTH2_TOKEN_URL': f'{oidc_url}/token',
         # URL is used for authentication,
         # Ex: https://github.com/login/oauth/authorize
-        'OAUTH2_AUTHORIZATION_URL': None,
+        'OAUTH2_AUTHORIZATION_URL': f'{oidc_url}/auth',
         # server metadata url might optional for your provider
-        'OAUTH2_SERVER_METADATA_URL': None,
+        'OAUTH2_SERVER_METADATA_URL': f'{realm_url}/.well-known/openid-configuration',
         # Oauth base url, ex: https://api.github.com/
-        'OAUTH2_API_BASE_URL': None,
+        'OAUTH2_API_BASE_URL': f'{realm_url}/',
         # Name of the Endpoint, ex: user
-        'OAUTH2_USERINFO_ENDPOINT': None,
+        'OAUTH2_USERINFO_ENDPOINT': f'{oidc_url}/userinfo',
         # Oauth scope, ex: 'openid email profile'
         # Note that an 'email' claim is required in the resulting profile
-        'OAUTH2_SCOPE': None,
+        'OAUTH2_SCOPE': 'openid email profile',
         # The claim which is used for the username. If the value is empty the
         # email is used as username, but if a value is provided,
         # the claim has to exist.
@@ -66,6 +69,6 @@ OAUTH2_CONFIG = [
         # Example for keycloak:
         # 'OAUTH2_LOGOUT_URL':
         # 'https://example.com/realms/master/protocol/openid-connect/logout?post_logout_redirect_uri={redirect_uri}&id_token_hint={id_token}'
-        'OAUTH2_LOGOUT_URL': None
+        'OAUTH2_LOGOUT_URL': oidc_url + '/logout?post_logout_redirect_uri={redirect_uri}&id_token_hint={id_token}',
     }
 ]
