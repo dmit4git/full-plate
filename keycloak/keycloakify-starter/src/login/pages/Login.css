@@ -1,0 +1,86 @@
+/* hide Template header */
+#kc-header {
+    display: none;
+}
+
+.login-pf body {
+    background: var(--surface-ground);
+    overflow-y: hidden;
+}
+.login-pf-page {
+    padding-top: 0;
+}
+
+.kcFormCardClass.card-pf {
+    background: color-mix(in srgb, var(--surface-c), transparent 50%);
+    color: var(--text-color);
+}
+
+.kcLocaleListClass.pf-c-dropdown__menu.pf-m-align-right {
+    background: var(--surface-c);
+}
+
+#kc-locale-dropdown button {
+    color: var(--text-color-secondary);
+}
+
+#kc-info-wrapper.kcInfoAreaWrapperClass {
+    background: color-mix(in srgb, var(--surface-c), transparent 50%);
+    color: var(--text-color-secondary);
+}
+
+button.p-button {
+    color: var(--primary-color-text);
+}
+
+/* override for patternfly.min.css from keycloak */
+
+body {
+    font-size: unset;
+    line-height: unset;
+    font-family: unset;
+}
+label {
+    font-weight: normal;
+}
+small {
+    font-size: smaller;
+}
+
+#kc-locale-dropdown a {
+    background: var(--surface-ground);
+    color: var(--text-color-secondary);
+}
+
+#kc-social-providers > hr {
+    border-top: 1px solid var(--surface-border);
+}
+#kc-social-providers > h2 {
+    color: var(--primary-color);
+}
+
+.pf-c-button {
+    --pf-c-button--PaddingTop: calc(var(--pf-global--spacer--form-element) + 5px);
+    --pf-c-button--PaddingBottom: calc(var(--pf-global--spacer--form-element) + 5px);
+}
+.pf-c-button.pf-m-control {
+    background-color: var(--surface-a);
+    color: var(--text-color);
+    --pf-c-button--after--BorderColor: var(--surface-border);
+}
+.pf-c-button.pf-m-control > i {
+    color: var(--primary-700);
+}
+
+.checkbox label > input {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.alert-warning, .alert-error, .alert-info {
+    display: none;
+}
+
+.p-inline-message-error, .p-message-wrapper {
+    white-space: pre-line;
+}

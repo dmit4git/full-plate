@@ -1,0 +1,71 @@
+{
+    "name": "keycloakify-fullplate-theme",
+    "version": "0.0.0",
+    "description": "Starter for Keycloakify 11",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/codegouvfr/keycloakify-starter.git"
+    },
+    "type": "module",
+    "scripts": {
+        "postinstall": "keycloakify sync-extensions",
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "build-keycloak-theme": "npm run build && keycloakify build",
+        "build-theme": "vite build && keycloakify build",
+        "storybook": "storybook dev -p 6006",
+        "format": "prettier . --write"
+    },
+    "license": "MIT",
+    "keywords": [],
+    "dependencies": {
+        "keycloakify": "^11.8.5",
+        "lodash-es": "^4.17.21",
+        "primeflex": "^3.3.1",
+        "primeicons": "^7.0.0",
+        "primereact": "^10.8.2",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-hook-form": "^7.53.0",
+        "@keycloakify/keycloak-account-ui": "~260007.0.2",
+        "@patternfly/patternfly": "^5.4.0",
+        "@patternfly/react-core": "^5.4.1",
+        "@patternfly/react-icons": "^5.4.0",
+        "@patternfly/react-table": "^5.4.1",
+        "i18next": "^23.15.1",
+        "i18next-http-backend": "^2.6.1",
+        "react-i18next": "^15.0.2",
+        "react-router-dom": "^6.26.2",
+        "keycloak-js": "26.0.7",
+        "@keycloakify/keycloak-ui-shared": "~260007.0.1",
+        "@patternfly/react-styles": "^5.4.0",
+        "@keycloak/keycloak-admin-client": "26.0.7"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.15.0",
+        "@storybook/react": "^8.1.10",
+        "@storybook/react-vite": "^8.1.10",
+        "@types/react": "^18.2.43",
+        "@types/react-dom": "^18.2.17",
+        "@typescript-eslint/eslint-plugin": "^8.15.0",
+        "@typescript-eslint/parser": "^8.15.0",
+        "@vitejs/plugin-react": "^4.2.1",
+        "eslint": "^9.15.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-react": "^7.37.2",
+        "eslint-plugin-react-hooks": "^5.0.0",
+        "eslint-plugin-react-refresh": "^0.4.14",
+        "eslint-plugin-storybook": "^0.11.1",
+        "globals": "^15.12.0",
+        "prettier": "3.3.1",
+        "sass": "^1.83.1",
+        "storybook": "^8.1.10",
+        "typescript": "^5.2.2",
+        "typescript-eslint": "^8.15.0",
+        "vite": "^5.0.8",
+        "@types/lodash-es": "^4.17.12"
+    },
+    "engines": {
+        "node": "^18.0.0 || >=20.0.0"
+    }
+}
