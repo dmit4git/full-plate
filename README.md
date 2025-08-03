@@ -12,7 +12,8 @@ It is currently in prototype stage, development is in progress.
   * [Graylog](https://graylog.org/) ([logs.fullplate.dev](https://logs.fullplate.dev/)) is used for logs monitoring
   * [Prometheus](https://prometheus.io/) + [Grafana](https://grafana.com/) ([metrics.fullplate.dev](https://metrics.fullplate.dev)) are used for performance metrics monitoring
   * [Portainer](https://www.portainer.io/) ([containers.fullplate.dev](https://containers.fullplate.dev/)) is used for management of docker containers
-  * [pgAdmin](https://www.pgadmin.org/) ([data.fullplate.dev](https://data.fullplate.dev/)) for data management
+  * [pgAdmin](https://www.pgadmin.org/) ([data.fullplate.dev](https://data.fullplate.dev/)) for database management
+  * [Payload](https://payloadcms.com/) ([content.fullplate.dev/admin](https://data.fullplate.dev/admin)) for content management
 * **themes**: user can choose from variety of themes
 
 ## To do
