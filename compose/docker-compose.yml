@@ -204,7 +204,7 @@ services:
       - webapi-e2e-test-server
     logging: *graylog-logging
 
-  ############ keycloak ############
+  ############ Keycloak ############
   keycloak:
     container_name: keycloak
     image: keycloak
@@ -274,7 +274,7 @@ services:
     network_mode: "host"
     logging: *graylog-logging
 
-  ########## graylog ##########
+  ########## Graylog ##########
   graylog:
     container_name: graylog
     profiles:
@@ -331,7 +331,7 @@ services:
     network_mode: "host"
     logging: *graylog-logging
 
-  ########## prometheus ##########
+  ########## Prometheus ##########
   prometheus:
     image: prom/prometheus:v2.50.0
     container_name: prometheus
@@ -427,7 +427,7 @@ services:
     network_mode: "host"
     logging: *graylog-logging
 
-  ########## portainer ###########
+  ########## Portainer ###########
   portainer:
     image: portainer/portainer-ce:2.27.3
     container_name: portainer
@@ -448,7 +448,7 @@ services:
     # tty: true
     logging: *graylog-logging
 
-  ########## pgadmin ###########
+  ########## pgAdmin ###########
   pgadmin:
     image: dpage/pgadmin4:9.5
     container_name: pgadmin
@@ -461,5 +461,40 @@ services:
     volumes:
       - ../pgadmin/data:/var/lib/pgadmin
       - ../pgadmin/config_local.py:/pgadmin4/config_local.py:ro
+    network_mode: "host"
+    logging: *graylog-logging
+
+  ########## Payload ###########
+  payload:
+    container_name: payload
+    profiles:
+      - payload
+    build: # need to be built separately from postgres-payload (the db is needed during build)
+      context: ../payload
+      network: "host"
+      args:
+        - POSTGRES_PASSWORD=${FP_PAYLOAD_POSTGRES_PASSWORD:-changeme}
+    environment:
+      - PAYLOAD_DOMAIN_NAME=${FP_DOMAIN_NAME:-fullplate.local}
+      - PAYLOAD_SECRET=${FP_PAYLOAD_SECRET:-changeme}
+      - PAYLOAD_AUTH_SECRET=${FP_PAYLOAD_AUTH_SECRET:-changeme}
+      - PAYLOAD_KEYCLOAK_SECRET=${FP_PAYLOAD_KEYCLOAK_SECRET:-changeme}
+    depends_on:
+      - postgres-payload
+    network_mode: "host"
+    logging: *graylog-logging
+
+  postgres-payload:
+    container_name: postgres-payload
+    profiles:
+      - payload
+    image: postgres:17
+    command: -p 14432
+    environment:
+      - POSTGRES_USER=${FP_POSTGRES_USER:-payload_db_user}
+      - POSTGRES_PASSWORD=${FP_POSTGRES_PASSWORD:-changeme}
+      - POSTGRES_DB=${FP_POSTGRES_DB:-payload_db}
+    volumes:
+      - ../payload/postgres/data:/var/lib/postgresql/data
     network_mode: "host"
     logging: *graylog-logging

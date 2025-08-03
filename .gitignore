@@ -35,3 +35,6 @@
 !/keycloak/keycloakify/dist_keycloak/keycloak-theme-for-kc-all-other-versions.jar
 /temp/
 /pgadmin/data/
+/webapp/solid/.output/
+/webapp/solid/.vinxi/
+/payload/postgres/data/
