@@ -476,7 +476,7 @@ services:
         - POSTGRES_PASSWORD=${FP_PAYLOAD_POSTGRES_PASSWORD:-changeme}
     environment:
       - PAYLOAD_DOMAIN_NAME=${FP_DOMAIN_NAME:-fullplate.local}
-      - PAYLOAD_SECRET=${FP_PAYLOAD_SECRET:-changeme}
+      - FP_PAYLOAD_SECRET=${FP_PAYLOAD_SECRET:-changeme}
       - PAYLOAD_AUTH_SECRET=${FP_PAYLOAD_AUTH_SECRET:-changeme}
       - PAYLOAD_KEYCLOAK_SECRET=${FP_PAYLOAD_KEYCLOAK_SECRET:-changeme}
     depends_on:

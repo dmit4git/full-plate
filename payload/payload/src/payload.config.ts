@@ -38,8 +38,14 @@ export default buildConfig({
     // payloadCloudPlugin(),
     authjsPlugin({
       authjsConfig: authConfig,
+      components: {
+        SignInButton: {
+          icon: null,
+          text: 'Sign in with Account Console',
+        }
+      }
     }),
     // storage-adapter-placeholder
   ],
-  serverURL: 'https://content.fullplate.dev',
+  serverURL: `https://content.${process.env.DOMAIN_NAME}`
 })
