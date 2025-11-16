@@ -2,9 +2,9 @@
 
 RUN mkdir -p /NetCore
 # copy end-to-end project source
-COPY NetCore/WebApi.Tests.E2E /NetCore/WebApi.Tests.E2E
-COPY NetCore/WebApi /NetCore/WebApi
-COPY NetCore/WebApi.Tests.API /NetCore/WebApi.Tests.API
+COPY WebApi.Tests.E2E /NetCore/WebApi.Tests.E2E
+COPY WebApi /NetCore/WebApi
+COPY WebApi.Tests.API /NetCore/WebApi.Tests.API
 WORKDIR /NetCore/WebApi.Tests.E2E
 
 # install playwright browsers
