@@ -190,7 +190,7 @@ services:
     profiles:
       - e2e-tests
     build:
-      context: ../webapi
+      context: ../webapi/NetCore
       dockerfile: Dockerfile.e2e.test
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-}

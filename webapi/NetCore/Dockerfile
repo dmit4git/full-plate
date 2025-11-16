@@ -8,7 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 # copy source
 WORKDIR /source
-COPY NetCore/WebApi .
+COPY WebApi .
 
 # build
 RUN dotnet publish --configuration release --output build
