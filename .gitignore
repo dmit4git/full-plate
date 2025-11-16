@@ -38,3 +38,8 @@
 /webapp/solid/.output/
 /webapp/solid/.vinxi/
 /payload/postgres/data/
+/webapi/orchard/build/
+/webapi/orchard/.idea/
+/webapi/orchard/backend/App_Data/
+/webapi/orchard/backend/bin/
+/webapi/orchard/backend/obj/

@@ -135,7 +135,7 @@ services:
     profiles:
       - backend
     build:
-      context: ../webapi
+      context: ../webapi/NetCore
     environment:
       - NGINX_DOMAIN_NAME=${FP_DOMAIN_NAME:-fullplate.local}
       - BACKEND_PFX_PASSWORD=${FP_BACKEND_PFX_PASSWORD:-}
@@ -159,7 +159,7 @@ services:
     profiles:
       - api-tests
     build:
-      context: ../webapi
+      context: ../webapi/NetCore
       dockerfile: Dockerfile.api.test
     network_mode: "host"
     depends_on:
@@ -172,7 +172,7 @@ services:
     profiles:
       - e2e-tests
     build:
-      context: ../webapi
+      context: ../webapi/NetCore
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-}
       - BACKEND_DATABASE_CONNECTION_STRING_NAME=${FP_DATABASE_CONNECTION_STRING_NAME:-e2e_test_db}
@@ -202,6 +202,40 @@ services:
       - postgres-e2e-test
       - nginx
       - webapi-e2e-test-server
+    logging: *graylog-logging
+
+  ############ orchard #############
+  orchard-cms:
+    container_name: orchard-cms
+    image: orchard-cms
+    profiles:
+      - orchard
+    build:
+      context: ../webapi/orchard
+    environment:
+      - HTTP_PORTS=15260
+      # - HTTPS_PORTS=15443
+    volumes:
+      - ../webapi/data/orchard/App_Data:/orchard/App_Data
+      # - ../nginx/certbot/own_ca_certs:/own_ca_certs:ro
+    network_mode: "host"
+    depends_on:
+      - postgres-orchard
+    logging: *graylog-logging
+
+  postgres-orchard:
+    container_name: postgres-orchard
+    profiles:
+      - orchard
+    image: postgres:17
+    command: -p 15432
+    environment:
+      - POSTGRES_USER=${FP_POSTGRES_USER:-orchard_db_user}
+      - POSTGRES_PASSWORD=${FP_POSTGRES_PASSWORD:-changeme}
+      - POSTGRES_DB=${FP_POSTGRES_DB:-orchard_db}
+    volumes:
+      - ../postgres/data/orchard:/var/lib/postgresql/data
+    network_mode: "host"
     logging: *graylog-logging
 
   ############ Keycloak ############
